@@ -8,15 +8,55 @@ vi.mock('openai', () => ({
     chat: {
       completions: {
         create: vi.fn().mockImplementation(async (params) => {
-          // Return intelligent analysis based on the prompt
-          const traits = params.messages[1].content.includes('age') ? 
-            mockAgeRelatedAnalysis() : mockGeneralAnalysis();
+          const content = params.messages[1].content;
+          let analysis;
+          
+          // Parse traits from the prompt
+          if (content.includes('age') && content.includes('income') && content.includes('fitnessLevel')) {
+            analysis = {
+              distributions: [
+                {
+                  trait: 'age',
+                  distributionType: 'normal',
+                  parameters: { mean: 35, stdDev: 10 },
+                  reasoning: 'Age distribution'
+                },
+                {
+                  trait: 'income',
+                  distributionType: 'normal',
+                  parameters: { mean: 60000, stdDev: 20000 },
+                  reasoning: 'Income distribution'
+                },
+                {
+                  trait: 'fitnessLevel',
+                  distributionType: 'uniform',
+                  parameters: { min: 1, max: 10 },
+                  reasoning: 'Fitness level distribution'
+                }
+              ],
+              correlations: [
+                {
+                  trait1: 'age',
+                  trait2: 'income',
+                  correlation: 0.6,
+                  reasoning: 'Income increases with age'
+                }
+              ],
+              dependencies: [],
+              validationRules: [],
+              warnings: []
+            };
+          } else if (content.includes('age')) {
+            analysis = mockAgeRelatedAnalysis();
+          } else {
+            analysis = mockGeneralAnalysis();
+          }
           
           return {
             choices: [{
               message: {
                 function_call: {
-                  arguments: JSON.stringify(traits)
+                  arguments: JSON.stringify(analysis)
                 }
               }
             }]

@@ -204,6 +204,9 @@ describe('PersonaBuilder with Correlations - Integration Tests', () => {
         });
 
       // Rent should be reasonable percentage of income
+      expect(persona.attributes.rentPerMonth).toBeDefined();
+      expect(persona.attributes.income).toBeDefined();
+      
       const monthlyIncome = persona.attributes.income / 12;
       const rentRatio = persona.attributes.rentPerMonth / monthlyIncome;
       
@@ -349,8 +352,8 @@ describe('PersonaGroup with Correlations - Integration Tests', () => {
               const multipliers: Record<string, number> = {
                 'Junior': 0.7,
                 'Mid': 1.0,
-                'Senior': 1.3,
-                'Lead': 1.6
+                'Senior': 1.5,
+                'Lead': 2.0
               };
               return salary * (multipliers[level as string] || 1);
             }

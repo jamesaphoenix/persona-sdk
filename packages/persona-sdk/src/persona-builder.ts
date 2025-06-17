@@ -349,16 +349,27 @@ export class PersonaBuilder {
     
     // Add conditionals if provided
     if (config?.conditionals) {
+      // Group conditionals by attribute
+      const conditionalsByAttr = new Map<string, any[]>();
+      
       config.conditionals.forEach(cond => {
-        const dist = allSpecs[cond.attribute];
+        if (!conditionalsByAttr.has(cond.attribute)) {
+          conditionalsByAttr.set(cond.attribute, []);
+        }
+        conditionalsByAttr.get(cond.attribute)!.push({
+          dependsOn: cond.dependsOn,
+          transform: cond.transform
+        });
+      });
+      
+      // Add each attribute's conditionals
+      conditionalsByAttr.forEach((conditions, attribute) => {
+        const dist = allSpecs[attribute];
         if (dist && typeof dist === 'object' && 'sample' in dist) {
           correlated.addConditional({
-            attribute: cond.attribute,
+            attribute,
             baseDistribution: dist as Distribution,
-            conditions: [{
-              dependsOn: cond.dependsOn,
-              transform: cond.transform
-            }]
+            conditions
           });
         }
       });

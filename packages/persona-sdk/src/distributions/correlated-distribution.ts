@@ -60,8 +60,7 @@ export class CorrelatedDistribution {
    */
   addConditional(conditional: ConditionalDistribution): this {
     this.conditionals.set(conditional.attribute, conditional);
-    // Also ensure the base distribution is registered
-    this.baseDistributions.set(conditional.attribute, conditional.baseDistribution);
+    // Don't add to baseDistributions as it will be handled by conditionals
     return this;
   }
 
