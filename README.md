@@ -4,22 +4,23 @@ A TypeScript SDK for generating personas from statistical distributions with AI-
 
 ## 📦 Package
 
-The main package is located in `packages/persona-sdk/` and is published as `@open-persona/persona-sdk` on npm.
+The main package is located in `packages/persona-sdk/` and is published as `@jamesaphoenix/persona-sdk` on npm.
 
 ### Installation
 
 ```bash
-npm install @open-persona/persona-sdk
+npm install @jamesaphoenix/persona-sdk
 # or
-pnpm add @open-persona/persona-sdk
+pnpm add @jamesaphoenix/persona-sdk
 # or
-yarn add @open-persona/persona-sdk
+yarn add @jamesaphoenix/persona-sdk
 ```
 
 ## 🚀 Quick Start
 
 ```typescript
-import { PersonaBuilder, PersonaGroup, NormalDistribution } from '@open-persona/persona-sdk';
+import { PersonaBuilder, PersonaGroup, NormalDistribution, UniformDistribution } from '@jamesaphoenix/persona-sdk';
+import { z } from 'zod';
 
 // Create a single persona
 const persona = PersonaBuilder.create()
@@ -36,6 +37,17 @@ group.generateFromDistributions(100, {
   occupation: 'Developer',
   sex: 'other',
   yearsExperience: new UniformDistribution(1, 10)
+});
+
+// Define schema for AI insights
+const MarketingInsightSchema = z.object({
+  targetSegment: z.string(),
+  keyDemographics: z.object({
+    averageAge: z.number(),
+    primaryOccupations: z.array(z.string())
+  }),
+  productRecommendations: z.array(z.string()),
+  marketingChannels: z.array(z.string())
 });
 
 // Generate AI insights (requires OpenAI API key)
@@ -87,8 +99,8 @@ To publish manually:
 
 ## 📄 Documentation
 
-- [API Documentation](https://open-persona.github.io/persona-sdk/)
-- [NPM Package](https://www.npmjs.com/package/@open-persona/persona-sdk)
+- [API Documentation](https://jamesaphoenix.github.io/persona-sdk/)
+- [NPM Package](https://www.npmjs.com/package/@jamesaphoenix/persona-sdk)
 - [Quick Start Guide](./packages/persona-sdk/QUICKSTART.md)
 
 ## 📝 License

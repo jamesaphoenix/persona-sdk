@@ -30,19 +30,28 @@ import { StructuredOutput } from '../types';
  */
 export class StructuredOutputGenerator {
   private model: ChatOpenAI;
+  private systemPrompt?: string;
 
   /**
    * Create a new StructuredOutputGenerator.
    * 
    * @param apiKey - OpenAI API key (optional, uses OPENAI_API_KEY env var if not provided)
-   * @param modelName - OpenAI model to use (default: 'gpt-4-turbo-preview')
+   * @param modelName - OpenAI model to use (default: 'gpt-4.1-mini')
+   * @param systemPrompt - Custom system prompt (optional)
+   * @param temperature - Model temperature (default: 0.7)
    */
-  constructor(apiKey?: string, modelName: string = 'gpt-4-turbo-preview') {
+  constructor(
+    apiKey?: string, 
+    modelName: string = 'gpt-4.1-mini',
+    systemPrompt?: string,
+    temperature: number = 0.7
+  ) {
     this.model = new ChatOpenAI({
       openAIApiKey: apiKey || process.env.OPENAI_API_KEY,
       modelName,
-      temperature: 0.7
+      temperature
     });
+    this.systemPrompt = systemPrompt;
   }
 
   /**
@@ -66,23 +75,38 @@ export class StructuredOutputGenerator {
     const groupSummary = group.getSummary();
     const personas = group.personas.slice(0, 10); // Limit to avoid token limits
 
-    const context = `You are analyzing a persona group to generate structured insights.
+    // Create focus group system prompt
+    const defaultSystemPrompt = `You are acting as a focus group consisting of the following personas:
+
+${personas.map((p, i) => `${i + 1}. ${p.name} - ${p.getSummary()}`).join('\n')}
+
+You must respond as this collective group, considering all perspectives and demographics represented. 
+Generate insights that reflect the diverse viewpoints of all personas in the group.`;
+
+    const systemPrompt = this.systemPrompt || defaultSystemPrompt;
+
+    const context = `Focus Group Analysis:
     
-Group: ${groupSummary.name}
-Size: ${groupSummary.size}
+Group Name: ${groupSummary.name}
+Total Size: ${groupSummary.size} personas
 Common Attributes: ${JSON.stringify(groupSummary.commonAttributes)}
 
-Sample Personas:
+Detailed Personas in Focus Group:
 ${personas.map(p => `- ${p.name}: ${JSON.stringify(p.attributes)}`).join('\n')}`;
 
-    const userPrompt = prompt || 'Analyze this persona group and provide insights according to the schema.';
-    const fullPrompt = `${context}\n\n${userPrompt}`;
+    const userPrompt = prompt || 'Analyze this focus group and provide insights according to the schema.';
 
-    // Use LangChain's withStructuredOutput method
+    // Use LangChain's withStructuredOutput method with system prompt
     const modelWithStructure = this.model.withStructuredOutput(schema);
     
+    // Create messages array with system prompt
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: `${context}\n\n${userPrompt}` }
+    ];
+    
     // Invoke the model with structured output
-    const data = await modelWithStructure.invoke(fullPrompt);
+    const data = await modelWithStructure.invoke(messages);
 
     return {
       data: data as T,
@@ -90,7 +114,8 @@ ${personas.map(p => `- ${p.name}: ${JSON.stringify(p.attributes)}`).join('\n')}`
         model: this.model.modelName,
         timestamp: new Date(),
         groupSize: group.size,
-        promptUsed: userPrompt
+        promptUsed: userPrompt,
+        systemPrompt: systemPrompt
       }
     };
   }

@@ -164,15 +164,20 @@ export class PersonaGroup<T extends PersonaAttributes = PersonaAttributes> {
    * 
    * @example
    * ```typescript
+   * // You can mix distributions with literal values
+   * // Distributions will be sampled for each persona
+   * // Literal values will be the same for all personas
    * group.generateFromDistributions(50, {
-   *   age: new NormalDistribution(35, 7),
-   *   occupation: 'Analyst',
-   *   sex: new CategoricalDistribution([
+   *   age: new NormalDistribution(35, 7),      // Distribution: varies
+   *   occupation: 'Analyst',                   // Literal: constant
+   *   sex: new CategoricalDistribution([       // Distribution: varies
    *     { value: 'male', probability: 0.45 },
    *     { value: 'female', probability: 0.45 },
    *     { value: 'other', probability: 0.1 }
    *   ]),
-   *   income: new UniformDistribution(40000, 80000)
+   *   income: new UniformDistribution(40000, 80000), // Distribution: varies
+   *   department: 'Analytics',                 // Literal: constant
+   *   isFullTime: true                         // Literal: constant
    * });
    * ```
    */
@@ -237,12 +242,16 @@ export class PersonaGroup<T extends PersonaAttributes = PersonaAttributes> {
    * Generate structured output using AI.
    * 
    * Uses LangChain's structured output feature to analyze the persona group
-   * and generate insights in a specified format.
+   * as a focus group, with each persona contributing their perspective.
    * 
    * @template T - Type of the structured output
    * @param schema - Zod schema defining the output structure
    * @param prompt - Custom prompt for the AI (optional)
-   * @param apiKey - OpenAI API key (optional, uses env var if not provided)
+   * @param options - Configuration options
+   * @param options.apiKey - OpenAI API key (optional, uses env var if not provided)
+   * @param options.modelName - Model to use (default: 'gpt-4.1-mini')
+   * @param options.systemPrompt - Custom system prompt (optional)
+   * @param options.temperature - Model temperature (default: 0.7)
    * @returns Promise resolving to structured output with metadata
    * 
    * @example
@@ -256,17 +265,28 @@ export class PersonaGroup<T extends PersonaAttributes = PersonaAttributes> {
    * 
    * const insights = await group.generateStructuredOutput(
    *   MarketInsightSchema,
-   *   "Analyze this audience for marketing campaign targeting"
+   *   "Analyze this audience for marketing campaign targeting",
+   *   { modelName: 'gpt-4o-mini', temperature: 0.8 }
    * );
    * ```
    */
   async generateStructuredOutput<T = any>(
     schema: z.ZodSchema<T>,
     prompt?: string,
-    apiKey?: string
+    options: {
+      apiKey?: string;
+      modelName?: string;
+      systemPrompt?: string;
+      temperature?: number;
+    } = {}
   ): Promise<StructuredOutput<T>> {
     const { StructuredOutputGenerator } = await import('./tools/structured-output-generator');
-    const generator = new StructuredOutputGenerator(apiKey);
+    const generator = new StructuredOutputGenerator(
+      options.apiKey,
+      options.modelName,
+      options.systemPrompt,
+      options.temperature
+    );
     return generator.generate(this, schema, prompt);
   }
 

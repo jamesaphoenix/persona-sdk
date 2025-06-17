@@ -96,7 +96,7 @@ Consider:
 - Categorical: For discrete choices (occupation, preference categories)`;
 
     const response = await this.openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: 'gpt-4.1-mini',
       messages: [{ role: 'user', content: prompt }],
       tools,
       tool_choice: { type: 'function', function: { name: 'select_distribution' } }

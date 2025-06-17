@@ -44,6 +44,7 @@ import {
 } from '@open-persona/persona-sdk';
 
 // Define distributions for all required fields
+// You can mix distributions with literal values - useful when some attributes should be constant
 const distributions = {
   age: new NormalDistribution(30, 5), // mean=30, stdDev=5
   occupation: new CategoricalDistribution([
@@ -57,7 +58,9 @@ const distributions = {
     { value: 'other', probability: 0.02 }
   ]),
   // Custom fields
-  yearsExperience: new ExponentialDistribution(0.2)
+  yearsExperience: new ExponentialDistribution(0.2),
+  company: 'Tech Corp',  // Literal value - same for all generated personas
+  isActive: true         // Literal value - same for all generated personas
 };
 
 // Generate one persona
@@ -87,9 +90,18 @@ import { PersonaGroup } from '@open-persona/persona-sdk';
 const customerBase = new PersonaGroup('Customers');
 
 // Add personas
+// Note: Required fields (age, occupation, sex) must be provided
+// You can use distributions or literal values for any field
 customerBase.generateFromDistributions(100, {
-  age: new NormalDistribution(35, 10),
-  spendingScore: new UniformDistribution(0, 100)
+  age: new NormalDistribution(35, 10),     // Distribution: varies per persona
+  occupation: 'Customer',                   // Literal: same for all
+  sex: new CategoricalDistribution([        // Distribution: varies per persona
+    { value: 'male', probability: 0.5 },
+    { value: 'female', probability: 0.5 }
+  ]),
+  spendingScore: new UniformDistribution(0, 100), // Distribution: varies
+  region: 'North America',                  // Literal: same for all
+  accountType: 'Premium'                    // Literal: same for all
 });
 
 // Get statistics

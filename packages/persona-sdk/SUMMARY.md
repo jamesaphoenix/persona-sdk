@@ -64,15 +64,18 @@ packages/persona-sdk/
 import { PersonaGroup, NormalDistribution } from '@open-person/persona-sdk';
 
 // Create a group and generate personas
+// Note: You can mix distributions (vary per persona) with literal values (same for all)
 const customers = new PersonaGroup('Customers');
 customers.generateFromDistributions(100, {
-  age: new NormalDistribution(35, 10),
-  occupation: 'Customer',
-  sex: new CategoricalDistribution([
+  age: new NormalDistribution(35, 10),      // Distribution: varies per persona
+  occupation: 'Customer',                   // Literal: same for all personas
+  sex: new CategoricalDistribution([        // Distribution: varies per persona
     { value: 'male', probability: 0.5 },
     { value: 'female', probability: 0.5 }
   ]),
-  spendingScore: new UniformDistribution(0, 100)
+  spendingScore: new UniformDistribution(0, 100), // Distribution: varies
+  membershipTier: 'Gold',                   // Literal: same for all
+  region: 'North America'                   // Literal: same for all
 });
 
 // Get insights with AI

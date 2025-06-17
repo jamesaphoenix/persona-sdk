@@ -1,4 +1,4 @@
-# @open-persona/persona-sdk
+# @jamesaphoenix/persona-sdk
 
 A TypeScript SDK for generating personas from statistical distributions with AI-powered insights.
 
@@ -14,11 +14,11 @@ A TypeScript SDK for generating personas from statistical distributions with AI-
 ## Installation
 
 ```bash
-npm install @open-persona/persona-sdk
+npm install @jamesaphoenix/persona-sdk
 # or
-pnpm add @open-persona/persona-sdk
+pnpm add @jamesaphoenix/persona-sdk
 # or
-yarn add @open-persona/persona-sdk
+yarn add @jamesaphoenix/persona-sdk
 ```
 
 ## Quick Start
@@ -30,18 +30,31 @@ import {
   NormalDistribution, 
   UniformDistribution,
   CategoricalDistribution 
-} from '@open-persona/persona-sdk';
+} from '@jamesaphoenix/persona-sdk';
 
 // Create a single persona
 const john = new Persona('John Doe', {
   age: 35,
+  occupation: 'Software Engineer',
+  sex: 'male',
   income: 75000,
   interests: ['technology', 'fitness']
 });
 
 // Generate personas from distributions
+// Note: You can mix distributions with literal values for flexibility
 const distributions = {
   age: new NormalDistribution(35, 10),
+  occupation: new CategoricalDistribution([
+    { value: 'Engineer', probability: 0.4 },
+    { value: 'Designer', probability: 0.3 },
+    { value: 'Manager', probability: 0.3 }
+  ]),
+  sex: new CategoricalDistribution([
+    { value: 'male', probability: 0.45 },
+    { value: 'female', probability: 0.45 },
+    { value: 'other', probability: 0.1 }
+  ]),
   income: new NormalDistribution(60000, 20000),
   satisfaction: new UniformDistribution(1, 10),
   category: new CategoricalDistribution([
@@ -237,6 +250,19 @@ Or pass it directly:
 ```typescript
 const selector = new DistributionSelector('your-api-key');
 ```
+
+The SDK uses `gpt-4.1-mini` as the default model for all AI features, but you can customize it:
+
+```typescript
+// For structured output generation
+const insights = await group.generateStructuredOutput(
+  YourSchema,
+  'Your analysis prompt',
+  { modelName: 'gpt-4-turbo-preview' } // Optional: use a different model
+);
+```
+
+
 
 ## TypeScript Support
 

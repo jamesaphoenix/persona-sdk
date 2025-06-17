@@ -4,7 +4,8 @@ import {
   DistributionMap, 
   Distribution, 
   AttributeValue,
-  PersonaAttributesSchema
+  PersonaAttributesSchema,
+  StructuredOutput
 } from './types';
 import { z } from 'zod';
 
@@ -102,14 +103,17 @@ export class Persona<T extends PersonaAttributes = PersonaAttributes> {
    * 
    * @example
    * ```typescript
+   * // Mix distributions with literal values for flexibility
    * const persona = Persona.fromDistributions('Random User', {
-   *   age: new NormalDistribution(35, 5),
-   *   occupation: 'Developer',
-   *   sex: new CategoricalDistribution([
+   *   age: new NormalDistribution(35, 5),     // Distribution: sampled
+   *   occupation: 'Developer',                // Literal: fixed value
+   *   sex: new CategoricalDistribution([      // Distribution: sampled
    *     { value: 'male', probability: 0.5 },
    *     { value: 'female', probability: 0.5 }
    *   ]),
-   *   income: new UniformDistribution(50000, 100000)
+   *   income: new UniformDistribution(50000, 100000), // Distribution: sampled
+   *   company: 'Tech Corp',                   // Literal: fixed value
+   *   remote: true                            // Literal: fixed value
    * });
    * ```
    */
@@ -156,15 +160,18 @@ export class Persona<T extends PersonaAttributes = PersonaAttributes> {
    * 
    * @example
    * ```typescript
+   * // Generate 100 personas with mixed distributions and literal values
    * const personas = Persona.generateMany('Employee', 100, {
-   *   age: new NormalDistribution(30, 5),
-   *   occupation: new CategoricalDistribution([
+   *   age: new NormalDistribution(30, 5),          // Distribution: varies
+   *   occupation: new CategoricalDistribution([    // Distribution: varies
    *     { value: 'Engineer', probability: 0.4 },
    *     { value: 'Designer', probability: 0.3 },
    *     { value: 'Manager', probability: 0.3 }
    *   ]),
-   *   sex: 'other',
-   *   experience: new UniformDistribution(0, 10)
+   *   sex: 'other',                                // Literal: all will have 'other'
+   *   experience: new UniformDistribution(0, 10),  // Distribution: varies
+   *   department: 'Technology',                    // Literal: all in same dept
+   *   location: 'San Francisco'                    // Literal: all in same location
    * });
    * ```
    */
@@ -332,5 +339,80 @@ export class Persona<T extends PersonaAttributes = PersonaAttributes> {
   getSummary(): string {
     const { age, occupation, sex } = this.baseAttributes;
     return `${this.name} (${age} year old ${sex} ${occupation})`;
+  }
+
+  /**
+   * Generate structured output using AI from this persona's perspective.
+   * 
+   * The persona will respond as themselves, considering their attributes
+   * and background when generating the structured output.
+   * 
+   * @template T - Type of the structured output
+   * @param schema - Zod schema defining the output structure
+   * @param prompt - Custom prompt for the persona
+   * @param options - Configuration options
+   * @param options.apiKey - OpenAI API key (optional)
+   * @param options.modelName - Model to use (default: 'gpt-4.1-mini')
+   * @param options.systemPrompt - Custom system prompt (optional)
+   * @param options.temperature - Model temperature (default: 0.7)
+   * @returns Promise resolving to structured output
+   * 
+   * @example
+   * ```typescript
+   * const OpinionSchema = z.object({
+   *   productRating: z.number().min(1).max(10),
+   *   likes: z.array(z.string()),
+   *   dislikes: z.array(z.string()),
+   *   recommendation: z.boolean()
+   * });
+   * 
+   * const opinion = await persona.generateStructuredOutput(
+   *   OpinionSchema,
+   *   "What do you think about our new mobile app?"
+   * );
+   * ```
+   */
+  async generateStructuredOutput<T = any>(
+    schema: z.ZodSchema<T>,
+    prompt: string,
+    options: {
+      apiKey?: string;
+      modelName?: string;
+      systemPrompt?: string;
+      temperature?: number;
+    } = {}
+  ): Promise<StructuredOutput<T>> {
+    const { StructuredOutputGenerator } = await import('./tools/structured-output-generator');
+    
+    // Create persona-specific system prompt
+    const defaultSystemPrompt = `You are ${this.name}, ${this.getSummary()}.
+
+Your attributes:
+${Object.entries(this.attributes).map(([key, value]) => `- ${key}: ${JSON.stringify(value)}`).join('\n')}
+
+Respond to all prompts as this persona, considering your background, age, occupation, and other attributes.
+Your responses should reflect your perspective and experiences.`;
+
+    const generator = new StructuredOutputGenerator(
+      options.apiKey,
+      options.modelName,
+      options.systemPrompt || defaultSystemPrompt,
+      options.temperature
+    );
+
+    // Create a temporary PersonaGroup with just this persona
+    const { PersonaGroup } = await import('./persona-group');
+    const tempGroup = new PersonaGroup(`${this.name} Individual`, [this as any]);
+    
+    const result = await generator.generate(tempGroup, schema, prompt);
+    
+    return {
+      ...result,
+      metadata: {
+        ...result.metadata,
+        personaId: this.id,
+        personaName: this.name
+      }
+    };
   }
 }
