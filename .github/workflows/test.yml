@@ -32,7 +32,7 @@ jobs:
           cache: 'pnpm'
       
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --reporter=silent
         
       - name: Type check
         run: pnpm type-check
@@ -73,14 +73,18 @@ jobs:
           cache: 'pnpm'
           
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --reporter=silent
         
       - name: Build package
         run: pnpm build
         
       - name: Generate docs
-        run: pnpm docs
-        working-directory: ./packages/persona-sdk
+        run: |
+          export DISPLAY=
+          export BROWSER=none
+          cd packages/persona-sdk && npx typedoc --logLevel Error
+        env:
+          CI: true
         
       - name: Upload docs artifact
         uses: actions/upload-artifact@v4
