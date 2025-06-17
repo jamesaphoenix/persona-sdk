@@ -70,6 +70,7 @@ export class CorrelatedDistribution {
   generate(): Record<string, any> {
     const result: Record<string, any> = {};
     const generated = new Set<string>();
+    const remaining = new Map(this.conditionals);
 
     // First, copy all static values
     Object.entries(this.attributes).forEach(([key, value]) => {
@@ -87,48 +88,53 @@ export class CorrelatedDistribution {
       }
     });
 
-    // Generate conditional attributes
-    let previousSize = generated.size;
+    // Generate conditional attributes in dependency order
     let iterations = 0;
-    const maxIterations = 10;
+    const maxIterations = 50; // Increased for more complex dependency chains
     
-    while (this.conditionals.size > 0 && iterations < maxIterations) {
-      this.conditionals.forEach((conditional, attr) => {
-        if (!generated.has(attr)) {
-          // Check if all dependencies are satisfied
-          const satisfiedConditions = conditional.conditions.filter(
-            cond => result[cond.dependsOn] !== undefined
-          );
+    while (remaining.size > 0 && iterations < maxIterations) {
+      let progressMade = false;
+      
+      // Try to generate attributes whose dependencies are satisfied
+      remaining.forEach((conditional, attr) => {
+        // Check if all dependencies are available
+        const allDependenciesSatisfied = conditional.conditions.every(
+          cond => result[cond.dependsOn] !== undefined
+        );
 
-          // Generate with base distribution and apply available transforms
+        if (allDependenciesSatisfied) {
+          // Generate with base distribution and apply all transforms
           let value = conditional.baseDistribution.sample();
           
-          // Apply transformations for satisfied conditions
-          satisfiedConditions.forEach(cond => {
+          // Apply all transformations in sequence
+          conditional.conditions.forEach(cond => {
             value = cond.transform(value, result[cond.dependsOn]);
           });
 
           result[attr] = value;
           generated.add(attr);
+          remaining.delete(attr);
+          progressMade = true;
         }
       });
 
-      // Prevent infinite loop
-      if (generated.size === previousSize) {
-        // Generate remaining attributes without conditions
-        this.conditionals.forEach((conditional, attr) => {
-          if (!generated.has(attr)) {
-            result[attr] = conditional.baseDistribution.sample();
-            generated.add(attr);
-          }
-        });
+      // If no progress was made, we have circular dependencies or missing dependencies
+      if (!progressMade) {
+        // Check for actual circular dependencies
+        const hasTrueCircularDep = this.detectCircularDependency(remaining);
         
-        if (generated.size === previousSize) {
+        if (hasTrueCircularDep) {
           console.warn('Circular dependency detected in conditional distributions');
-          break;
         }
+        
+        // Generate remaining attributes with base distributions only
+        remaining.forEach((conditional, attr) => {
+          result[attr] = conditional.baseDistribution.sample();
+          generated.add(attr);
+        });
+        break;
       }
-      previousSize = generated.size;
+      
       iterations++;
     }
 
@@ -136,6 +142,43 @@ export class CorrelatedDistribution {
     this.applyCorrelations(result);
 
     return result;
+  }
+
+  /**
+   * Detect actual circular dependencies in remaining conditionals
+   */
+  private detectCircularDependency(remaining: Map<string, ConditionalDistribution>): boolean {
+    const visited = new Set<string>();
+    const recursionStack = new Set<string>();
+    
+    const hasCycle = (attr: string): boolean => {
+      if (recursionStack.has(attr)) return true;
+      if (visited.has(attr)) return false;
+      
+      visited.add(attr);
+      recursionStack.add(attr);
+      
+      const conditional = remaining.get(attr);
+      if (conditional) {
+        for (const condition of conditional.conditions) {
+          if (remaining.has(condition.dependsOn) && hasCycle(condition.dependsOn)) {
+            return true;
+          }
+        }
+      }
+      
+      recursionStack.delete(attr);
+      return false;
+    };
+    
+    // Check each remaining attribute for cycles
+    for (const attr of remaining.keys()) {
+      if (!visited.has(attr) && hasCycle(attr)) {
+        return true;
+      }
+    }
+    
+    return false;
   }
 
   /**
