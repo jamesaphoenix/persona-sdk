@@ -60,6 +60,8 @@ export class CorrelatedDistribution {
    */
   addConditional(conditional: ConditionalDistribution): this {
     this.conditionals.set(conditional.attribute, conditional);
+    // Also ensure the base distribution is registered
+    this.baseDistributions.set(conditional.attribute, conditional.baseDistribution);
     return this;
   }
 
@@ -74,6 +76,7 @@ export class CorrelatedDistribution {
     Object.entries(this.attributes).forEach(([key, value]) => {
       if (!(typeof value === 'object' && value !== null && 'sample' in value)) {
         result[key] = value;
+        generated.add(key);
       }
     });
 
@@ -87,34 +90,50 @@ export class CorrelatedDistribution {
 
     // Generate conditional attributes
     let previousSize = generated.size;
-    while (generated.size < this.baseDistributions.size) {
+    let iterations = 0;
+    const maxIterations = 10;
+    
+    // Check total attributes to generate (including conditionals not in baseDistributions)
+    const totalAttributes = new Set([...this.baseDistributions.keys(), ...this.conditionals.keys()]);
+    
+    while (generated.size < totalAttributes.size && iterations < maxIterations) {
       this.conditionals.forEach((conditional, attr) => {
         if (!generated.has(attr)) {
           // Check if all dependencies are satisfied
-          const canGenerate = conditional.conditions.every(
+          const satisfiedConditions = conditional.conditions.filter(
             cond => result[cond.dependsOn] !== undefined
           );
 
-          if (canGenerate) {
-            let value = conditional.baseDistribution.sample();
-            
-            // Apply transformations based on conditions
-            conditional.conditions.forEach(cond => {
-              value = cond.transform(value, result[cond.dependsOn]);
-            });
+          // Generate with base distribution and apply available transforms
+          let value = conditional.baseDistribution.sample();
+          
+          // Apply transformations for satisfied conditions
+          satisfiedConditions.forEach(cond => {
+            value = cond.transform(value, result[cond.dependsOn]);
+          });
 
-            result[attr] = value;
-            generated.add(attr);
-          }
+          result[attr] = value;
+          generated.add(attr);
         }
       });
 
       // Prevent infinite loop
       if (generated.size === previousSize) {
-        console.warn('Circular dependency detected in conditional distributions');
-        break;
+        // Generate remaining attributes without conditions
+        this.conditionals.forEach((conditional, attr) => {
+          if (!generated.has(attr)) {
+            result[attr] = conditional.baseDistribution.sample();
+            generated.add(attr);
+          }
+        });
+        
+        if (generated.size === previousSize) {
+          console.warn('Circular dependency detected in conditional distributions');
+          break;
+        }
       }
       previousSize = generated.size;
+      iterations++;
     }
 
     // Apply correlations for numeric attributes
@@ -130,19 +149,39 @@ export class CorrelatedDistribution {
     const processed = new Set<string>();
 
     this.correlations.forEach((correlations, attr1) => {
-      if (processed.has(attr1) || typeof result[attr1] !== 'number') return;
+      if (processed.has(attr1) || result[attr1] === undefined || typeof result[attr1] !== 'number') return;
 
       correlations.forEach(({ attribute2, correlation, type = 'linear' }) => {
-        if (processed.has(attribute2) || typeof result[attribute2] !== 'number') return;
+        if (processed.has(attribute2) || result[attribute2] === undefined || typeof result[attribute2] !== 'number') return;
 
         const value1 = result[attr1];
         const value2 = result[attribute2];
 
         // Apply correlation adjustment
         if (type === 'linear') {
-          // Simple linear correlation adjustment
-          const adjustment = correlation * (value1 - this.getMean(attr1)) * 0.3;
-          result[attribute2] = value2 + adjustment;
+          // Linear correlation adjustment - stronger effect for higher correlations
+          const mean1 = this.getMean(attr1);
+          const mean2 = this.getMean(attribute2);
+          const stdDev1 = Math.sqrt(this.getVariance(attr1));
+          const stdDev2 = Math.sqrt(this.getVariance(attribute2));
+          
+          // Z-score of value1
+          const z1 = stdDev1 > 0 ? (value1 - mean1) / stdDev1 : 0;
+          
+          // Adjust value2 based on correlation
+          const targetZ2 = correlation * z1;
+          const targetValue2 = mean2 + targetZ2 * stdDev2;
+          
+          // Blend original and target based on correlation strength
+          const blendedValue = value2 * (1 - Math.abs(correlation)) + targetValue2 * Math.abs(correlation);
+          
+          // Ensure non-negative for certain attributes
+          const nonNegativeAttrs = ['age', 'income', 'salary', 'weight', 'height', 'yearsExperience', 'yearsAtCompany', 'monthlySpending', 'savingsBalance', 'creditScore'];
+          if (nonNegativeAttrs.includes(attribute2)) {
+            result[attribute2] = Math.max(0, blendedValue);
+          } else {
+            result[attribute2] = blendedValue;
+          }
         }
       });
 
@@ -163,6 +202,22 @@ export class CorrelatedDistribution {
     }
     
     return 0;
+  }
+
+  /**
+   * Get variance for an attribute
+   */
+  private getVariance(attribute: string): number {
+    const dist = this.baseDistributions.get(attribute);
+    if (!dist) return 1;
+
+    // Use the distribution's variance() method if available
+    if (typeof dist.variance === 'function') {
+      return dist.variance();
+    }
+    
+    // Default variance for distributions without explicit variance
+    return 1;
   }
 }
 

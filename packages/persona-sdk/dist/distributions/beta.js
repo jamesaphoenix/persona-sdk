@@ -79,5 +79,34 @@ export class BetaDistribution extends BaseDistribution {
     toString() {
         return `Beta(α=${this.alpha}, β=${this.beta})`;
     }
+    /**
+     * Scale the beta distribution to a different range
+     *
+     * @param min - Minimum value of the new range
+     * @param max - Maximum value of the new range
+     * @returns A new distribution that scales beta values to the specified range
+     */
+    scale(min, max) {
+        const self = this;
+        // Create a custom distribution that scales the beta values
+        class ScaledBetaDistribution extends BaseDistribution {
+            sample() {
+                const betaValue = self.sample();
+                return min + betaValue * (max - min);
+            }
+            mean() {
+                const betaMean = self.mean();
+                return min + betaMean * (max - min);
+            }
+            variance() {
+                const betaVar = self.variance();
+                return betaVar * (max - min) ** 2;
+            }
+            toString() {
+                return `ScaledBeta(${min}, ${max}, α=${self.alpha}, β=${self.beta})`;
+            }
+        }
+        return new ScaledBetaDistribution(self.seed);
+    }
 }
 //# sourceMappingURL=beta.js.map

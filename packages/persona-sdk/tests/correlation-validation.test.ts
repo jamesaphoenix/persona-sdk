@@ -3,6 +3,7 @@ import {
   CorrelatedDistribution,
   NormalDistribution,
   UniformDistribution,
+  ExponentialDistribution,
   CategoricalDistribution,
   CommonCorrelations
 } from '../src';
@@ -39,6 +40,12 @@ describe('Correlation Validation - Real World Accuracy', () => {
       const midCareer = samples.filter(s => s.age >= 35 && s.age < 45);
       const peakEarners = samples.filter(s => s.age >= 50 && s.age < 60);
       const nearRetirement = samples.filter(s => s.age >= 60);
+
+      // Ensure we have samples in each group
+      expect(youngAdults.length).toBeGreaterThan(0);
+      expect(midCareer.length).toBeGreaterThan(0);
+      expect(peakEarners.length).toBeGreaterThan(0);
+      expect(nearRetirement.length).toBeGreaterThan(0);
 
       // Calculate average incomes
       const avgYoung = youngAdults.reduce((sum, s) => sum + s.income, 0) / youngAdults.length;

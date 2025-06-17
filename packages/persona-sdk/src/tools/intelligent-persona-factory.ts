@@ -119,7 +119,16 @@ export class IntelligentPersonaFactory {
       
       // Retry until we get a valid persona
       while (!validPersona && attempts < 10) {
-        const correlated = new CorrelatedDistribution(intelligence.distributions);
+        // Ensure required attributes are included
+        const distributions = {
+          ...intelligence.distributions,
+          // Add defaults for required attributes if not provided
+          age: intelligence.distributions.age || new NormalDistribution(35, 10),
+          occupation: intelligence.distributions.occupation || 'Professional',
+          sex: intelligence.distributions.sex || 'other'
+        };
+        
+        const correlated = new CorrelatedDistribution(distributions);
         
         // Add correlations
         intelligence.correlations.forEach(corr => {

@@ -1,5 +1,5 @@
 /**
- * @module @open-person/persona-sdk
+ * @module @open-persona/persona-sdk
  *
  * A TypeScript SDK for generating personas from statistical distributions.
  *
@@ -18,7 +18,7 @@
  * ## Quick Start
  *
  * ```typescript
- * import { PersonaBuilder, PersonaGroup, NormalDistribution } from '@open-person/persona-sdk';
+ * import { PersonaBuilder, PersonaGroup, NormalDistribution } from '@open-persona/persona-sdk';
  *
  * // Create a single persona
  * const persona = PersonaBuilder.create()
@@ -57,8 +57,9 @@
 export { Persona } from './persona';
 export { PersonaGroup } from './persona-group';
 export { PersonaBuilder } from './persona-builder';
-export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution } from './distributions';
-export type { AttributeValue, BasePersonaAttributes, PersonaAttributes, Sex, Distribution, DistributionSpec, DistributionMap, PersonaGroupOptions, StructuredOutput } from './types';
+export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution, CorrelatedDistribution, CommonCorrelations, PersonaCorrelationPresets } from './distributions';
+export type { AttributeValue, BasePersonaAttributes, PersonaAttributes, Sex, Distribution, DistributionSpec, DistributionMap, PersonaGroupOptions, StructuredOutput, AttributeCorrelation } from './types';
+export type { ConditionalDistribution } from './distributions/correlated-distribution';
 export { BasePersonaAttributesSchema, PersonaAttributesSchema, SexSchema } from './types';
 export * from './tools';
 export declare const VERSION = "0.1.0";

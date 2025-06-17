@@ -5,6 +5,7 @@ import { Distribution } from '../types';
  */
 export declare abstract class BaseDistribution<T = number> implements Distribution<T> {
     protected random: Random;
+    readonly seed?: number;
     constructor(seed?: number);
     abstract sample(): T;
     abstract mean(): T;

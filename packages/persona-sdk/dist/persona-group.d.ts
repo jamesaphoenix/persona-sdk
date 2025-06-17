@@ -1,5 +1,5 @@
 import { Persona } from './persona';
-import { PersonaGroupOptions, DistributionMap, StructuredOutput, PersonaAttributes } from './types';
+import { PersonaGroupOptions, DistributionMap, StructuredOutput, PersonaAttributes, AttributeCorrelation } from './types';
 import { z } from 'zod';
 /**
  * Represents a group of personas for collective analysis and generation.
@@ -128,19 +128,75 @@ export declare class PersonaGroup<T extends PersonaAttributes = PersonaAttribute
      *
      * @example
      * ```typescript
+     * // You can mix distributions with literal values
+     * // Distributions will be sampled for each persona
+     * // Literal values will be the same for all personas
      * group.generateFromDistributions(50, {
-     *   age: new NormalDistribution(35, 7),
-     *   occupation: 'Analyst',
-     *   sex: new CategoricalDistribution([
+     *   age: new NormalDistribution(35, 7),      // Distribution: varies
+     *   occupation: 'Analyst',                   // Literal: constant
+     *   sex: new CategoricalDistribution([       // Distribution: varies
      *     { value: 'male', probability: 0.45 },
      *     { value: 'female', probability: 0.45 },
      *     { value: 'other', probability: 0.1 }
      *   ]),
-     *   income: new UniformDistribution(40000, 80000)
+     *   income: new UniformDistribution(40000, 80000), // Distribution: varies
+     *   department: 'Analytics',                 // Literal: constant
+     *   isFullTime: true                         // Literal: constant
      * });
      * ```
      */
     generateFromDistributions(count: number, distributions?: DistributionMap): void;
+    /**
+     * Generate personas with correlated attributes.
+     *
+     * Creates multiple personas where attributes have realistic correlations,
+     * such as age correlating with income and experience.
+     *
+     * @param count - Number of personas to generate
+     * @param config - Configuration for attributes, correlations, and conditionals
+     *
+     * @example
+     * ```typescript
+     * // Generate tech workers with realistic correlations
+     * group.generateWithCorrelations(100, {
+     *   attributes: {
+     *     age: new NormalDistribution(32, 8),
+     *     yearsExperience: new NormalDistribution(8, 4),
+     *     income: new NormalDistribution(95000, 30000),
+     *     height: new NormalDistribution(170, 10),
+     *     weight: new NormalDistribution(70, 15),
+     *     occupation: 'Software Engineer',
+     *     sex: 'other'
+     *   },
+     *   correlations: [
+     *     { attribute1: 'age', attribute2: 'income', correlation: 0.6 },
+     *     { attribute1: 'age', attribute2: 'yearsExperience', correlation: 0.8 },
+     *     { attribute1: 'height', attribute2: 'weight', correlation: 0.7 }
+     *   ],
+     *   conditionals: [
+     *     {
+     *       attribute: 'yearsExperience',
+     *       dependsOn: 'age',
+     *       transform: (exp, age) => Math.min(exp, Math.max(0, age - 22))
+     *     },
+     *     {
+     *       attribute: 'income',
+     *       dependsOn: 'yearsExperience',
+     *       transform: (income, exp) => income * (1 + exp * 0.05)
+     *     }
+     *   ]
+     * });
+     * ```
+     */
+    generateWithCorrelations(count: number, config: {
+        attributes: DistributionMap;
+        correlations?: AttributeCorrelation[];
+        conditionals?: Array<{
+            attribute: string;
+            dependsOn: string;
+            transform: (value: number, dependentValue: any) => number;
+        }>;
+    }): void;
     /**
      * Get statistics for a numeric attribute.
      *
@@ -169,12 +225,16 @@ export declare class PersonaGroup<T extends PersonaAttributes = PersonaAttribute
      * Generate structured output using AI.
      *
      * Uses LangChain's structured output feature to analyze the persona group
-     * and generate insights in a specified format.
+     * as a focus group, with each persona contributing their perspective.
      *
      * @template T - Type of the structured output
      * @param schema - Zod schema defining the output structure
      * @param prompt - Custom prompt for the AI (optional)
-     * @param apiKey - OpenAI API key (optional, uses env var if not provided)
+     * @param options - Configuration options
+     * @param options.apiKey - OpenAI API key (optional, uses env var if not provided)
+     * @param options.modelName - Model to use (default: 'gpt-4.1-mini')
+     * @param options.systemPrompt - Custom system prompt (optional)
+     * @param options.temperature - Model temperature (default: 0.7)
      * @returns Promise resolving to structured output with metadata
      *
      * @example
@@ -188,11 +248,17 @@ export declare class PersonaGroup<T extends PersonaAttributes = PersonaAttribute
      *
      * const insights = await group.generateStructuredOutput(
      *   MarketInsightSchema,
-     *   "Analyze this audience for marketing campaign targeting"
+     *   "Analyze this audience for marketing campaign targeting",
+     *   { modelName: 'gpt-4o-mini', temperature: 0.8 }
      * );
      * ```
      */
-    generateStructuredOutput<T = any>(schema: z.ZodSchema<T>, prompt?: string, apiKey?: string): Promise<StructuredOutput<T>>;
+    generateStructuredOutput<T = any>(schema: z.ZodSchema<T>, prompt?: string, options?: {
+        apiKey?: string;
+        modelName?: string;
+        systemPrompt?: string;
+        temperature?: number;
+    }): Promise<StructuredOutput<T>>;
     /**
      * Convert to plain object.
      *

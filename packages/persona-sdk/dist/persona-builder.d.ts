@@ -169,6 +169,51 @@ export declare class PersonaBuilder {
      */
     private isDistribution;
     /**
+     * Build a persona with correlated attributes.
+     *
+     * This method ensures realistic relationships between attributes using
+     * correlations and conditional distributions.
+     *
+     * @param config - Configuration for correlations and conditional dependencies
+     * @returns A new Persona instance with correlated attributes
+     *
+     * @example
+     * ```typescript
+     * const persona = PersonaBuilder.create()
+     *   .withName('Professional')
+     *   .withAge(new NormalDistribution(35, 10))
+     *   .withAttribute('yearsExperience', new NormalDistribution(10, 5))
+     *   .withAttribute('income', new NormalDistribution(60000, 20000))
+     *   .withOccupation('Developer')
+     *   .withSex('other')
+     *   .buildWithCorrelations({
+     *     correlations: [
+     *       { attribute1: 'age', attribute2: 'income', correlation: 0.6 },
+     *       { attribute1: 'age', attribute2: 'yearsExperience', correlation: 0.8 }
+     *     ],
+     *     conditionals: [
+     *       {
+     *         attribute: 'yearsExperience',
+     *         dependsOn: 'age',
+     *         transform: (exp, age) => Math.min(exp, Math.max(0, age - 22))
+     *       }
+     *     ]
+     *   });
+     * ```
+     */
+    buildWithCorrelations(config?: {
+        correlations?: Array<{
+            attribute1: string;
+            attribute2: string;
+            correlation: number;
+        }>;
+        conditionals?: Array<{
+            attribute: string;
+            dependsOn: string;
+            transform: (value: number, dependentValue: any) => number;
+        }>;
+    }): Persona<PersonaAttributes>;
+    /**
      * Create a new builder instance.
      *
      * Static factory method for creating builders.

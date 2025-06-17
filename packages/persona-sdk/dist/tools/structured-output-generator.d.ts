@@ -28,13 +28,16 @@ import { StructuredOutput } from '../types';
  */
 export declare class StructuredOutputGenerator {
     private model;
+    private systemPrompt?;
     /**
      * Create a new StructuredOutputGenerator.
      *
      * @param apiKey - OpenAI API key (optional, uses OPENAI_API_KEY env var if not provided)
-     * @param modelName - OpenAI model to use (default: 'gpt-4-turbo-preview')
+     * @param modelName - OpenAI model to use (default: 'gpt-4.1-mini')
+     * @param systemPrompt - Custom system prompt (optional)
+     * @param temperature - Model temperature (default: 0.7)
      */
-    constructor(apiKey?: string, modelName?: string);
+    constructor(apiKey?: string, modelName?: string, systemPrompt?: string, temperature?: number);
     /**
      * Generate structured output from a PersonaGroup using LangChain's withStructuredOutput.
      *

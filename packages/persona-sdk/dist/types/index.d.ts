@@ -184,4 +184,13 @@ export interface StructuredOutput<T = any> {
         [key: string]: any;
     };
 }
+/**
+ * Represents a correlation between two attributes
+ */
+export interface AttributeCorrelation {
+    attribute1: string;
+    attribute2: string;
+    correlation: number;
+    type?: 'linear' | 'exponential' | 'logarithmic';
+}
 //# sourceMappingURL=index.d.ts.map

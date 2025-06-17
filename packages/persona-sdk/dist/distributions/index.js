@@ -3,4 +3,5 @@ export { UniformDistribution } from './uniform';
 export { ExponentialDistribution } from './exponential';
 export { BetaDistribution } from './beta';
 export { CategoricalDistribution } from './categorical';
+export { CorrelatedDistribution, CommonCorrelations, PersonaCorrelationPresets } from './correlated-distribution';
 //# sourceMappingURL=index.js.map

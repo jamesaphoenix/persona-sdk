@@ -45,5 +45,13 @@ export declare class BetaDistribution extends BaseDistribution<number> {
      * Get string representation
      */
     toString(): string;
+    /**
+     * Scale the beta distribution to a different range
+     *
+     * @param min - Minimum value of the new range
+     * @param max - Maximum value of the new range
+     * @returns A new distribution that scales beta values to the specified range
+     */
+    scale(min: number, max: number): BetaDistribution;
 }
 //# sourceMappingURL=beta.d.ts.map
