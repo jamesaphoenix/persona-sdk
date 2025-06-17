@@ -37,6 +37,15 @@ jobs:
         with:
           enablement: true
         
+      - name: Disable xdg-open for CI
+        run: |
+          mkdir -p ~/.local/bin
+          echo '#!/bin/bash' > ~/.local/bin/xdg-open
+          echo 'exit 0' >> ~/.local/bin/xdg-open
+          chmod +x ~/.local/bin/xdg-open
+          export PATH="$HOME/.local/bin:$PATH"
+          echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+        
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
         
