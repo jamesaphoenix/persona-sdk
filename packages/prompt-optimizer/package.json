@@ -1,0 +1,73 @@
+{
+  "name": "@jamesaphoenix/prompt-optimizer",
+  "version": "0.1.0",
+  "description": "A TypeScript package for optimizing prompts using techniques inspired by DSPy",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "tsc --build --watch",
+    "test": "NODE_OPTIONS='--loader tsx/esm' vitest run --config vitest.config.ts",
+    "test:watch": "NODE_OPTIONS='--loader tsx/esm' vitest --config vitest.config.ts",
+    "test:simple": "node --loader tsx/esm --test tests/*.test.ts",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "docs": "typedoc",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix"
+  },
+  "keywords": [
+    "prompt",
+    "optimization",
+    "llm",
+    "ai",
+    "typescript",
+    "dspy",
+    "machine-learning",
+    "langchain"
+  ],
+  "author": "James Phoenix <jamesaphoenix@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamesaphoenix/prompt-optimizer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jamesaphoenix/prompt-optimizer/issues"
+  },
+  "homepage": "https://github.com/jamesaphoenix/prompt-optimizer#readme",
+  "dependencies": {
+    "@langchain/core": "^0.3.24",
+    "@langchain/openai": "^0.3.11",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "@vitest/ui": "^2.0.0",
+    "eslint": "^8.0.0",
+    "typedoc": "^0.25.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@langchain/core": ">=0.3.0",
+    "@langchain/openai": ">=0.3.0"
+  }
+}
