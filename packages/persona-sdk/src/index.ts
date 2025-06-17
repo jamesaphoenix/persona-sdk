@@ -66,7 +66,10 @@ export {
   UniformDistribution,
   ExponentialDistribution,
   BetaDistribution,
-  CategoricalDistribution
+  CategoricalDistribution,
+  CorrelatedDistribution,
+  CommonCorrelations,
+  PersonaCorrelationPresets
 } from './distributions';
 
 // Types and Schemas
@@ -81,6 +84,11 @@ export type {
   PersonaGroupOptions,
   StructuredOutput
 } from './types';
+
+export type {
+  AttributeCorrelation,
+  ConditionalDistribution
+} from './distributions/correlated-distribution';
 
 export {
   BasePersonaAttributesSchema,

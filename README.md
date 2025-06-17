@@ -33,11 +33,12 @@ const persona = PersonaBuilder.create()
 // Create personas with distributions
 const group = new PersonaGroup('Tech Workers');
 group.generateFromDistributions(100, {
-  age: new NormalDistribution(32, 5),
-  occupation: 'Developer',
-  sex: 'other',
-  yearsExperience: new UniformDistribution(1, 10)
+  age: new NormalDistribution(32, 5),    // Age varies with normal distribution
+  occupation: 'Developer',                // 'Developer' is a literal (constant)
+  sex: 'other',                          // 'other' is a literal (constant)
+  yearsExperience: new UniformDistribution(1, 10)  // Experience varies uniformly
 });
+// Note: You can mix distributions (which vary) with literals (which stay constant)
 
 // Define schema for AI insights
 const MarketingInsightSchema = z.object({
@@ -55,6 +56,82 @@ const insights = await group.generateStructuredOutput(
   MarketingInsightSchema,
   'Analyze for product positioning'
 );
+```
+
+## 🎯 Creating Realistic Personas with Correlations
+
+Generate personas with realistic relationships between attributes:
+
+```typescript
+import { PersonaGroup, NormalDistribution, CommonCorrelations } from '@jamesaphoenix/persona-sdk';
+
+// Create a group with correlated attributes
+const realisticGroup = new PersonaGroup('Tech Professionals');
+
+realisticGroup.generateWithCorrelations(100, {
+  attributes: {
+    // Define base distributions
+    age: new NormalDistribution(32, 8),
+    yearsExperience: new NormalDistribution(8, 4),
+    income: new NormalDistribution(95000, 30000),
+    height: new NormalDistribution(170, 10),  // cm
+    weight: new NormalDistribution(70, 15),   // kg
+    occupation: 'Software Engineer',          // Literal value
+    sex: 'other',                            // Literal value
+    location: 'San Francisco'                // Literal value
+  },
+  
+  // Define correlations between numeric attributes
+  correlations: [
+    { attribute1: 'age', attribute2: 'income', correlation: 0.6 },
+    { attribute1: 'yearsExperience', attribute2: 'income', correlation: 0.7 },
+    { attribute1: 'height', attribute2: 'weight', correlation: 0.7 }
+  ],
+  
+  // Add conditional dependencies
+  conditionals: [
+    {
+      attribute: 'yearsExperience',
+      dependsOn: 'age',
+      transform: CommonCorrelations.ageExperience // Can't have 30 years experience at age 25
+    },
+    {
+      attribute: 'income',
+      dependsOn: 'location',
+      transform: (income, location) => 
+        location === 'San Francisco' ? income * 1.4 : income
+    }
+  ]
+});
+
+// Result: Personas with realistic attribute relationships
+// - Older personas tend to have higher incomes
+// - Experience is bounded by age
+// - San Francisco workers have 40% higher salaries
+// - Height and weight are correlated (realistic BMI)
+```
+
+### Built-in Correlation Functions
+
+The SDK provides common real-world correlations:
+
+```typescript
+import { CommonCorrelations } from '@jamesaphoenix/persona-sdk';
+
+// Age-Income: Income increases with age until retirement
+CommonCorrelations.ageIncome(baseIncome, age)
+
+// Age-Experience: Experience can't exceed working years
+CommonCorrelations.ageExperience(experience, age)
+
+// Height-Weight: BMI-based correlation
+CommonCorrelations.heightWeight(baseWeight, height)
+
+// Education-Income: More education → higher income
+CommonCorrelations.educationIncome(baseIncome, educationYears)
+
+// Urban-Rural Income: Location-based adjustments
+CommonCorrelations.urbanRuralIncome(baseIncome, isUrban)
 ```
 
 ## 📁 Repository Structure

@@ -180,6 +180,62 @@ group.generateWithCorrelations(100, {
 
 ## AI-Powered Features
 
+### 🧠 Intelligent Persona Generation (NEW!)
+
+Generate personas with ANY traits while ensuring they're completely realistic:
+
+```typescript
+import { createRealisticPersonas, IntelligentPersonaFactory } from '@jamesaphoenix/persona-sdk';
+
+// Just list any traits - AI handles all correlations!
+const personas = await createRealisticPersonas(
+  [
+    'age', 'income', 'fitnessLevel', 'screenTimeHours',
+    'favoriteFood', 'sleepQuality', 'hasKids', 'commuteTime',
+    'musicTaste', 'workFromHome', 'stressLevel'
+  ],
+  'Urban millennials',
+  100  // Generate 100 personas
+);
+
+// AI automatically ensures:
+// - Parents have less sleep quality
+// - Fitness level inversely correlates with screen time  
+// - Income affects food preferences
+// - Age influences music taste
+// - Work from home affects commute time (obviously!)
+// - ALL traits interact realistically
+```
+
+#### Advanced: Custom Trait Definitions
+
+```typescript
+const factory = new IntelligentPersonaFactory();
+
+const gamingCommunity = await factory.generatePersonas({
+  traits: [
+    { name: 'age', dataType: 'numeric' },
+    { name: 'hoursPlayedPerWeek', dataType: 'numeric' },
+    { name: 'favoriteGenre', dataType: 'categorical' },
+    { name: 'toxicityScore', dataType: 'numeric', constraints: { min: 0, max: 10 } },
+    { name: 'teamPlayer', dataType: 'boolean' },
+    { name: 'spentOnGames', dataType: 'numeric' },
+    { name: 'streamViewers', dataType: 'numeric' },
+    { name: 'energyDrinkBrand', dataType: 'categorical' }
+  ],
+  context: 'Online gaming community members',
+  count: 500,
+  customRules: [
+    'Toxicity decreases with age',
+    'Team players have lower toxicity',
+    'Streaming correlates with hours played',
+    'Energy drink consumption correlates with hours played'
+  ]
+});
+
+// Result: 500 realistic gamers with proper correlations
+```
+
 ### Automatic Distribution Selection
 
 ```typescript
@@ -199,6 +255,32 @@ const recommendations = await selector.recommendDistributions(
   ['age', 'experience_years', 'job_satisfaction'],
   'Tech industry professionals'
 );
+```
+
+### Correlation-Aware Distribution Selection
+
+Generate complete persona configurations with realistic correlations:
+
+```typescript
+import { CorrelationAwareSelector } from '@jamesaphoenix/persona-sdk';
+
+const selector = new CorrelationAwareSelector();
+
+// AI generates distributions AND correlations
+const config = await selector.selectCorrelatedDistributions({
+  attributes: ['age', 'income', 'experience', 'satisfaction'],
+  context: 'Remote software developers',
+  existingAttributes: { location: 'Global', workStyle: 'Remote' }
+});
+
+// Use the configuration
+const group = new PersonaGroup('Remote Team');
+group.generateWithCorrelations(50, config);
+
+// Result includes:
+// - Appropriate distributions for each attribute
+// - Correlations (e.g., age-income: 0.6)
+// - Conditionals (e.g., experience limited by age)
 ```
 
 ### Structured Output Generation (LangChain)

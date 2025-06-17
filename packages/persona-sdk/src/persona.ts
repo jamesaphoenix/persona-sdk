@@ -79,8 +79,16 @@ export class Persona<T extends PersonaAttributes = PersonaAttributes> {
     
     // Validate attributes using Zod
     try {
-      PersonaAttributesSchema.parse(attributes);
-      this._attributes = attributes; // Keep the original typed attributes
+      // Round age to integer if it's a float
+      const validationAttributes = { ...attributes };
+      if (typeof validationAttributes.age === 'number') {
+        validationAttributes.age = Math.round(validationAttributes.age);
+      }
+      
+      PersonaAttributesSchema.parse(validationAttributes);
+      
+      // Store with rounded age
+      this._attributes = { ...attributes, age: validationAttributes.age } as T;
     } catch (error) {
       if (error instanceof z.ZodError) {
         throw new Error(`Invalid persona attributes: ${error.errors.map(e => e.message).join(', ')}`);
