@@ -47,12 +47,12 @@ describe('Structured Output Generation', () => {
         TestSchema, 
         'Test prompt',
         { 
-          modelName: 'gpt-4o-mini',
+          modelName: 'gpt-4-turbo-preview',
           temperature: 0.9
         }
       );
 
-      expect(result.metadata.model).toBe('gpt-4.1-mini');
+      expect(result.metadata.model).toBe('gpt-4-turbo-preview');
     });
 
     it('should include focus group system prompt', async () => {
@@ -160,13 +160,13 @@ describe('Structured Output Generation', () => {
         TestSchema,
         'Test',
         {
-          modelName: 'gpt-4o-mini',
+          modelName: 'gpt-3.5-turbo',
           temperature: 0.5,
           systemPrompt: 'Custom persona prompt'
         }
       );
 
-      expect(result.metadata.model).toBe('gpt-4.1-mini');
+      expect(result.metadata.model).toBe('gpt-3.5-turbo');
       expect(result.metadata.systemPrompt).toBe('Custom persona prompt');
     });
   });
