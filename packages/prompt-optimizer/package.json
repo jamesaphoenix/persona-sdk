@@ -44,12 +44,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jamesaphoenix/prompt-optimizer.git"
+    "url": "https://github.com/jamesaphoenix/persona-sdk.git",
+    "directory": "packages/prompt-optimizer"
   },
   "bugs": {
-    "url": "https://github.com/jamesaphoenix/prompt-optimizer/issues"
+    "url": "https://github.com/jamesaphoenix/persona-sdk/issues"
   },
-  "homepage": "https://github.com/jamesaphoenix/prompt-optimizer#readme",
+  "homepage": "https://github.com/jamesaphoenix/persona-sdk/tree/main/packages/prompt-optimizer#readme",
   "dependencies": {
     "@langchain/core": "^0.3.24",
     "@langchain/openai": "^0.3.11",
