@@ -398,9 +398,9 @@ describe('PersonaGroup with Correlations - Integration Tests', () => {
       });
 
       // Extract values for correlation calculation
-      const xValues = group.all().map(p => p.attributes.x);
-      const yValues = group.all().map(p => p.attributes.y);
-      const zValues = group.all().map(p => p.attributes.z);
+      const xValues = group.personas.map(p => p.attributes.x);
+      const yValues = group.personas.map(p => p.attributes.y);
+      const zValues = group.personas.map(p => p.attributes.z);
 
       // Helper to calculate correlation
       const calculateCorrelation = (a: number[], b: number[]) => {
@@ -489,7 +489,7 @@ describe('PersonaGroup with Correlations - Integration Tests', () => {
       }
 
       // Verify BMI is reasonable across population
-      const bmis = group.all().map(p => {
+      const bmis = group.personas.map(p => {
         const heightM = p.attributes.height / 100;
         return p.attributes.weight / (heightM * heightM);
       });
@@ -553,8 +553,8 @@ describe('PersonaGroup with Correlations - Integration Tests', () => {
       expect(group.size).toBe(1000);
       
       // Verify correlations still hold at scale
-      const incomes = group.all().map(p => p.attributes.income);
-      const spending = group.all().map(p => p.attributes.monthlySpending);
+      const incomes = group.personas.map(p => p.attributes.income);
+      const spending = group.personas.map(p => p.attributes.monthlySpending);
       
       // High earners should spend more
       const highEarners = group.filter(p => p.attributes.income > 90000);

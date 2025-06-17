@@ -82,11 +82,11 @@ export type {
   DistributionSpec,
   DistributionMap,
   PersonaGroupOptions,
-  StructuredOutput
+  StructuredOutput,
+  AttributeCorrelation
 } from './types';
 
 export type {
-  AttributeCorrelation,
   ConditionalDistribution
 } from './distributions/correlated-distribution';
 

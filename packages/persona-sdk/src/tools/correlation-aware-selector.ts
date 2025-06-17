@@ -409,7 +409,7 @@ Identify:
  * Helper function to quickly generate correlated personas
  */
 export async function generateRealisticPersonas(
-  count: number,
+  _count: number,
   context: string,
   options?: {
     apiKey?: string;
@@ -447,7 +447,7 @@ export async function generateRealisticPersonas(
     if (dist) {
       correlated.addConditional({
         attribute: cond.attribute,
-        baseDistribution: dist,
+        baseDistribution: dist as Distribution,
         conditions: [{
           dependsOn: cond.dependsOn,
           transform: cond.transform

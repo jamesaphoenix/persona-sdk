@@ -6,8 +6,10 @@ import { Distribution } from '../types';
  */
 export abstract class BaseDistribution<T = number> implements Distribution<T> {
   protected random: Random;
+  public readonly seed?: number;
 
   constructor(seed?: number) {
+    this.seed = seed;
     const engine = seed !== undefined 
       ? MersenneTwister19937.seed(seed)
       : MersenneTwister19937.autoSeed();

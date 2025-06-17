@@ -121,7 +121,7 @@ describe('IntelligentPersonaFactory', () => {
       expect(result.size).toBe(10);
       
       // Check that personas have expected attributes
-      const firstPersona = result.all()[0];
+      const firstPersona = result.personas[0];
       expect(firstPersona.attributes).toHaveProperty('age');
       expect(firstPersona.attributes).toHaveProperty('income');
       expect(firstPersona.attributes).toHaveProperty('fitnessLevel');
@@ -158,7 +158,7 @@ describe('IntelligentPersonaFactory', () => {
       });
 
       // All ratings should be within constraints
-      result.all().forEach(persona => {
+      result.personas.forEach(persona => {
         if (typeof persona.attributes.rating === 'number') {
           expect(persona.attributes.rating).toBeGreaterThanOrEqual(1);
           expect(persona.attributes.rating).toBeLessThanOrEqual(5);
@@ -193,7 +193,7 @@ describe('IntelligentPersonaFactory', () => {
       });
 
       // All personas should pass validation (age >= 18)
-      result.all().forEach(persona => {
+      result.personas.forEach(persona => {
         expect(persona.attributes.age).toBeGreaterThanOrEqual(18);
       });
     });
@@ -219,7 +219,7 @@ describe('IntelligentPersonaFactory', () => {
       });
 
       // Check for diversity in generated values
-      const ages = result.all().map(p => p.attributes.age);
+      const ages = result.personas.map(p => p.attributes.age);
       const uniqueAges = new Set(ages);
       
       // Should have reasonable diversity

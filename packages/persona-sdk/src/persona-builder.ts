@@ -354,7 +354,7 @@ export class PersonaBuilder {
         if (dist && typeof dist === 'object' && 'sample' in dist) {
           correlated.addConditional({
             attribute: cond.attribute,
-            baseDistribution: dist,
+            baseDistribution: dist as Distribution,
             conditions: [{
               dependsOn: cond.dependsOn,
               transform: cond.transform

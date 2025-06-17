@@ -1,15 +1,5 @@
-import { Distribution } from '../types';
+import { Distribution, AttributeCorrelation } from '../types';
 import { NormalDistribution } from './normal';
-
-/**
- * Represents a correlation between two attributes
- */
-export interface AttributeCorrelation {
-  attribute1: string;
-  attribute2: string;
-  correlation: number; // -1 to 1
-  type?: 'linear' | 'exponential' | 'logarithmic';
-}
 
 /**
  * Configuration for conditional distributions

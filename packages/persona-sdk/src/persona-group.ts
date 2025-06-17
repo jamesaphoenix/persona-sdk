@@ -1,8 +1,8 @@
 import { Persona } from './persona';
-import { PersonaGroupOptions, DistributionMap, StructuredOutput, PersonaAttributes } from './types';
+import { PersonaGroupOptions, DistributionMap, StructuredOutput, PersonaAttributes, AttributeCorrelation, Distribution } from './types';
 import * as ss from 'simple-statistics';
 import { z } from 'zod';
-import { CorrelatedDistribution, AttributeCorrelation } from './distributions/correlated-distribution';
+import { CorrelatedDistribution } from './distributions/correlated-distribution';
 
 /**
  * Represents a group of personas for collective analysis and generation.
@@ -265,7 +265,7 @@ export class PersonaGroup<T extends PersonaAttributes = PersonaAttributes> {
         if (dist && typeof dist === 'object' && 'sample' in dist) {
           correlated.addConditional({
             attribute: cond.attribute,
-            baseDistribution: dist,
+            baseDistribution: dist as Distribution,
             conditions: [{
               dependsOn: cond.dependsOn,
               transform: cond.transform

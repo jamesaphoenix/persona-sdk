@@ -1,6 +1,5 @@
 import { OpenAI } from 'openai';
-import { z } from 'zod';
-import { PersonaGroup, Persona } from '../';
+import { PersonaGroup, Persona, PersonaAttributes } from '../';
 import { 
   CorrelatedDistribution,
   NormalDistribution,
@@ -90,13 +89,11 @@ interface IntelligenceResult {
  */
 export class IntelligentPersonaFactory {
   private openai: OpenAI;
-  private knowledgeBase: Map<string, any>;
 
   constructor(apiKey?: string) {
     this.openai = new OpenAI({
       apiKey: apiKey || process.env.OPENAI_API_KEY
     });
-    this.knowledgeBase = this.initializeKnowledgeBase();
   }
 
   /**
@@ -135,7 +132,7 @@ export class IntelligentPersonaFactory {
           if (dist && typeof dist === 'object' && 'sample' in dist) {
             correlated.addConditional({
               attribute: cond.attribute,
-              baseDistribution: dist,
+              baseDistribution: dist as Distribution,
               conditions: [{
                 dependsOn: cond.dependsOn,
                 transform: cond.transform
@@ -155,7 +152,7 @@ export class IntelligentPersonaFactory {
       }
       
       if (validPersona) {
-        group.add(new Persona(`${config.context} ${i + 1}`, attributes));
+        group.add(new Persona(`${config.context} ${i + 1}`, attributes as PersonaAttributes));
       }
     }
     
@@ -168,33 +165,6 @@ export class IntelligentPersonaFactory {
   private async analyzeTraitRelationships(
     config: IntelligentPersonaConfig
   ): Promise<IntelligenceResult> {
-    const analysisSchema = z.object({
-      distributions: z.array(z.object({
-        trait: z.string(),
-        distributionType: z.enum(['normal', 'uniform', 'exponential', 'beta', 'categorical']),
-        parameters: z.record(z.any()),
-        reasoning: z.string()
-      })),
-      correlations: z.array(z.object({
-        trait1: z.string(),
-        trait2: z.string(),
-        correlation: z.number().min(-1).max(1),
-        reasoning: z.string()
-      })),
-      dependencies: z.array(z.object({
-        dependent: z.string(),
-        independent: z.string(),
-        relationshipType: z.string(),
-        formula: z.string().optional(),
-        reasoning: z.string()
-      })),
-      validationRules: z.array(z.object({
-        description: z.string(),
-        rule: z.string()
-      })),
-      warnings: z.array(z.string())
-    });
-
     const prompt = `Analyze these traits for realistic persona generation:
 
 Traits: ${JSON.stringify(config.traits, null, 2)}
@@ -229,7 +199,68 @@ Be comprehensive - find EVERY meaningful relationship.`;
       ],
       functions: [{
         name: 'analyze_traits',
-        parameters: analysisSchema
+        description: 'Analyze traits for persona generation',
+        parameters: {
+          type: 'object',
+          properties: {
+            distributions: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  trait: { type: 'string' },
+                  distributionType: { type: 'string', enum: ['normal', 'uniform', 'exponential', 'beta', 'categorical'] },
+                  parameters: { type: 'object' },
+                  reasoning: { type: 'string' }
+                },
+                required: ['trait', 'distributionType', 'parameters', 'reasoning']
+              }
+            },
+            correlations: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  trait1: { type: 'string' },
+                  trait2: { type: 'string' },
+                  correlation: { type: 'number', minimum: -1, maximum: 1 },
+                  reasoning: { type: 'string' }
+                },
+                required: ['trait1', 'trait2', 'correlation', 'reasoning']
+              }
+            },
+            dependencies: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  dependent: { type: 'string' },
+                  independent: { type: 'string' },
+                  relationshipType: { type: 'string' },
+                  formula: { type: 'string' },
+                  reasoning: { type: 'string' }
+                },
+                required: ['dependent', 'independent', 'relationshipType', 'reasoning']
+              }
+            },
+            validationRules: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  description: { type: 'string' },
+                  rule: { type: 'string' }
+                },
+                required: ['description', 'rule']
+              }
+            },
+            warnings: {
+              type: 'array',
+              items: { type: 'string' }
+            }
+          },
+          required: ['distributions', 'correlations', 'dependencies', 'validationRules', 'warnings']
+        }
       }],
       function_call: { name: 'analyze_traits' }
     });
@@ -425,65 +456,19 @@ Be comprehensive - find EVERY meaningful relationship.`;
     }
   }
 
-  /**
-   * Initialize knowledge base with common patterns
-   */
-  private initializeKnowledgeBase(): Map<string, any> {
-    const kb = new Map();
-
-    // Common trait relationships
-    kb.set('trait_relationships', {
-      'age': {
-        affects: ['income', 'experience', 'health', 'preferences', 'technology_comfort'],
-        distribution: 'normal',
-        typicalRange: [18, 80]
-      },
-      'income': {
-        affects: ['spending', 'savings', 'lifestyle', 'stress'],
-        correlatesWith: ['education', 'experience', 'location', 'occupation'],
-        distribution: 'lognormal'
-      },
-      'location': {
-        affects: ['income', 'cost_of_living', 'lifestyle', 'culture'],
-        type: 'categorical'
-      }
-    });
-
-    // Industry-specific patterns
-    kb.set('tech_industry', {
-      avgIncome: 95000,
-      ageRange: [22, 55],
-      commonTraits: ['remote_friendly', 'continuous_learning', 'flexible_hours']
-    });
-
-    return kb;
-  }
 
   /**
    * Quick helper to add custom traits with automatic correlation detection
    */
   async addTrait(
-    group: PersonaGroup,
-    traitName: string,
-    traitType: 'numeric' | 'categorical' | 'boolean',
-    context?: string
+    _group: PersonaGroup,
+    _traitName: string,
+    _traitType: 'numeric' | 'categorical' | 'boolean',
+    _context?: string
   ): Promise<void> {
-    // Analyze existing personas to understand current distribution
-    const existingData = group.all().map(p => p.attributes);
-    
-    // Use AI to determine best distribution and correlations
-    const prompt = `Given these existing personas: ${JSON.stringify(existingData.slice(0, 5))}
-    
-    I want to add a new trait: ${traitName} (${traitType})
-    Context: ${context || 'General population'}
-    
-    Determine:
-    1. Best distribution for this trait
-    2. Which existing traits it should correlate with
-    3. Any conditional dependencies`;
-
-    // Implementation would follow similar pattern as above
-    // This is a simplified version for illustration
+    // TODO: Implement dynamic trait addition
+    // This would analyze existing personas and determine correlations
+    throw new Error('addTrait method not yet implemented');
   }
 }
 
