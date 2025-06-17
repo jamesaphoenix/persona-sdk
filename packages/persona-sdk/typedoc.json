@@ -1,0 +1,34 @@
+{
+  "entryPoints": ["./src/index.ts"],
+  "out": "docs",
+  "name": "@open-person/persona-sdk",
+  "navigationLinks": {
+    "GitHub": "https://github.com/open-person/persona-sdk",
+    "NPM": "https://www.npmjs.com/package/@open-person/persona-sdk"
+  },
+  "includeVersion": true,
+  "sidebarLinks": {
+    "Quick Start": "https://github.com/open-person/persona-sdk/blob/main/QUICKSTART.md",
+    "Examples": "https://github.com/open-person/persona-sdk/tree/main/examples"
+  },
+  "plugin": [],
+  "theme": "default",
+  "lightHighlightTheme": "github-light",
+  "darkHighlightTheme": "github-dark",
+  "exclude": ["**/*.test.ts", "**/tests/**", "**/node_modules/**"],
+  "externalPattern": ["**/node_modules/**"],
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "hideGenerator": false,
+  "readme": "./README.md",
+  "categorizeByGroup": true,
+  "searchInComments": true,
+  "disableSources": false,
+  "gitRevision": "main",
+  "validation": {
+    "notExported": false,
+    "invalidLink": true,
+    "notDocumented": true
+  }
+}

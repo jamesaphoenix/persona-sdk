@@ -1,0 +1,96 @@
+apps/web/e2e/storage
+apps/web/test-results
+testing
+
+# Hide github worktrees
+worktrees/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Env files:
+.env
+.env.*
+!.env.example
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+node_modules
+.turbo
+apps/web/.next
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# Vitest JSON output files
+test-results.json
+vitest-results.json
+vitest-integration-results.json
+**/test-results.json
+**/vitest-results.json
+**/vitest-integration-results.json
+
+# next.js
+client/.next
+client/out
+
+# production
+client/build
+
+# misc
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+!.env.example
+
+# vercel
+client/.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# TypeScript build artifacts in src directories should not be committed
+**/src/**/*.d.ts.map
+**/src/**/*.js
+**/src/**/*.js.map
+**/src/**/*.d.ts
+
+# Allow dist/ artifacts (needed for package consumers)
+!**/dist/**/*.d.ts.map
+!**/dist/**/*.js
+!**/dist/**/*.js.map
+!**/dist/**/*.d.ts
+
+.vercel
+
+# Playwright storage states
+apps/web/e2e/storage/*.json
+!apps/web/e2e/storage/.gitkeep
+
+# Worktree specific files
+.env.worktree
+docker-compose.worktree.yml
+docker-compose.override.yml
+run-migrations.sh
+seed-worktree.sh
+test-worktree.sh
+dev-worktree.sh
+cleanup-worktree.sh
+
+# Generated monitoring configs
+monitoring-configs/
+*.worktree.yml

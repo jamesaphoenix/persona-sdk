@@ -1,0 +1,90 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start All Services",
+      "dependsOn": ["Next.js", "FastAPI", "Ngrok", "Stripe"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Next.js",
+      "type": "shell",
+      "command": "cd client && npm run dev",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "▲ Next\\.js.*",
+          "endsPattern": "✓ Compiled.*"
+        }
+      }
+    },
+    {
+      "label": "FastAPI",
+      "type": "shell",
+      "command": "supabase start && docker compose up",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\[\\+\\] Running.*",
+          "endsPattern": "Attaching to.*"
+        }
+      }
+    },
+    {
+      "label": "Ngrok",
+      "type": "shell",
+      "command": "${env:HOME}/Desktop/ngrok",
+      "args": ["http", "8080"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^ngrok$"
+        }
+      }
+    },
+    {
+      "label": "Stripe",
+      "type": "shell",
+      "command": "stripe",
+      "args": ["listen", "--forward-to", "localhost:3000/api/stripe/webhook"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Ready!.*",
+          "endsPattern": "> Ready!.*webhook signing secret.*"
+        }
+      }
+    }
+  ]
+}

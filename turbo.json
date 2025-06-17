@@ -1,0 +1,35 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["OPENAI_API_KEY", "NODE_ENV"],
+  "tasks": {
+    "dev": {
+      "dependsOn": ["^dev"],
+      "persistent": true,
+      "cache": false
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "lib/**"]
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "cache": false
+    },
+    "test:watch": {
+      "persistent": true,
+      "cache": false,
+      "interactive": true
+    },
+    "test:coverage": {
+      "dependsOn": ["^test:coverage"],
+      "outputs": ["coverage/**"]
+    },
+    "type-check": {
+      "dependsOn": ["^type-check"],
+      "cache": false
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}

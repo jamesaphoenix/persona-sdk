@@ -1,0 +1,260 @@
+# @open-persona/persona-sdk
+
+A TypeScript SDK for generating personas from statistical distributions with AI-powered insights.
+
+## Features
+
+- 🎲 **Statistical Distributions**: Generate personas using Normal, Uniform, Exponential, Beta, and Categorical distributions
+- 👥 **PersonaGroup Management**: Organize and analyze collections of personas
+- 🤖 **AI-Powered Tools**: Automatic distribution selection and structured output generation using OpenAI
+- 📊 **Statistical Analysis**: Built-in statistics for persona attributes
+- 🔧 **Clean API**: Simple, modular, and type-safe interface
+- 🌱 **Reproducible**: Seedable random generation for consistent results
+
+## Installation
+
+```bash
+npm install @open-persona/persona-sdk
+# or
+pnpm add @open-persona/persona-sdk
+# or
+yarn add @open-persona/persona-sdk
+```
+
+## Quick Start
+
+```typescript
+import { 
+  Persona, 
+  PersonaGroup, 
+  NormalDistribution, 
+  UniformDistribution,
+  CategoricalDistribution 
+} from '@open-persona/persona-sdk';
+
+// Create a single persona
+const john = new Persona('John Doe', {
+  age: 35,
+  income: 75000,
+  interests: ['technology', 'fitness']
+});
+
+// Generate personas from distributions
+const distributions = {
+  age: new NormalDistribution(35, 10),
+  income: new NormalDistribution(60000, 20000),
+  satisfaction: new UniformDistribution(1, 10),
+  category: new CategoricalDistribution([
+    { value: 'premium', probability: 0.2 },
+    { value: 'standard', probability: 0.5 },
+    { value: 'basic', probability: 0.3 }
+  ])
+};
+
+const generatedPersona = Persona.fromDistributions('Alice Smith', distributions);
+
+// Create and manage persona groups
+const group = new PersonaGroup('Target Audience');
+group.generateFromDistributions(100, distributions);
+
+// Get statistics
+const ageStats = group.getStatistics('age');
+console.log(`Average age: ${ageStats.mean}`);
+```
+
+## Distributions
+
+### Normal Distribution
+Best for naturally occurring attributes with central tendency.
+
+```typescript
+const ageDistribution = new NormalDistribution(
+  35,    // mean (μ)
+  10     // standard deviation (σ)
+);
+```
+
+### Uniform Distribution
+For evenly distributed attributes.
+
+```typescript
+const scoreDistribution = new UniformDistribution(
+  0,     // min
+  100    // max
+);
+```
+
+### Exponential Distribution
+For time-based or decay attributes.
+
+```typescript
+const waitTimeDistribution = new ExponentialDistribution(
+  0.5    // rate (λ)
+);
+```
+
+### Beta Distribution
+For probabilities or percentages.
+
+```typescript
+const successRateDistribution = new BetaDistribution(
+  2,     // alpha (α)
+  5      // beta (β)
+);
+```
+
+### Categorical Distribution
+For discrete choices.
+
+```typescript
+const occupationDistribution = new CategoricalDistribution([
+  { value: 'engineer', probability: 0.3 },
+  { value: 'designer', probability: 0.2 },
+  { value: 'manager', probability: 0.25 },
+  { value: 'analyst', probability: 0.25 }
+]);
+```
+
+## AI-Powered Features
+
+### Automatic Distribution Selection
+
+```typescript
+import { DistributionSelector } from '@open-persona/persona-sdk';
+
+const selector = new DistributionSelector(); // Uses OPENAI_API_KEY env var
+
+// Get AI recommendation for a single attribute
+const distribution = await selector.selectDistribution({
+  attribute: 'annual_income',
+  context: 'Software engineers in Silicon Valley',
+  constraints: { min: 50000, max: 300000 }
+});
+
+// Get recommendations for multiple attributes
+const recommendations = await selector.recommendDistributions(
+  ['age', 'experience_years', 'job_satisfaction'],
+  'Tech industry professionals'
+);
+```
+
+### Structured Output Generation (LangChain)
+
+The SDK uses LangChain's `withStructuredOutput` method for reliable structured output generation:
+
+```typescript
+import { StructuredOutputGenerator } from '@open-persona/persona-sdk';
+import { z } from 'zod';
+
+const generator = new StructuredOutputGenerator();
+
+// Define output schema with Zod
+const MarketingInsightsSchema = z.object({
+  segments: z.array(z.object({
+    name: z.string(),
+    size: z.number(),
+    characteristics: z.array(z.string())
+  })),
+  recommendations: z.array(z.string()),
+  keyInsight: z.string()
+});
+
+// Generate insights from persona group
+const insights = await generator.generate(
+  group,
+  MarketingInsightsSchema,
+  'Identify key market segments and provide marketing recommendations'
+);
+
+console.log(insights.data);
+```
+
+You can also use the built-in methods:
+
+```typescript
+// Generate distribution insights
+const distInsights = await generator.generateDistributionInsights(
+  group, 
+  ['age', 'income', 'satisfaction']
+);
+
+// Generate market segments
+const segments = await generator.generateSegments(group, 4); // 4 segments
+
+// Or use directly from PersonaGroup
+const output = await group.generateStructuredOutput(
+  YourSchema,
+  'Your analysis prompt'
+);
+```
+
+## Advanced Usage
+
+### Reproducible Generation
+
+```typescript
+// Use seeds for reproducible results
+const seededDist = new NormalDistribution(100, 15, 12345);
+const value1 = seededDist.sample(); // Always generates the same sequence
+const value2 = seededDist.sample();
+```
+
+### Filtering and Analysis
+
+```typescript
+// Filter personas
+const millennials = group.filter(p => {
+  const age = p.attributes.age as number;
+  return age >= 25 && age <= 40;
+});
+
+// Get group summary
+const summary = group.getSummary();
+console.log(`Common attributes: ${JSON.stringify(summary.commonAttributes)}`);
+```
+
+### Batch Generation
+
+```typescript
+// Generate multiple personas at once
+const personas = Persona.generateMany(
+  'Customer',      // base name
+  1000,           // count
+  distributions   // distribution map
+);
+```
+
+## Configuration
+
+Set your OpenAI API key for AI features:
+
+```bash
+export OPENAI_API_KEY=your-api-key-here
+```
+
+Or pass it directly:
+
+```typescript
+const selector = new DistributionSelector('your-api-key');
+```
+
+## TypeScript Support
+
+This SDK is written in TypeScript and provides full type definitions:
+
+```typescript
+import type { 
+  PersonaAttributes,
+  Distribution,
+  DistributionMap,
+  StructuredOutput 
+} from '@open-persona/persona-sdk';
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT
