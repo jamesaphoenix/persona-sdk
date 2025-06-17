@@ -1,5 +1,5 @@
 {
-  "name": "@open-persona/persona-sdk",
+  "name": "@jamesaphoenix/persona-sdk",
   "version": "0.1.0",
   "description": "TypeScript SDK for generating personas from statistical distributions",
   "type": "module",
