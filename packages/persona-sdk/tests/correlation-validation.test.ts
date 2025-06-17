@@ -46,6 +46,10 @@ describe('Correlation Validation - Real World Accuracy', () => {
       expect(midCareer.length).toBeGreaterThan(0);
       expect(peakEarners.length).toBeGreaterThan(0);
       expect(nearRetirement.length).toBeGreaterThan(0);
+      
+      // Ensure income was generated
+      expect(samples[0]).toHaveProperty('income');
+      expect(typeof samples[0].income).toBe('number');
 
       // Calculate average incomes
       const avgYoung = youngAdults.reduce((sum, s) => sum + s.income, 0) / youngAdults.length;

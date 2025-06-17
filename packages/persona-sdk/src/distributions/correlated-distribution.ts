@@ -92,10 +92,7 @@ export class CorrelatedDistribution {
     let iterations = 0;
     const maxIterations = 10;
     
-    // Check total attributes to generate (including conditionals not in baseDistributions)
-    const totalAttributes = new Set([...this.baseDistributions.keys(), ...this.conditionals.keys()]);
-    
-    while (generated.size < totalAttributes.size && iterations < maxIterations) {
+    while (this.conditionals.size > 0 && iterations < maxIterations) {
       this.conditionals.forEach((conditional, attr) => {
         if (!generated.has(attr)) {
           // Check if all dependencies are satisfied
