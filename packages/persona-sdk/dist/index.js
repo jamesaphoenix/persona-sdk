@@ -11,6 +11,7 @@
  *
  * - **Type-safe persona creation** with required and custom attributes
  * - **Statistical distributions** for realistic data generation
+ * - **Auto-correlation generation** using AI for realistic relationships
  * - **Persona groups** for managing collections
  * - **AI-powered analysis** using LangChain and OpenAI
  * - **Fluent builder API** for easy persona construction

@@ -3,5 +3,6 @@ export { UniformDistribution } from './uniform';
 export { ExponentialDistribution } from './exponential';
 export { BetaDistribution } from './beta';
 export { CategoricalDistribution } from './categorical';
-export { CorrelatedDistribution, ConditionalDistribution, CommonCorrelations, PersonaCorrelationPresets } from './correlated-distribution';
+export { CorrelatedDistribution, CommonCorrelations, PersonaCorrelationPresets } from './correlated-distribution';
+export type { ConditionalDistribution } from './correlated-distribution';
 //# sourceMappingURL=index.d.ts.map

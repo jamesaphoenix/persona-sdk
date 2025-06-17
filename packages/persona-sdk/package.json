@@ -17,6 +17,7 @@
     "README.md"
   ],
   "scripts": {
+    "preinstall": "command -v xdg-open >/dev/null 2>&1 && echo 'xdg-open() { echo \"xdg-open disabled in CI\"; }' > /tmp/disable-xdg-open.sh && chmod +x /tmp/disable-xdg-open.sh && export PATH=\"/tmp:$PATH\" || true",
     "dev": "vitest",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -24,7 +25,7 @@
     "build": "tsc --build",
     "clean": "rm -rf dist coverage docs",
     "type-check": "tsc --noEmit",
-    "docs": "DISPLAY= typedoc",
+    "docs": "DISPLAY= BROWSER=none typedoc --logLevel Error",
     "docs:watch": "typedoc --watch"
   },
   "dependencies": {

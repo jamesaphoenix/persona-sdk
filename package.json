@@ -3,16 +3,17 @@
   "version": "0.1.0",
   "private": false,
   "scripts": {
+    "preinstall": "command -v xdg-open >/dev/null 2>&1 && echo '#!/bin/bash\necho \"xdg-open disabled in CI\"' > /tmp/xdg-open && chmod +x /tmp/xdg-open && export PATH=\"/tmp:$PATH\" || true",
     "dev": "turbo dev",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "test:coverage": "turbo run test:coverage",
-    "build": "turbo run build",
+    "build": "DISPLAY= BROWSER=none turbo run build",
     "clean": "turbo run clean",
     "type-check": "turbo run type-check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "docs": "turbo run docs"
+    "docs": "DISPLAY= BROWSER=none turbo run docs"
   },
   "devDependencies": {
     "@esbuild/darwin-arm64": "^0.25.5",

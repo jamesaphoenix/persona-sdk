@@ -40,8 +40,7 @@ export class CorrelatedDistribution {
      */
     addConditional(conditional) {
         this.conditionals.set(conditional.attribute, conditional);
-        // Also ensure the base distribution is registered
-        this.baseDistributions.set(conditional.attribute, conditional.baseDistribution);
+        // Don't add to baseDistributions as it will be handled by conditionals
         return this;
     }
     /**
@@ -68,7 +67,7 @@ export class CorrelatedDistribution {
         let previousSize = generated.size;
         let iterations = 0;
         const maxIterations = 10;
-        while (generated.size < this.baseDistributions.size && iterations < maxIterations) {
+        while (this.conditionals.size > 0 && iterations < maxIterations) {
             this.conditionals.forEach((conditional, attr) => {
                 if (!generated.has(attr)) {
                     // Check if all dependencies are satisfied
@@ -110,10 +109,10 @@ export class CorrelatedDistribution {
     applyCorrelations(result) {
         const processed = new Set();
         this.correlations.forEach((correlations, attr1) => {
-            if (processed.has(attr1) || typeof result[attr1] !== 'number')
+            if (processed.has(attr1) || result[attr1] === undefined || typeof result[attr1] !== 'number')
                 return;
             correlations.forEach(({ attribute2, correlation, type = 'linear' }) => {
-                if (processed.has(attribute2) || typeof result[attribute2] !== 'number')
+                if (processed.has(attribute2) || result[attribute2] === undefined || typeof result[attribute2] !== 'number')
                     return;
                 const value1 = result[attr1];
                 const value2 = result[attribute2];
@@ -130,7 +129,15 @@ export class CorrelatedDistribution {
                     const targetZ2 = correlation * z1;
                     const targetValue2 = mean2 + targetZ2 * stdDev2;
                     // Blend original and target based on correlation strength
-                    result[attribute2] = value2 * (1 - Math.abs(correlation)) + targetValue2 * Math.abs(correlation);
+                    const blendedValue = value2 * (1 - Math.abs(correlation)) + targetValue2 * Math.abs(correlation);
+                    // Ensure non-negative for certain attributes
+                    const nonNegativeAttrs = ['age', 'income', 'salary', 'weight', 'height', 'yearsExperience', 'yearsAtCompany', 'monthlySpending', 'savingsBalance', 'creditScore'];
+                    if (nonNegativeAttrs.includes(attribute2)) {
+                        result[attribute2] = Math.max(0, blendedValue);
+                    }
+                    else {
+                        result[attribute2] = blendedValue;
+                    }
                 }
             });
             processed.add(attr1);
