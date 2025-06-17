@@ -6,7 +6,9 @@ A TypeScript SDK for generating personas from statistical distributions with AI-
 
 - 🎲 **Statistical Distributions**: Generate personas using Normal, Uniform, Exponential, Beta, and Categorical distributions
 - 👥 **PersonaGroup Management**: Organize and analyze collections of personas
-- 🤖 **AI-Powered Tools**: Automatic distribution selection and structured output generation using OpenAI
+- 🤖 **AI-Powered Tools**: Automatic distribution selection, correlation generation, and structured output generation using OpenAI
+- 🪄 **Auto-Correlation Generation**: AI automatically generates realistic relationships between persona attributes
+- 🔗 **Realistic Correlations**: Built-in correlation system ensures personas have believable attribute relationships
 - 📊 **Statistical Analysis**: Built-in statistics for persona attributes
 - 🔧 **Clean API**: Simple, modular, and type-safe interface
 - 🌱 **Reproducible**: Seedable random generation for consistent results
@@ -29,7 +31,8 @@ import {
   PersonaGroup, 
   NormalDistribution, 
   UniformDistribution,
-  CategoricalDistribution 
+  CategoricalDistribution,
+  generateWithAutoCorrelations  // NEW: Auto-correlation generation
 } from '@jamesaphoenix/persona-sdk';
 
 // Create a single persona
@@ -234,6 +237,119 @@ const gamingCommunity = await factory.generatePersonas({
 });
 
 // Result: 500 realistic gamers with proper correlations
+```
+
+### 🪄 Automatic Correlation Generation (NEW!)
+
+Generate correlations and conditional relationships automatically using AI! Perfect for users who want realistic personas without manually configuring complex relationships:
+
+```typescript
+import { generateWithAutoCorrelations } from '@jamesaphoenix/persona-sdk';
+
+// Just define your attributes - AI handles all the correlations!
+const realisticTeam = await generateWithAutoCorrelations({
+  attributes: {
+    age: new UniformDistribution(25, 55),
+    yearsExperience: new NormalDistribution(8, 6),
+    salary: new NormalDistribution(85000, 30000),
+    height: new NormalDistribution(170, 10),  // cm
+    weight: new NormalDistribution(75, 15),   // kg
+    fitnessLevel: new UniformDistribution(1, 10),
+    commuteMins: new ExponentialDistribution(0.03),
+    hasKids: new CategoricalDistribution([
+      { value: true, probability: 0.4 },
+      { value: false, probability: 0.6 }
+    ]),
+    occupation: 'Software Engineer',
+    sex: 'other'
+  },
+  count: 100,
+  context: 'Tech professionals in Seattle',
+  domain: 'workplace',  // Helps AI understand the context
+  groupName: 'Seattle Tech Team'
+});
+
+// AI automatically generates:
+// ✅ Age-Income correlation (older = higher salary)
+// ✅ Age-Experience conditional (experience ≤ age - 22)
+// ✅ Height-Weight correlation (BMI-based)
+// ✅ Fitness-Commute relationship (fit people bike to work)
+// ✅ HasKids-CommuteMins (parents drive, others walk/bike)
+// ✅ All relationships are realistic and domain-aware!
+
+console.log(realisticTeam.size); // 100 realistic personas
+```
+
+#### Manual Control with Auto-Generation
+
+For more control, use the `AutoCorrelationGenerator` directly:
+
+```typescript
+import { AutoCorrelationGenerator, PersonaBuilder } from '@jamesaphoenix/persona-sdk';
+
+const generator = new AutoCorrelationGenerator(); // Uses OPENAI_API_KEY
+
+// Generate correlation config for your attributes
+const correlationConfig = await generator.generate({
+  attributes: {
+    age: new UniformDistribution(30, 60),
+    income: new NormalDistribution(75000, 25000),
+    stressLevel: new UniformDistribution(1, 10),
+    exerciseHours: new NormalDistribution(3, 2),
+    sleepQuality: new UniformDistribution(1, 10),
+    occupation: 'Manager',
+    sex: 'other'
+  },
+  context: 'Corporate middle management',
+  domain: 'workplace'
+});
+
+// Review and modify the AI suggestions
+console.log('AI-generated correlations:', correlationConfig.correlations);
+console.log('AI-generated conditionals:', correlationConfig.conditionals);
+
+// Use with PersonaBuilder
+const buildConfig = generator.toBuildConfig(correlationConfig);
+const persona = PersonaBuilder.create()
+  .withAttributes(attributes)
+  .buildWithCorrelations(buildConfig);
+```
+
+#### Supported Transform Types
+
+The AI can generate these common correlation patterns:
+
+- **`age_income`**: Income increases with age until retirement
+- **`age_experience`**: Experience bounded by working years (age - 22)
+- **`height_weight`**: BMI-based weight correlation 
+- **`education_income`**: Higher education correlates with income
+- **`custom`**: AI can write custom formulas for unique relationships
+
+#### Context-Aware Generation
+
+Different domains produce different correlation patterns:
+
+```typescript
+// Health domain - focuses on physical relationships
+const healthCorrelations = await generator.generate({
+  attributes: { age: new NormalDistribution(40, 15), weight: new NormalDistribution(75, 15), exerciseHours: new NormalDistribution(3, 2) },
+  domain: 'health',
+  context: 'Fitness app users'
+});
+
+// Workplace domain - focuses on career relationships  
+const workCorrelations = await generator.generate({
+  attributes: { age: new UniformDistribution(25, 65), salary: new NormalDistribution(80000, 30000), yearsExperience: new UniformDistribution(0, 40) },
+  domain: 'workplace', 
+  context: 'Corporate employees'
+});
+
+// Academic domain - focuses on education relationships
+const academicCorrelations = await generator.generate({
+  attributes: { age: new UniformDistribution(18, 80), income: new NormalDistribution(50000, 20000), educationYears: new UniformDistribution(12, 20) },
+  domain: 'academic',
+  context: 'University professors'  
+});
 ```
 
 ### Automatic Distribution Selection
