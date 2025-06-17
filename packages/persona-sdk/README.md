@@ -522,7 +522,7 @@ import type {
   Distribution,
   DistributionMap,
   StructuredOutput 
-} from '@open-persona/persona-sdk';
+} from '@jamesaphoenix/persona-sdk';
 ```
 
 ## Contributing

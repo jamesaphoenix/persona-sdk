@@ -1,5 +1,5 @@
 /**
- * @module @open-persona/persona-sdk
+ * @module @jamesaphoenix/persona-sdk
  *
  * A TypeScript SDK for generating personas from statistical distributions.
  *
@@ -19,7 +19,7 @@
  * ## Quick Start
  *
  * ```typescript
- * import { PersonaBuilder, PersonaGroup, NormalDistribution } from '@open-persona/persona-sdk';
+ * import { PersonaBuilder, PersonaGroup, NormalDistribution } from '@jamesaphoenix/persona-sdk';
  *
  * // Create a single persona
  * const persona = PersonaBuilder.create()

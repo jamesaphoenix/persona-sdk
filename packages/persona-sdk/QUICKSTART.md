@@ -3,13 +3,13 @@
 ## Installation
 
 ```bash
-npm install @open-persona/persona-sdk
+npm install @jamesaphoenix/persona-sdk
 ```
 
 ## 1. Basic Persona Creation
 
 ```typescript
-import { Persona, PersonaBuilder } from '@open-persona/persona-sdk';
+import { Persona, PersonaBuilder } from '@jamesaphoenix/persona-sdk';
 
 // Create a persona with required fields
 const user = new Persona('John Doe', {
@@ -41,7 +41,7 @@ import {
   NormalDistribution, 
   CategoricalDistribution,
   ExponentialDistribution 
-} from '@open-persona/persona-sdk';
+} from '@jamesaphoenix/persona-sdk';
 
 // Define distributions for all required fields
 // You can mix distributions with literal values - useful when some attributes should be constant
@@ -152,7 +152,7 @@ import {
   NormalDistribution,
   BetaDistribution,
   StructuredOutputGenerator
-} from '@open-persona/persona-sdk';
+} from '@jamesaphoenix/persona-sdk';
 import { z } from 'zod';
 
 async function analyzeUserBase() {

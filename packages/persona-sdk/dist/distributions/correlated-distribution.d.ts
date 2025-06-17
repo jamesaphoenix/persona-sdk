@@ -32,6 +32,10 @@ export declare class CorrelatedDistribution {
      */
     generate(): Record<string, any>;
     /**
+     * Detect actual circular dependencies in remaining conditionals
+     */
+    private detectCircularDependency;
+    /**
      * Apply correlations between numeric attributes
      */
     private applyCorrelations;
