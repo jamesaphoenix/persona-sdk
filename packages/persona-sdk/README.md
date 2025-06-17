@@ -6,12 +6,16 @@ A TypeScript SDK for generating personas from statistical distributions with AI-
 
 - 🎲 **Statistical Distributions**: Generate personas using Normal, Uniform, Exponential, Beta, and Categorical distributions
 - 👥 **PersonaGroup Management**: Organize and analyze collections of personas
-- 🤖 **AI-Powered Tools**: Automatic distribution selection, correlation generation, and structured output generation using OpenAI
+- 🤖 **AI-Powered Tools**: Automatic distribution selection, correlation generation, and structured output generation using LangChain
 - 🪄 **Auto-Correlation Generation**: AI automatically generates realistic relationships between persona attributes
 - 🔗 **Realistic Correlations**: Built-in correlation system ensures personas have believable attribute relationships
 - 📊 **Statistical Analysis**: Built-in statistics for persona attributes
 - 🔧 **Clean API**: Simple, modular, and type-safe interface
 - 🌱 **Reproducible**: Seedable random generation for consistent results
+- 📸 **Media-to-Persona**: Generate personas from text posts, images, and other media content
+- 🎬 **Media Diet**: Apply media consumption influences to persona groups
+- 📊 **Token Usage Tracking**: Built-in token counting and cost estimation for all AI operations
+- 🔄 **LangChain Integration**: Full LangChain support for structured outputs and tool use
 
 ## Installation
 
@@ -482,6 +486,165 @@ const personas = Persona.generateMany(
   'Customer',      // base name
   1000,           // count
   distributions   // distribution map
+);
+```
+
+### 📸 Media-to-Persona Generation (NEW!)
+
+Generate personas from text posts, images, and other media content:
+
+```typescript
+import { MediaToPersonaGenerator } from '@jamesaphoenix/persona-sdk';
+
+const generator = new MediaToPersonaGenerator('your-api-key');
+
+// Generate persona from a social media post
+const textResult = await generator.fromTextPost(`
+  Just finished my morning 5K run! 🏃‍♀️ Feeling energized for the day ahead. 
+  Time to grab my usual oat milk latte and head to the co-working space. 
+  Working on some exciting sustainability projects today. 
+  Who else is passionate about green tech? #StartupLife #Sustainability
+`);
+
+console.log(textResult.personas[0].attributes);
+// {
+//   age: 28,
+//   occupation: 'Tech Professional',
+//   sex: 'female',
+//   interests: ['fitness', 'sustainability', 'technology'],
+//   values: ['environmental consciousness', 'health', 'innovation'],
+//   personality: { openness: 0.8, conscientiousness: 0.7, ... }
+// }
+
+// Generate multiple varied personas
+const multiplePersonas = await generator.fromTextPost(postText, {
+  generateMultiple: true,
+  count: 10,
+  includeDistributions: true
+});
+
+// Generate from images
+const imageResult = await generator.fromImage('./lifestyle-photo.jpg');
+
+// Generate from media collection
+const mediaCollection = await generator.fromMediaCollection([
+  './article1.txt',
+  './photo1.jpg',
+  './blog-post.txt'
+]);
+
+// Track token usage
+console.log(`Tokens used: ${textResult.usage.total_tokens}`);
+console.log(`Estimated cost: $${generator.estimateProcessingCost(1, ['text'], 'gpt-4-turbo-preview').estimatedCost}`);
+```
+
+### 🎬 Media Diet & Persona Influence (NEW!)
+
+Model how media consumption influences personas over time:
+
+```typescript
+import { MediaDietManager, MediaProcessor } from '@jamesaphoenix/persona-sdk';
+
+const dietManager = new MediaDietManager('your-api-key');
+
+// Create a media diet from files
+const mediaDiet = await dietManager.createMediaDiet([
+  './tech-articles/ai-news.txt',
+  './videos/documentary.mp4',
+  './podcasts/startup-interview.mp3'
+]);
+
+// Apply media influence to a persona
+const influencedPersona = await dietManager.applyMediaInfluence(
+  originalPersona,
+  mediaDiet
+);
+
+console.log(influencedPersona.influences);
+// {
+//   interests: ['technology', 'innovation', 'AI'],
+//   values: ['progress', 'efficiency'],
+//   vocabulary: ['algorithm', 'optimization'],
+//   opinions: [{ topic: 'AI', stance: 'positive', confidence: 0.8 }]
+// }
+
+// Apply to entire persona group with variation
+const { influencedGroup, results, totalUsage } = await dietManager.applyToPersonaGroup(
+  personaGroup,
+  mediaDiet,
+  {
+    variationFactor: 0.3,  // 30% variation in diet per persona
+    sampleSize: 100        // Apply to subset of group
+  }
+);
+
+// Get media recommendations for a persona
+const recommendations = await dietManager.recommendMedia(
+  persona,
+  availableMediaContent,
+  {
+    desiredInfluences: ['creativity', 'technical skills'],
+    avoidTopics: ['politics', 'controversy']
+  }
+);
+```
+
+### 📊 Token Usage & Cost Tracking (NEW!)
+
+All AI operations now include comprehensive token usage tracking:
+
+```typescript
+// Every AI operation returns usage metadata
+const result = await generator.fromTextPost(text);
+console.log(result.usage);
+// {
+//   input_tokens: 245,
+//   output_tokens: 156,
+//   total_tokens: 401
+// }
+
+// Estimate costs before processing
+const estimate = generator.estimateProcessingCost(
+  5,  // number of media items
+  ['text', 'image', 'text', 'video', 'document'],
+  'gpt-4-turbo-preview'
+);
+console.log(`Estimated cost: $${estimate.estimatedCost}`);
+
+// Cost calculation utilities
+const processor = new MediaProcessor('your-api-key');
+const cost = processor.estimateCost(
+  { input_tokens: 1000, output_tokens: 500, total_tokens: 1500 },
+  'gpt-4'
+);
+// { inputCost: 0.03, outputCost: 0.03, totalCost: 0.06 }
+```
+
+### 🔄 LangChain Integration (NEW!)
+
+The SDK now uses LangChain for all AI operations, providing better structure and tool use:
+
+```typescript
+import { DistributionSelectorLangChain } from '@jamesaphoenix/persona-sdk';
+
+const selector = new DistributionSelectorLangChain('your-api-key');
+
+// Select distribution with structured output
+const { distribution, usage, reasoning } = await selector.selectDistribution({
+  attribute: 'customer_lifetime_value',
+  context: 'E-commerce platform users',
+  constraints: { min: 0, max: 10000 }
+});
+
+// Get multiple recommendations
+const { distributions, recommendations } = await selector.recommendDistributions(
+  ['age', 'purchase_frequency', 'average_order_value'],
+  'Online shoppers demographic'
+);
+
+// Natural language to distribution
+const { distribution: nlDist } = await selector.fromDescription(
+  'mostly young adults in their 20s and 30s, centered around 27'
 );
 ```
 

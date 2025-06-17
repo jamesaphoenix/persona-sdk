@@ -62,6 +62,19 @@ export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaD
 export type { AttributeValue, BasePersonaAttributes, PersonaAttributes, Sex, Distribution, DistributionSpec, DistributionMap, PersonaGroupOptions, StructuredOutput, AttributeCorrelation } from './types';
 export type { ConditionalDistribution } from './distributions/correlated-distribution';
 export { BasePersonaAttributesSchema, PersonaAttributesSchema, SexSchema } from './types';
-export * from './tools';
+export { DistributionSelector } from './tools/distribution-selector';
+export { DistributionSelectorLangChain } from './tools/distribution-selector-langchain';
+export { StructuredOutputGenerator } from './tools/structured-output-generator';
+export { CorrelationAwareSelector } from './tools/correlation-aware-selector';
+export { IntelligentPersonaFactory, createRealisticPersonas } from './tools/intelligent-persona-factory';
+export { AutoCorrelationGenerator, generateWithAutoCorrelations } from './tools/auto-correlation-generator';
+export { MediaToPersonaGenerator } from './tools/media-to-persona';
+export { MediaProcessor } from './media/media-processor';
+export { MediaDietManager } from './media/media-diet';
+export type { MediaContent, UsageMetadata, MediaProcessingResult } from './media/media-processor';
+export type { MediaDietItem, MediaConsumptionPattern, MediaDietConfig, MediaInfluenceResult } from './media/media-diet';
+export type { MediaToPersonaOptions, MediaToPersonaResult } from './tools/media-to-persona';
+export type { DistributionTool, OutputSchema, DistributionSelectionParams, TraitDefinition, IntelligentPersonaConfig, CorrelationAwareSelectionParams, CorrelationAwareResult, AutoCorrelationOptions, AutoCorrelationConfig } from './tools';
+export { SUPPORTED_MEDIA_TYPES } from './media/media-processor';
 export declare const VERSION = "0.1.0";
 //# sourceMappingURL=index.d.ts.map

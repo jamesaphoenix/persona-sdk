@@ -97,8 +97,53 @@ export {
   SexSchema
 } from './types';
 
-// Tools (to be implemented)
-export * from './tools';
+// Tools
+export { DistributionSelector } from './tools/distribution-selector';
+export { DistributionSelectorLangChain } from './tools/distribution-selector-langchain';
+export { StructuredOutputGenerator } from './tools/structured-output-generator';
+export { CorrelationAwareSelector } from './tools/correlation-aware-selector';
+export { IntelligentPersonaFactory, createRealisticPersonas } from './tools/intelligent-persona-factory';
+export { AutoCorrelationGenerator, generateWithAutoCorrelations } from './tools/auto-correlation-generator';
+export { MediaToPersonaGenerator } from './tools/media-to-persona';
+
+// Media processing
+export { MediaProcessor } from './media/media-processor';
+export { MediaDietManager } from './media/media-diet';
+
+// Media types
+export type {
+  MediaContent,
+  UsageMetadata,
+  MediaProcessingResult
+} from './media/media-processor';
+
+export type {
+  MediaDietItem,
+  MediaConsumptionPattern,
+  MediaDietConfig,
+  MediaInfluenceResult
+} from './media/media-diet';
+
+export type {
+  MediaToPersonaOptions,
+  MediaToPersonaResult
+} from './tools/media-to-persona';
+
+// Types for tools
+export type { 
+  DistributionTool, 
+  OutputSchema,
+  DistributionSelectionParams,
+  TraitDefinition,
+  IntelligentPersonaConfig,
+  CorrelationAwareSelectionParams,
+  CorrelationAwareResult,
+  AutoCorrelationOptions,
+  AutoCorrelationConfig
+} from './tools';
+
+// Constants
+export { SUPPORTED_MEDIA_TYPES } from './media/media-processor';
 
 // Version
 export const VERSION = '0.1.0';

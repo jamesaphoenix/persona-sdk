@@ -62,8 +62,19 @@ export { PersonaBuilder } from './persona-builder';
 // Distributions
 export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution, CorrelatedDistribution, CommonCorrelations, PersonaCorrelationPresets } from './distributions';
 export { BasePersonaAttributesSchema, PersonaAttributesSchema, SexSchema } from './types';
-// Tools (to be implemented)
-export * from './tools';
+// Tools
+export { DistributionSelector } from './tools/distribution-selector';
+export { DistributionSelectorLangChain } from './tools/distribution-selector-langchain';
+export { StructuredOutputGenerator } from './tools/structured-output-generator';
+export { CorrelationAwareSelector } from './tools/correlation-aware-selector';
+export { IntelligentPersonaFactory, createRealisticPersonas } from './tools/intelligent-persona-factory';
+export { AutoCorrelationGenerator, generateWithAutoCorrelations } from './tools/auto-correlation-generator';
+export { MediaToPersonaGenerator } from './tools/media-to-persona';
+// Media processing
+export { MediaProcessor } from './media/media-processor';
+export { MediaDietManager } from './media/media-diet';
+// Constants
+export { SUPPORTED_MEDIA_TYPES } from './media/media-processor';
 // Version
 export const VERSION = '0.1.0';
 //# sourceMappingURL=index.js.map
