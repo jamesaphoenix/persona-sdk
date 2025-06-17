@@ -11,7 +11,8 @@
     "clean": "turbo run clean",
     "type-check": "turbo run type-check",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "docs": "turbo run docs"
   },
   "devDependencies": {
     "@esbuild/darwin-arm64": "^0.25.5",

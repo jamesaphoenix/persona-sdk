@@ -45,7 +45,6 @@ jobs:
         
       - name: Generate documentation
         run: pnpm docs
-        working-directory: ./packages/persona-sdk
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

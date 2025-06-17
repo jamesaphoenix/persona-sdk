@@ -7,6 +7,7 @@ import {
 } from './types';
 import { Persona } from './persona';
 import { z } from 'zod';
+import { CorrelatedDistribution } from './distributions/correlated-distribution';
 
 /**
  * Builder class for creating personas with a fluent API.
@@ -272,6 +273,105 @@ export class PersonaBuilder {
    */
   private isDistribution(value: any): value is Distribution {
     return value && typeof value.sample === 'function' && typeof value.mean === 'function';
+  }
+
+  /**
+   * Build a persona with correlated attributes.
+   * 
+   * This method ensures realistic relationships between attributes using
+   * correlations and conditional distributions.
+   * 
+   * @param config - Configuration for correlations and conditional dependencies
+   * @returns A new Persona instance with correlated attributes
+   * 
+   * @example
+   * ```typescript
+   * const persona = PersonaBuilder.create()
+   *   .withName('Professional')
+   *   .withAge(new NormalDistribution(35, 10))
+   *   .withAttribute('yearsExperience', new NormalDistribution(10, 5))
+   *   .withAttribute('income', new NormalDistribution(60000, 20000))
+   *   .withOccupation('Developer')
+   *   .withSex('other')
+   *   .buildWithCorrelations({
+   *     correlations: [
+   *       { attribute1: 'age', attribute2: 'income', correlation: 0.6 },
+   *       { attribute1: 'age', attribute2: 'yearsExperience', correlation: 0.8 }
+   *     ],
+   *     conditionals: [
+   *       {
+   *         attribute: 'yearsExperience',
+   *         dependsOn: 'age',
+   *         transform: (exp, age) => Math.min(exp, Math.max(0, age - 22))
+   *       }
+   *     ]
+   *   });
+   * ```
+   */
+  buildWithCorrelations(config?: {
+    correlations?: Array<{
+      attribute1: string;
+      attribute2: string;
+      correlation: number;
+    }>;
+    conditionals?: Array<{
+      attribute: string;
+      dependsOn: string;
+      transform: (value: number, dependentValue: any) => number;
+    }>;
+  }): Persona<PersonaAttributes> {
+    if (!this.name) {
+      throw new Error('Persona name is required');
+    }
+
+    // Merge all attributes and distributions
+    const allSpecs: DistributionMap = {};
+    
+    // Add static attributes
+    for (const [key, value] of Object.entries(this.attributes)) {
+      allSpecs[key] = value;
+    }
+    
+    // Add distributions
+    for (const [key, value] of Object.entries(this.distributions)) {
+      allSpecs[key] = value;
+    }
+
+    // Create correlated distribution
+    const correlated = new CorrelatedDistribution(allSpecs);
+    
+    // Add correlations if provided
+    if (config?.correlations) {
+      config.correlations.forEach(corr => {
+        correlated.addCorrelation(corr);
+      });
+    }
+    
+    // Add conditionals if provided
+    if (config?.conditionals) {
+      config.conditionals.forEach(cond => {
+        const dist = allSpecs[cond.attribute];
+        if (dist && typeof dist === 'object' && 'sample' in dist) {
+          correlated.addConditional({
+            attribute: cond.attribute,
+            baseDistribution: dist,
+            conditions: [{
+              dependsOn: cond.dependsOn,
+              transform: cond.transform
+            }]
+          });
+        }
+      });
+    }
+    
+    const generatedAttributes = correlated.generate();
+    
+    // Ensure required attributes are present
+    if (!generatedAttributes.age || !generatedAttributes.occupation || !generatedAttributes.sex) {
+      throw new Error('Required attributes (age, occupation, sex) must be provided');
+    }
+    
+    return new Persona(this.name, generatedAttributes as PersonaAttributes);
   }
 
   /**

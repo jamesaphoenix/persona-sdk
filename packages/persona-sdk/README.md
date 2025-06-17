@@ -128,12 +128,62 @@ const occupationDistribution = new CategoricalDistribution([
 ]);
 ```
 
+## Correlated Personas
+
+Generate personas with realistic relationships between attributes:
+
+```typescript
+import { PersonaGroup, NormalDistribution, CommonCorrelations } from '@jamesaphoenix/persona-sdk';
+
+// Create a group with correlated attributes
+const group = new PersonaGroup('Realistic Population');
+
+group.generateWithCorrelations(100, {
+  attributes: {
+    age: new NormalDistribution(35, 10),
+    yearsExperience: new NormalDistribution(10, 5),
+    income: new NormalDistribution(75000, 25000),
+    height: new NormalDistribution(170, 10),  // cm
+    weight: new NormalDistribution(70, 15),   // kg
+    occupation: 'Professional',              // Literal value
+    sex: 'other'                            // Literal value
+  },
+  correlations: [
+    // Define correlations between numeric attributes
+    { attribute1: 'age', attribute2: 'income', correlation: 0.6 },
+    { attribute1: 'age', attribute2: 'yearsExperience', correlation: 0.8 },
+    { attribute1: 'height', attribute2: 'weight', correlation: 0.7 }
+  ],
+  conditionals: [
+    // Experience can't exceed working years
+    {
+      attribute: 'yearsExperience',
+      dependsOn: 'age',
+      transform: CommonCorrelations.ageExperience
+    },
+    // Income increases with age
+    {
+      attribute: 'income',
+      dependsOn: 'age',
+      transform: CommonCorrelations.ageIncome
+    }
+  ]
+});
+
+// Built-in correlation functions:
+// - CommonCorrelations.ageIncome: Income increases with age until retirement
+// - CommonCorrelations.ageExperience: Experience bounded by working years
+// - CommonCorrelations.heightWeight: BMI-based weight correlation
+// - CommonCorrelations.educationIncome: Higher education → higher income
+// - CommonCorrelations.urbanRuralIncome: Urban areas have higher incomes
+```
+
 ## AI-Powered Features
 
 ### Automatic Distribution Selection
 
 ```typescript
-import { DistributionSelector } from '@open-persona/persona-sdk';
+import { DistributionSelector } from '@jamesaphoenix/persona-sdk';
 
 const selector = new DistributionSelector(); // Uses OPENAI_API_KEY env var
 
@@ -156,7 +206,7 @@ const recommendations = await selector.recommendDistributions(
 The SDK uses LangChain's `withStructuredOutput` method for reliable structured output generation:
 
 ```typescript
-import { StructuredOutputGenerator } from '@open-persona/persona-sdk';
+import { StructuredOutputGenerator } from '@jamesaphoenix/persona-sdk';
 import { z } from 'zod';
 
 const generator = new StructuredOutputGenerator();

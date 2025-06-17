@@ -2,6 +2,7 @@ import { Persona } from './persona';
 import { PersonaGroupOptions, DistributionMap, StructuredOutput, PersonaAttributes } from './types';
 import * as ss from 'simple-statistics';
 import { z } from 'zod';
+import { CorrelatedDistribution, AttributeCorrelation } from './distributions/correlated-distribution';
 
 /**
  * Represents a group of personas for collective analysis and generation.
@@ -191,6 +192,95 @@ export class PersonaGroup<T extends PersonaAttributes = PersonaAttributes> {
       const persona = Persona.fromDistributions<T>(
         `${this.name} Member ${this._personas.length + 1}`,
         dists
+      );
+      this.add(persona);
+    }
+  }
+
+  /**
+   * Generate personas with correlated attributes.
+   * 
+   * Creates multiple personas where attributes have realistic correlations,
+   * such as age correlating with income and experience.
+   * 
+   * @param count - Number of personas to generate
+   * @param config - Configuration for attributes, correlations, and conditionals
+   * 
+   * @example
+   * ```typescript
+   * // Generate tech workers with realistic correlations
+   * group.generateWithCorrelations(100, {
+   *   attributes: {
+   *     age: new NormalDistribution(32, 8),
+   *     yearsExperience: new NormalDistribution(8, 4),
+   *     income: new NormalDistribution(95000, 30000),
+   *     height: new NormalDistribution(170, 10),
+   *     weight: new NormalDistribution(70, 15),
+   *     occupation: 'Software Engineer',
+   *     sex: 'other'
+   *   },
+   *   correlations: [
+   *     { attribute1: 'age', attribute2: 'income', correlation: 0.6 },
+   *     { attribute1: 'age', attribute2: 'yearsExperience', correlation: 0.8 },
+   *     { attribute1: 'height', attribute2: 'weight', correlation: 0.7 }
+   *   ],
+   *   conditionals: [
+   *     {
+   *       attribute: 'yearsExperience',
+   *       dependsOn: 'age',
+   *       transform: (exp, age) => Math.min(exp, Math.max(0, age - 22))
+   *     },
+   *     {
+   *       attribute: 'income',
+   *       dependsOn: 'yearsExperience',
+   *       transform: (income, exp) => income * (1 + exp * 0.05)
+   *     }
+   *   ]
+   * });
+   * ```
+   */
+  generateWithCorrelations(count: number, config: {
+    attributes: DistributionMap;
+    correlations?: AttributeCorrelation[];
+    conditionals?: Array<{
+      attribute: string;
+      dependsOn: string;
+      transform: (value: number, dependentValue: any) => number;
+    }>;
+  }): void {
+    // Create correlated distribution
+    const correlated = new CorrelatedDistribution(config.attributes);
+    
+    // Add correlations
+    if (config.correlations) {
+      config.correlations.forEach(corr => {
+        correlated.addCorrelation(corr);
+      });
+    }
+    
+    // Add conditionals
+    if (config.conditionals) {
+      config.conditionals.forEach(cond => {
+        const dist = config.attributes[cond.attribute];
+        if (dist && typeof dist === 'object' && 'sample' in dist) {
+          correlated.addConditional({
+            attribute: cond.attribute,
+            baseDistribution: dist,
+            conditions: [{
+              dependsOn: cond.dependsOn,
+              transform: cond.transform
+            }]
+          });
+        }
+      });
+    }
+    
+    // Generate personas
+    for (let i = 0; i < count; i++) {
+      const attributes = correlated.generate();
+      const persona = new Persona<T>(
+        `${this.name} Member ${this._personas.length + 1}`,
+        attributes as T
       );
       this.add(persona);
     }

@@ -1,15 +1,15 @@
 {
   "entryPoints": ["./src/index.ts"],
   "out": "docs",
-  "name": "@open-person/persona-sdk",
+  "name": "@jamesaphoenix/persona-sdk",
   "navigationLinks": {
-    "GitHub": "https://github.com/open-person/persona-sdk",
-    "NPM": "https://www.npmjs.com/package/@open-person/persona-sdk"
+    "GitHub": "https://github.com/jamesaphoenix/persona-sdk",
+    "NPM": "https://www.npmjs.com/package/@jamesaphoenix/persona-sdk"
   },
   "includeVersion": true,
   "sidebarLinks": {
-    "Quick Start": "https://github.com/open-person/persona-sdk/blob/main/QUICKSTART.md",
-    "Examples": "https://github.com/open-person/persona-sdk/tree/main/examples"
+    "Quick Start": "https://github.com/jamesaphoenix/persona-sdk/blob/main/QUICKSTART.md",
+    "Examples": "https://github.com/jamesaphoenix/persona-sdk/tree/main/examples"
   },
   "plugin": [],
   "theme": "default",
