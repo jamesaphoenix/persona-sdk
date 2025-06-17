@@ -24,7 +24,7 @@
     "build": "tsc --build",
     "clean": "rm -rf dist coverage docs",
     "type-check": "tsc --noEmit",
-    "docs": "typedoc",
+    "docs": "DISPLAY= typedoc",
     "docs:watch": "typedoc --watch"
   },
   "dependencies": {
