@@ -2,7 +2,6 @@ import { OpenAI } from 'openai';
 import { z } from 'zod';
 import { 
   AttributeCorrelation, 
-  Distribution,
   DistributionSpec,
   DistributionMap
 } from '../types';
