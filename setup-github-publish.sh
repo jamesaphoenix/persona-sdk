@@ -2,7 +2,7 @@
 
 # Setup script for GitHub repository and npm publishing
 
-echo "🚀 Setting up open-persona/persona-sdk repository..."
+echo "🚀 Setting up jamesaphoenix/persona-sdk repository..."
 
 # Check if gh is authenticated
 if ! gh auth status &>/dev/null; then
@@ -12,7 +12,7 @@ fi
 
 # Create the repository if it doesn't exist
 echo "📦 Creating GitHub repository..."
-gh repo create open-persona/persona-sdk --public --description "TypeScript SDK for generating personas from statistical distributions" --homepage "https://www.npmjs.com/package/@open-persona/persona-sdk" || echo "Repository may already exist"
+gh repo create jamesaphoenix/persona-sdk --public --description "TypeScript SDK for generating personas from statistical distributions" --homepage "https://www.npmjs.com/package/@jamesaphoenix/persona-sdk" || echo "Repository may already exist"
 
 # Add NPM token as secret
 echo "🔐 Adding NPM_TOKEN to GitHub secrets..."
@@ -41,7 +41,7 @@ git commit -m "Initial commit: Open Persona SDK v0.1.0
 
 # Add remote
 echo "🔗 Adding remote origin..."
-git remote add origin https://github.com/open-persona/persona-sdk.git || git remote set-url origin https://github.com/open-persona/persona-sdk.git
+git remote add origin https://github.com/jamesaphoenix/persona-sdk.git || git remote set-url origin https://github.com/jamesaphoenix/persona-sdk.git
 
 # Push to main branch
 echo "⬆️ Pushing to GitHub..."
@@ -55,5 +55,5 @@ echo "1. The GitHub Actions workflow will automatically run tests"
 echo "2. To publish to npm manually, run: cd packages/persona-sdk && npm publish --access public"
 echo "3. To trigger automated publishing, create a release on GitHub"
 echo ""
-echo "🔗 Repository: https://github.com/open-persona/persona-sdk"
-echo "📦 NPM Package: https://www.npmjs.com/package/@open-persona/persona-sdk"
+echo "🔗 Repository: https://github.com/jamesaphoenix/persona-sdk"
+echo "📦 NPM Package: https://www.npmjs.com/package/@jamesaphoenix/persona-sdk"

@@ -17,7 +17,6 @@
     "README.md"
   ],
   "scripts": {
-    "preinstall": "command -v xdg-open >/dev/null 2>&1 && echo 'xdg-open() { echo \"xdg-open disabled in CI\"; }' > /tmp/disable-xdg-open.sh && chmod +x /tmp/disable-xdg-open.sh && export PATH=\"/tmp:$PATH\" || true",
     "dev": "vitest",
     "test": "vitest run",
     "test:watch": "vitest",

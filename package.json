@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": false,
   "scripts": {
-    "preinstall": "command -v xdg-open >/dev/null 2>&1 && echo '#!/bin/bash\necho \"xdg-open disabled in CI\"' > /tmp/xdg-open && chmod +x /tmp/xdg-open && export PATH=\"/tmp:$PATH\" || true",
     "dev": "turbo dev",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",

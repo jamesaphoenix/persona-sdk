@@ -73,6 +73,8 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3(@types/node@22.15.32)(@vitest/ui@3.2.3)(yaml@2.8.0)
 
+  packages/typescript-config: {}
+
 packages:
 
   '@ampproject/remapping@2.3.0':

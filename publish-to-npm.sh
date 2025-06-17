@@ -9,7 +9,7 @@ if [ -z "$NPM_TOKEN" ]; then
     exit 1
 fi
 
-echo "📦 Publishing @open-persona/persona-sdk to npm..."
+echo "📦 Publishing @jamesaphoenix/persona-sdk to npm..."
 
 # Navigate to the package directory
 cd packages/persona-sdk
@@ -42,6 +42,6 @@ npm publish --access public
 rm ~/.npmrc
 
 echo "✅ Package published successfully!"
-echo "📦 View at: https://www.npmjs.com/package/@open-persona/persona-sdk"
+echo "📦 View at: https://www.npmjs.com/package/@jamesaphoenix/persona-sdk"
 echo ""
-echo "To install: npm install @open-persona/persona-sdk"
+echo "To install: npm install @jamesaphoenix/persona-sdk"
