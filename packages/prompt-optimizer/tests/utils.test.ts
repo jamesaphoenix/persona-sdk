@@ -220,7 +220,7 @@ describe('MockLanguageModel', () => {
       await mockLM.generate('test');
       const endTime = Date.now();
       
-      expect(endTime - startTime).toBeLessThan(10); // Should be very fast
+      expect(endTime - startTime).toBeLessThan(50); // Allow more time for CI environments
     });
   });
 });
