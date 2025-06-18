@@ -70,11 +70,6 @@ jobs:
       
       - name: Build packages
         run: pnpm build
-        
-      - name: Generate docs
-        run: |
-          cd packages/persona-sdk && DISPLAY= BROWSER=none pnpm docs
-          cd ../prompt-optimizer && DISPLAY= BROWSER=none pnpm docs
       
       - name: Publish persona-sdk to npm
         run: npm publish --access public
