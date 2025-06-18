@@ -2,7 +2,7 @@
  * Real-world scenario tests - complete workflows
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import {
   PersonaBuilder,
   PersonaGroup,
@@ -438,9 +438,9 @@ describe('Real-World Scenarios', () => {
           company: profile.company,
           teamSize: profile.teamSize,
           useCase: profile.useCase,
-          onboardingPath: this.determineOnboardingPath(profile),
-          expectedTimeToValue: this.estimateTimeToValue(profile),
-          churnRisk: this.calculateChurnRisk(profile),
+          onboardingPath: determineOnboardingPath(profile),
+          expectedTimeToValue: estimateTimeToValue(profile),
+          churnRisk: calculateChurnRisk(profile),
         },
       }));
 
@@ -514,7 +514,6 @@ describe('Real-World Scenarios', () => {
       // const optimizedFlow = await optimizer.optimize(onboardingModule, trainingData);
     });
   });
-});
 
 // Helper functions
 function determineOnboardingPath(profile: any): string {
@@ -571,7 +570,7 @@ function calculateChurnRisk(profile: any): number {
             dailyReadingTime: Math.round(pref.readingTime.sample()),
             preferredFormats: pref.preferredFormats,
             engagementScore: Math.random() * 100,
-            contentHistory: this.generateContentHistory(pref.interests),
+            contentHistory: generateContentHistory(pref.interests),
             lastActive: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
           },
         }));
@@ -604,7 +603,7 @@ function calculateChurnRisk(profile: any): number {
         return {
           personaId: persona.id,
           recommendations: relevantContent,
-          score: this.calculateRecommendationScore(persona, relevantContent),
+          score: calculateRecommendationScore(persona, relevantContent),
         };
       });
 
@@ -634,24 +633,25 @@ function calculateChurnRisk(profile: any): number {
       // These would get premium content recommendations
       expect(highEngagementPersonas.data.length).toBeGreaterThan(0);
     });
-
-    private generateContentHistory(interests: string[]): any[] {
-      return Array.from({ length: 10 }, () => ({
-        category: interests[Math.floor(Math.random() * interests.length)],
-        timestamp: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-        completed: Math.random() > 0.3,
-      }));
-    }
-
-    private calculateRecommendationScore(persona: any, content: any[]): number {
-      const interestMatch = content.length / persona.attributes.interests.length;
-      const recencyBoost = 
-        (Date.now() - new Date(persona.attributes.lastActive).getTime()) < 
-        (24 * 60 * 60 * 1000) ? 0.2 : 0;
-      
-      return Math.min(interestMatch + recencyBoost, 1) * 100;
-    }
   });
+
+// Helper functions for Content Recommendation Engine
+function generateContentHistory(interests: string[]): any[] {
+  return Array.from({ length: 10 }, () => ({
+    category: interests[Math.floor(Math.random() * interests.length)],
+    timestamp: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
+    completed: Math.random() > 0.3,
+  }));
+}
+
+function calculateRecommendationScore(persona: any, content: any[]): number {
+  const interestMatch = content.length / persona.attributes.interests.length;
+  const recencyBoost = 
+    (Date.now() - new Date(persona.attributes.lastActive).getTime()) < 
+    (24 * 60 * 60 * 1000) ? 0.2 : 0;
+  
+  return Math.min(interestMatch + recencyBoost, 1) * 100;
+}
 
   describe('Healthcare Patient Journey Mapping', () => {
     it('should map patient journeys for treatment optimization', async () => {
@@ -687,10 +687,10 @@ function calculateChurnRisk(profile: any): number {
             conditions: profile.conditions,
             annualVisits: Math.round(profile.visitFrequency.sample()),
             adherenceRate: Math.max(0, Math.min(1, profile.medicationAdherence.sample())),
-            riskScore: this.calculateHealthRiskScore(profile),
+            riskScore: calculateHealthRiskScore(profile),
             lastVisit: new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000),
             nextAppointment: null,
-            careTeam: this.assignCareTeam(profileType),
+            careTeam: assignCareTeam(profileType),
           },
         }));
 
@@ -735,7 +735,7 @@ function calculateChurnRisk(profile: any): number {
             step,
             completed: Math.random() > 0.1, // 90% completion
             date: new Date(Date.now() - (pathway.length - index) * 30 * 24 * 60 * 60 * 1000),
-            outcome: this.generateStepOutcome(step, patient),
+            outcome: generateStepOutcome(step, patient),
           })),
           overallOutcome: 'managed',
           satisfactionScore: 4 + Math.random(),
@@ -780,31 +780,6 @@ function calculateChurnRisk(profile: any): number {
       expect(outcomes.managed).toBeGreaterThan(outcomes.declined);
     });
 
-    private calculateHealthRiskScore(profile: any): number {
-      let score = 0.3; // base risk
-      
-      if (profile.conditions.includes('diabetes')) score += 0.2;
-      if (profile.conditions.includes('hypertension')) score += 0.15;
-      if (profile.visitFrequency.mean < 4) score += 0.1; // Low engagement
-      
-      return Math.min(score, 1);
-    }
-
-    private assignCareTeam(patientType: string): string[] {
-      const teams = {
-        chronicCare: ['Primary Care', 'Specialist', 'Nurse', 'Pharmacist'],
-        preventiveCare: ['Primary Care', 'Nurse'],
-        acuteCare: ['Emergency', 'Specialist', 'Nurse'],
-      };
-      return teams[patientType as keyof typeof teams] || ['Primary Care'];
-    }
-
-    private generateStepOutcome(step: string, patient: any): string {
-      const adherence = patient.attributes.adherenceRate;
-      const outcomes = ['excellent', 'good', 'fair', 'poor'];
-      const index = Math.floor((1 - adherence) * outcomes.length);
-      return outcomes[Math.min(index, outcomes.length - 1)];
-    }
   });
 
   describe('Financial Services Risk Assessment', () => {
@@ -842,14 +817,14 @@ function calculateChurnRisk(profile: any): number {
         return {
           name: `Applicant ${i}`,
           age: Math.round(values.age),
-          occupation: this.assignOccupation(values.income),
+          occupation: assignOccupation(values.income),
           attributes: {
             income: Math.round(values.income),
             creditScore: Math.round(Math.max(300, Math.min(850, values.creditScore))),
             debtToIncome: Math.round(values.debtToIncome * 100) / 100,
             employmentYears: Math.max(0, Math.round((values.age - 22) * 0.7)),
             loanAmount: Math.round(values.income * 3), // 3x income
-            loanPurpose: this.assignLoanPurpose(values.age, values.income),
+            loanPurpose: assignLoanPurpose(values.age, values.income),
             riskProfile: null, // Will calculate
           },
         };
@@ -857,7 +832,7 @@ function calculateChurnRisk(profile: any): number {
 
       // 2. Calculate risk profiles
       applicants.forEach(applicant => {
-        applicant.attributes.riskProfile = this.calculateRiskProfile(applicant.attributes);
+        applicant.attributes.riskProfile = calculateRiskProfile(applicant.attributes);
       });
 
       const created = await apiClient.bulkCreatePersonas({ personas: applicants });
@@ -881,7 +856,7 @@ function calculateChurnRisk(profile: any): number {
 
       // 4. Simulate loan decisions
       const loanDecisions = created.map(applicant => {
-        const decision = this.makeLoanDecision(applicant);
+        const decision = makeLoanDecision(applicant);
         return {
           applicantId: applicant.id,
           approved: decision.approved,
@@ -899,7 +874,7 @@ function calculateChurnRisk(profile: any): number {
       const approvedLoans = loanDecisions.filter(d => d.approved);
       const loanPerformance = approvedLoans.map(loan => {
         const applicant = created.find(a => a.id === loan.applicantId)!;
-        const defaultProbability = this.calculateDefaultProbability(
+        const defaultProbability = calculateDefaultProbability(
           applicant.attributes.riskProfile,
           loan.interestRate
         );
@@ -930,94 +905,122 @@ function calculateChurnRisk(profile: any): number {
 
       expect(avgCreditScore).toBeGreaterThan(700);
     });
-
-    private assignOccupation(income: number): string {
-      if (income < 40000) return 'Entry Level';
-      if (income < 70000) return 'Professional';
-      if (income < 100000) return 'Senior Professional';
-      if (income < 150000) return 'Manager';
-      return 'Executive';
-    }
-
-    private assignLoanPurpose(age: number, income: number): string {
-      if (age < 30) return 'Auto Loan';
-      if (age < 40 && income > 60000) return 'Home Purchase';
-      if (age < 50) return 'Home Improvement';
-      return 'Debt Consolidation';
-    }
-
-    private calculateRiskProfile(attributes: any): string {
-      let riskScore = 0;
-
-      // Credit score factor (40%)
-      if (attributes.creditScore < 650) riskScore += 40;
-      else if (attributes.creditScore < 700) riskScore += 25;
-      else if (attributes.creditScore < 750) riskScore += 10;
-
-      // Debt-to-income factor (30%)
-      if (attributes.debtToIncome > 0.5) riskScore += 30;
-      else if (attributes.debtToIncome > 0.4) riskScore += 20;
-      else if (attributes.debtToIncome > 0.3) riskScore += 10;
-
-      // Employment stability (20%)
-      if (attributes.employmentYears < 2) riskScore += 20;
-      else if (attributes.employmentYears < 5) riskScore += 10;
-
-      // Loan-to-income ratio (10%)
-      const lti = attributes.loanAmount / attributes.income;
-      if (lti > 5) riskScore += 10;
-      else if (lti > 4) riskScore += 5;
-
-      if (riskScore <= 20) return 'low';
-      if (riskScore <= 50) return 'medium';
-      return 'high';
-    }
-
-    private makeLoanDecision(applicant: any): any {
-      const risk = applicant.attributes.riskProfile;
-      const baseRate = 0.05; // 5% base rate
-
-      if (risk === 'high' && applicant.attributes.creditScore < 650) {
-        return {
-          approved: false,
-          reasoning: 'High risk profile with low credit score',
-        };
-      }
-
-      const approved = risk === 'low' ? true :
-                      risk === 'medium' ? Math.random() > 0.3 :
-                      Math.random() > 0.7;
-
-      if (!approved) {
-        return {
-          approved: false,
-          reasoning: `Risk profile too high: ${risk}`,
-        };
-      }
-
-      const riskPremium = risk === 'low' ? 0 :
-                         risk === 'medium' ? 0.02 :
-                         0.04;
-
-      return {
-        approved: true,
-        interestRate: baseRate + riskPremium,
-        terms: risk === 'low' ? 60 : 48, // months
-        reasoning: `Approved with ${risk} risk profile`,
-      };
-    }
-
-    private calculateDefaultProbability(riskProfile: string, interestRate: number): number {
-      const baseDefault = {
-        low: 0.02,
-        medium: 0.05,
-        high: 0.15,
-      }[riskProfile] || 0.1;
-
-      // Higher interest rates increase default probability
-      const rateFactor = interestRate > 0.08 ? 1.5 : 1;
-
-      return Math.min(baseDefault * rateFactor, 0.3);
-    }
   });
+
+// Helper functions for Healthcare scenarios
+function calculateHealthRiskScore(profile: any): number {
+  let score = 0.3; // base risk
+  
+  if (profile.conditions.includes('diabetes')) score += 0.2;
+  if (profile.conditions.includes('hypertension')) score += 0.15;
+  if (profile.visitFrequency.mean < 4) score += 0.1; // Low engagement
+  
+  return Math.min(score, 1);
+}
+
+function assignCareTeam(patientType: string): string[] {
+  const teams = {
+    chronicCare: ['Primary Care', 'Specialist', 'Nurse', 'Pharmacist'],
+    preventiveCare: ['Primary Care', 'Nurse'],
+    acuteCare: ['Emergency', 'Specialist', 'Nurse'],
+  };
+  return teams[patientType as keyof typeof teams] || ['Primary Care'];
+}
+
+function generateStepOutcome(step: string, patient: any): string {
+  const adherence = patient.attributes.adherenceRate;
+  const outcomes = ['excellent', 'good', 'fair', 'poor'];
+  const index = Math.floor((1 - adherence) * outcomes.length);
+  return outcomes[Math.min(index, outcomes.length - 1)];
+}
+
+// Helper functions for Financial Services scenarios
+function assignOccupation(income: number): string {
+  if (income < 40000) return 'Entry Level';
+  if (income < 70000) return 'Professional';
+  if (income < 100000) return 'Senior Professional';
+  if (income < 150000) return 'Manager';
+  return 'Executive';
+}
+
+function assignLoanPurpose(age: number, income: number): string {
+  if (age < 30) return 'Auto Loan';
+  if (age < 40 && income > 60000) return 'Home Purchase';
+  if (age < 50) return 'Home Improvement';
+  return 'Debt Consolidation';
+}
+
+function calculateRiskProfile(attributes: any): string {
+  let riskScore = 0;
+
+  // Credit score factor (40%)
+  if (attributes.creditScore < 650) riskScore += 40;
+  else if (attributes.creditScore < 700) riskScore += 25;
+  else if (attributes.creditScore < 750) riskScore += 10;
+
+  // Debt-to-income factor (30%)
+  if (attributes.debtToIncome > 0.5) riskScore += 30;
+  else if (attributes.debtToIncome > 0.4) riskScore += 20;
+  else if (attributes.debtToIncome > 0.3) riskScore += 10;
+
+  // Employment stability (20%)
+  if (attributes.employmentYears < 2) riskScore += 20;
+  else if (attributes.employmentYears < 5) riskScore += 10;
+
+  // Loan-to-income ratio (10%)
+  const lti = attributes.loanAmount / attributes.income;
+  if (lti > 5) riskScore += 10;
+  else if (lti > 4) riskScore += 5;
+
+  if (riskScore <= 20) return 'low';
+  if (riskScore <= 50) return 'medium';
+  return 'high';
+}
+
+function makeLoanDecision(applicant: any): any {
+  const risk = applicant.attributes.riskProfile;
+  const baseRate = 0.05; // 5% base rate
+
+  if (risk === 'high' && applicant.attributes.creditScore < 650) {
+    return {
+      approved: false,
+      reasoning: 'High risk profile with low credit score',
+    };
+  }
+
+  const approved = risk === 'low' ? true :
+                  risk === 'medium' ? Math.random() > 0.3 :
+                  Math.random() > 0.7;
+
+  if (!approved) {
+    return {
+      approved: false,
+      reasoning: `Risk profile too high: ${risk}`,
+    };
+  }
+
+  const riskPremium = risk === 'low' ? 0 :
+                     risk === 'medium' ? 0.02 :
+                     0.04;
+
+  return {
+    approved: true,
+    interestRate: baseRate + riskPremium,
+    terms: risk === 'low' ? 60 : 48, // months
+    reasoning: `Approved with ${risk} risk profile`,
+  };
+}
+
+function calculateDefaultProbability(riskProfile: string, interestRate: number): number {
+  const baseDefault = {
+    low: 0.02,
+    medium: 0.05,
+    high: 0.15,
+  }[riskProfile] || 0.1;
+
+  // Higher interest rates increase default probability
+  const rateFactor = interestRate > 0.08 ? 1.5 : 1;
+
+  return Math.min(baseDefault * rateFactor, 0.3);
+}
 });
