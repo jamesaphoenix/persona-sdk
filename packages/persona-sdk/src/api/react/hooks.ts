@@ -2,7 +2,7 @@
  * React Hooks for Persona SDK API
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, createContext, useContext, type ReactNode } from 'react';
 import { PersonaApiClient } from '../client.js';
 import type {
   PersonaResponse,
@@ -354,8 +354,6 @@ export function useStats(config: UseApiConfig): QueryState<StatsResponse> {
 }
 
 // ============ Context Provider ============
-
-import React, { createContext, useContext, ReactNode } from 'react';
 
 const ApiConfigContext = createContext<UseApiConfig | null>(null);
 

@@ -2,7 +2,7 @@
  * Mock models and fixtures for testing
  */
 
-import { MockModule, MockLanguageModel, createMockModule, createMockLanguageModel } from '../../src/utils/index.js';
+import { MockModule, MockLanguageModel, createMockModule, createMockLanguageModel } from '../../../src/prompt-optimizer/utils/index.js';
 import type { Example } from '../../src/types/index.js';
 
 // Standard test datasets

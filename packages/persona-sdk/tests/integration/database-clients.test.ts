@@ -17,7 +17,38 @@ class MockSupabaseClient {
     return new MockSupabaseQuery(table, this.data, this.idCounter++);
   }
 
-  rpc(functionName: string, params?: any) {
+  async rpc(functionName: string, params?: any) {
+    if (functionName === 'execute_sql') {
+      // Handle raw SQL execution
+      const { query, params: values } = params;
+      const sql = query.toLowerCase();
+      
+      // Mock SQL execution
+      if (sql.includes('insert into personas')) {
+        const id = `sb_${this.idCounter++}`;
+        const persona = {
+          id,
+          name: values[0],
+          age: values[1],
+          occupation: values[2],
+          sex: values[3],
+          attributes: values[4] || {},
+          metadata: values[5] || {},
+          created_at: new Date(),
+          updated_at: new Date(),
+        };
+        this.data.set(id, persona);
+        return { data: [persona], error: null, count: 1 };
+      }
+      
+      if (sql.includes('select * from personas where id')) {
+        const persona = this.data.get(values[0]);
+        return { data: persona ? [persona] : [], error: null, count: persona ? 1 : 0 };
+      }
+      
+      return { data: [], error: null, count: 0 };
+    }
+    
     if (functionName === 'generate_distribution_personas') {
       // Simulate stored procedure
       const count = params.count || 10;
@@ -26,9 +57,10 @@ class MockSupabaseClient {
         name: `Generated ${i}`,
         age: Math.floor(Math.random() * 50) + 20,
       }));
-      return Promise.resolve({ data: personas, error: null });
+      return { data: personas, error: null };
     }
-    return Promise.resolve({ data: null, error: new Error('Unknown function') });
+    
+    return { data: null, error: { message: 'Unknown function' } };
   }
 }
 
@@ -307,22 +339,29 @@ class MockPrismaClient {
     },
   };
 
-  $transaction = async (operations: any[]) => {
+  $transaction = async (fn: any) => {
     // Simple transaction simulation
-    const results = [];
-    for (const op of operations) {
-      try {
-        const result = await op;
-        results.push(result);
-      } catch (error) {
-        // Rollback would happen here in real implementation
-        throw error;
+    if (typeof fn === 'function') {
+      // Function-based transaction (Prisma style)
+      return fn(this);
+    } else if (Array.isArray(fn)) {
+      // Array-based transaction (for compatibility)
+      const results = [];
+      for (const op of fn) {
+        try {
+          const result = await op;
+          results.push(result);
+        } catch (error) {
+          // Rollback would happen here in real implementation
+          throw error;
+        }
       }
+      return results;
     }
-    return results;
+    throw new Error('Invalid transaction argument');
   };
 
-  $queryRaw = async (query: any, ...values: any[]) => {
+  $queryRawUnsafe = async (query: any, ...values: any[]) => {
     // Simulate raw query for analytics
     if (query.includes('AVG(age)')) {
       const personas = Array.from(this.data.personas.values());
@@ -332,6 +371,8 @@ class MockPrismaClient {
     }
     return [];
   };
+  
+  $queryRaw = this.$queryRawUnsafe;
 }
 
 describe('Database Client Integration Tests', () => {

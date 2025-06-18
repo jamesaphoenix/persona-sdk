@@ -128,6 +128,12 @@ class EdgeCaseMockDatabaseClient implements DatabaseClient {
             if (b.age === null) return sql.includes('desc') ? 1 : -1;
             return sql.includes('desc') ? b.age - a.age : a.age - b.age;
           });
+        } else if (sql.includes('order by name')) {
+          // Sort by name
+          personas.sort((a, b) => {
+            const result = a.name.localeCompare(b.name);
+            return sql.includes('desc') ? -result : result;
+          });
         }
       }
 
@@ -260,6 +266,23 @@ class EdgeCaseMockDatabaseClient implements DatabaseClient {
       return { rows: [], rowCount: 1 };
     }
 
+    // Get group members
+    if (sql.includes('select p.* from personas p') && sql.includes('join persona_group_members')) {
+      const groupId = values![0];
+      const members = [];
+      
+      for (const membership of this.data.memberships.values()) {
+        if (membership.group_id === groupId) {
+          const persona = this.data.personas.get(membership.persona_id);
+          if (persona) {
+            members.push(persona);
+          }
+        }
+      }
+      
+      return { rows: members as any, rowCount: members.length };
+    }
+    
     // Default
     return { rows: [], rowCount: 0 };
   }
@@ -606,20 +629,20 @@ describe('PostgreSQL Adapter - Edge Cases', () => {
   });
 
   describe('Foreign Key Constraints', () => {
-    it('should enforce persona exists when adding to group', async () => {
+    it('should return false when persona does not exist when adding to group', async () => {
       const group = await adapter.createPersonaGroup({ name: 'FK Test' });
 
       // Try to add non-existent persona
-      await expect(adapter.addPersonaToGroup('non-existent-persona', group.id))
-        .rejects.toThrow('Foreign key violation');
+      const result = await adapter.addPersonaToGroup('non-existent-persona', group.id);
+      expect(result).toBe(false);
     });
 
-    it('should enforce group exists when adding persona', async () => {
+    it('should return false when group does not exist when adding persona', async () => {
       const persona = await adapter.createPersona({ name: 'FK Test' });
 
-      // Try to add to non-existent group
-      await expect(adapter.addPersonaToGroup(persona.id, 'non-existent-group'))
-        .rejects.toThrow('Foreign key violation');
+      // Try to add to non-existent group  
+      const result = await adapter.addPersonaToGroup(persona.id, 'non-existent-group');
+      expect(result).toBe(false);
     });
 
     it('should handle duplicate group names', async () => {

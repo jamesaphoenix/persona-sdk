@@ -416,10 +416,22 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
   app.setErrorHandler((error, request, reply) => {
     app.log.error(error);
     
-    if (error.validation) {
+    if (error.validation || error.statusCode === 400) {
       reply.code(400).send({
-        error: 'Validation error',
+        error: error.message || 'Validation error',
         details: error.validation,
+      });
+      return;
+    }
+
+    // Check for specific database errors
+    const message = error.message || 'Internal server error';
+    if (message.includes('connection') || 
+        message.includes('timeout') || 
+        message.includes('constraint')) {
+      reply.code(500).send({
+        error: message,
+        code: 'DATABASE_ERROR',
       });
       return;
     }

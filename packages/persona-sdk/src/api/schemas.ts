@@ -13,7 +13,7 @@ export const createPersonaSchema = z.object({
   name: z.string().min(1).max(255),
   age: z.number().int().min(0).max(150).optional(),
   occupation: z.string().max(255).optional(),
-  sex: z.string().max(50).optional(),
+  sex: z.enum(['male', 'female', 'other']).optional(),
   attributes: personaAttributesSchema.optional(),
   metadata: metadataSchema.optional(),
 });
@@ -22,7 +22,7 @@ export const updatePersonaSchema = z.object({
   name: z.string().min(1).max(255).optional(),
   age: z.number().int().min(0).max(150).nullable().optional(),
   occupation: z.string().max(255).nullable().optional(),
-  sex: z.string().max(50).nullable().optional(),
+  sex: z.enum(['male', 'female', 'other']).nullable().optional(),
   attributes: personaAttributesSchema.optional(),
   metadata: metadataSchema.optional(),
 });

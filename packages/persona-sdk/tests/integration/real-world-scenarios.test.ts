@@ -513,28 +513,29 @@ describe('Real-World Scenarios', () => {
       // This would optimize prompts for better onboarding
       // const optimizedFlow = await optimizer.optimize(onboardingModule, trainingData);
     });
-
-    // Helper methods
-    private determineOnboardingPath(profile: any): string {
-      if (profile.role.includes('Developer')) return 'technical';
-      if (profile.role.includes('Marketing')) return 'visual';
-      if (profile.role.includes('Founder')) return 'guided';
-      return 'visual';
-    }
-
-    private estimateTimeToValue(profile: any): number {
-      const baseTime = profile.teamSize === '1-5' ? 1 : 
-                      profile.teamSize === '5-10' ? 3 : 7; // days
-      return baseTime;
-    }
-
-    private calculateChurnRisk(profile: any): number {
-      let risk = 0.2; // base risk
-      if (profile.teamSize === '1-5') risk += 0.2; // Small teams churn more
-      if (profile.role === 'Founder') risk -= 0.1; // Founders more committed
-      return Math.min(Math.max(risk, 0), 1);
-    }
   });
+});
+
+// Helper functions
+function determineOnboardingPath(profile: any): string {
+  if (profile.role.includes('Developer')) return 'technical';
+  if (profile.role.includes('Marketing')) return 'visual';
+  if (profile.role.includes('Founder')) return 'guided';
+  return 'visual';
+}
+
+function estimateTimeToValue(profile: any): number {
+  const baseTime = profile.teamSize === '1-5' ? 1 : 
+                  profile.teamSize === '5-10' ? 3 : 7; // days
+  return baseTime;
+}
+
+function calculateChurnRisk(profile: any): number {
+  let risk = 0.2; // base risk
+  if (profile.teamSize === '1-5') risk += 0.2; // Small teams churn more
+  if (profile.role === 'Founder') risk -= 0.1; // Founders more committed
+  return Math.min(Math.max(risk, 0), 1);
+}
 
   describe('Content Recommendation Engine', () => {
     it('should build persona-based content recommendations', async () => {
