@@ -77,7 +77,18 @@ group.generateFromDistributions(100, {
 ### Prompt Optimizer Usage
 
 ```typescript
-import { BootstrapOptimizer, ExactMatch, MockModule } from '@jamesaphoenix/prompt-optimizer';
+import { 
+  BootstrapOptimizer, 
+  ExactMatch, 
+  MockModule,
+  createTestDataset 
+} from '@jamesaphoenix/prompt-optimizer';
+
+// Create a module to optimize
+const module = new MockModule('Answer the question: ');
+
+// Create training data
+const trainset = createTestDataset(20, 'math');
 
 // Create optimizer
 const optimizer = new BootstrapOptimizer({
@@ -94,25 +105,54 @@ console.log(`Improved score: ${result.finalScore}`);
 ### Integration Example
 
 ```typescript
-import { PersonaBuilder } from '@jamesaphoenix/persona-sdk';
-import { BootstrapOptimizer, createCompositeMetric } from '@jamesaphoenix/prompt-optimizer';
+import { PersonaBuilder, NormalDistribution } from '@jamesaphoenix/persona-sdk';
+import { 
+  BootstrapOptimizer, 
+  createCompositeMetric,
+  ExactMatch,
+  FuzzyMatch,
+  MockModule,
+  createMockLanguageModel
+} from '@jamesaphoenix/prompt-optimizer';
 
-// Create a prompt optimization workflow for persona generation
+// Create a module for persona generation prompts
+const personaModule = new MockModule(
+  'Generate a realistic persona with the following attributes: '
+);
+
+// Create training data for persona generation
+const personaTrainingData = [
+  { 
+    input: 'age: 25-35, occupation: software engineer', 
+    output: 'Meet Sarah, a 28-year-old software engineer...' 
+  },
+  { 
+    input: 'age: 40-50, occupation: teacher', 
+    output: 'John is a 45-year-old high school teacher...' 
+  }
+];
+
+// Create a composite metric for evaluation
 const personaMetric = createCompositeMetric([
   { metric: ExactMatch, weight: 0.4 },
   { metric: FuzzyMatch, weight: 0.6 }
 ]);
 
+// Create optimizer with a mock teacher model
+const teacherModel = createMockLanguageModel();
 const optimizer = new BootstrapOptimizer({
   metric: personaMetric,
-  maxLabeled: 8
+  maxLabeled: 8,
+  teacherModel
 });
 
 // Optimize persona generation prompts
-const optimizedPersonaGenerator = await optimizer.optimize(
+const optimizedResult = await optimizer.optimize(
   personaModule,
   personaTrainingData
 );
+
+console.log(`Optimization improved score from baseline to ${optimizedResult.finalScore}`);
 ```
 
 ## 🏗️ Monorepo Structure
