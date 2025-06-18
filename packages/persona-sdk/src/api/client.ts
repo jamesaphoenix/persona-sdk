@@ -61,7 +61,7 @@ export class PersonaApiClient {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+      const error = await response.json().catch(() => ({ error: `HTTP ${response.status}` })) as { error?: string };
       throw new Error(error.error || `HTTP ${response.status}`);
     }
 
@@ -69,7 +69,7 @@ export class PersonaApiClient {
       return null as T;
     }
 
-    return response.json();
+    return response.json() as Promise<T>;
   }
 
   // ============ Personas ============

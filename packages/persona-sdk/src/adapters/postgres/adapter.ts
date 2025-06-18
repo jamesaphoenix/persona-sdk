@@ -4,10 +4,8 @@
  */
 
 import type {
-  DatabaseConfig,
   PersonaRecord,
   PersonaGroupRecord,
-  PersonaGroupMemberRecord,
   PersonaQuery,
   PersonaGroupQuery,
   CreatePersonaInput,

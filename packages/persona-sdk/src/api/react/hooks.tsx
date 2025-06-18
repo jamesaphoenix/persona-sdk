@@ -2,8 +2,7 @@
  * React Hooks for Persona SDK API
  */
 
-import * as React from 'react';
-import { useState, useEffect, useCallback, useRef, createContext, useContext, type ReactNode } from 'react';
+import { useState, useEffect, useCallback, createContext, useContext, type ReactNode } from 'react';
 import { PersonaApiClient } from '../client.js';
 import type {
   PersonaResponse,
@@ -134,7 +133,12 @@ export function usePersona(id: string, config: UseApiConfig): QueryState<Persona
 }
 
 export function usePersonas(
-  query: PersonaQuery = {},
+  query: PersonaQuery | undefined = {
+    limit: 20,
+    offset: 0,
+    orderBy: 'created_at',
+    orderDirection: 'desc'
+  },
   config: UseApiConfig
 ): PaginatedQueryState<PersonaResponse> {
   const client = useApiClient(config);
@@ -235,7 +239,12 @@ export function usePersonaGroup(id: string, config: UseApiConfig): QueryState<Pe
 }
 
 export function usePersonaGroups(
-  query: PersonaGroupQuery = {},
+  query: PersonaGroupQuery | undefined = {
+    limit: 20,
+    offset: 0,
+    includeStats: false,
+    includeMembers: false
+  },
   config: UseApiConfig
 ): PaginatedQueryState<PersonaGroupResponse> {
   const client = useApiClient(config);
@@ -381,13 +390,13 @@ function useApiConfig(): UseApiConfig {
 
 // Convenience hooks that use context
 export const usePersonaWithContext = (id: string) => usePersona(id, useApiConfig());
-export const usePersonasWithContext = (query?: PersonaQuery) => usePersonas(query || {}, useApiConfig());
+export const usePersonasWithContext = (query?: PersonaQuery) => usePersonas(query, useApiConfig());
 export const useCreatePersonaWithContext = () => useCreatePersona(useApiConfig());
 export const useUpdatePersonaWithContext = () => useUpdatePersona(useApiConfig());
 export const useDeletePersonaWithContext = () => useDeletePersona(useApiConfig());
 export const useBulkCreatePersonasWithContext = () => useBulkCreatePersonas(useApiConfig());
 export const usePersonaGroupWithContext = (id: string) => usePersonaGroup(id, useApiConfig());
-export const usePersonaGroupsWithContext = (query?: PersonaGroupQuery) => usePersonaGroups(query || {}, useApiConfig());
+export const usePersonaGroupsWithContext = (query?: PersonaGroupQuery) => usePersonaGroups(query, useApiConfig());
 export const usePersonaGroupWithMembersWithContext = (id: string) => usePersonaGroupWithMembers(id, useApiConfig());
 export const useCreatePersonaGroupWithContext = () => useCreatePersonaGroup(useApiConfig());
 export const useUpdatePersonaGroupWithContext = () => useUpdatePersonaGroup(useApiConfig());
