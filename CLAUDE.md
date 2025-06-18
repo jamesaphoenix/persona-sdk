@@ -83,3 +83,29 @@ packages/persona-sdk/
 - `pnpm test:watch` - Run tests in watch mode
 - `pnpm build` - Build the package
 - `pnpm type-check` - Check TypeScript types
+
+## CI/CD Best Practices
+
+### Monitoring GitHub Actions
+
+When pushing changes, always monitor the CI/CD pipeline:
+
+1. **Push changes**: `git push`
+2. **Wait briefly**: `sleep 10`
+3. **Check runs**: `gh run list --limit 3 --repo jamesaphoenix/persona-sdk`
+4. **Monitor status**: `gh run view <run-id> --repo jamesaphoenix/persona-sdk`
+5. **Check failures**: `gh run view <run-id> --log-failed --repo jamesaphoenix/persona-sdk`
+
+Example workflow:
+```bash
+# After pushing
+sleep 10 && gh run list --limit 3 --repo jamesaphoenix/persona-sdk
+
+# Wait for tests to complete (usually 2-3 minutes)
+sleep 120 && gh run view <run-id> --repo jamesaphoenix/persona-sdk
+
+# If failures, check logs
+gh run view <run-id> --log-failed --repo jamesaphoenix/persona-sdk | head -50
+```
+
+Always ensure all tests pass on all platforms (Ubuntu, macOS, Windows) before considering a task complete.
