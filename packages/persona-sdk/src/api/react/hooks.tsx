@@ -2,7 +2,8 @@
  * React Hooks for Persona SDK API
  */
 
-import React, { useState, useEffect, useCallback, useRef, createContext, useContext, type ReactNode } from 'react';
+import * as React from 'react';
+import { useState, useEffect, useCallback, useRef, createContext, useContext, type ReactNode } from 'react';
 import { PersonaApiClient } from '../client.js';
 import type {
   PersonaResponse,
@@ -47,7 +48,7 @@ export interface PaginatedQueryState<T> extends QueryState<PaginatedResponse<T>>
 let apiClient: PersonaApiClient | null = null;
 
 export function useApiClient(config: UseApiConfig): PersonaApiClient {
-  if (!apiClient || apiClient.baseUrl !== config.baseUrl) {
+  if (!apiClient || apiClient.url !== config.baseUrl) {
     apiClient = new PersonaApiClient(config);
   }
   return apiClient;

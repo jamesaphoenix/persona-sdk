@@ -87,11 +87,12 @@
     "@types/mime-types": "^3.0.1",
     "@types/node": "^22.10.7",
     "@types/pg": "^8.0.0",
-    "@types/react": "^18.0.0",
+    "@types/react": "^18.3.23",
     "@vitest/coverage-v8": "^3.2.3",
     "dotenv": "^16.0.3",
     "fastify": "^5.4.0",
     "fastify-type-provider-zod": "^2.0.0",
+    "react": "^19.1.0",
     "typedoc": "^0.26.0",
     "typescript": "5.7.3",
     "vitest": "^3.2.3"

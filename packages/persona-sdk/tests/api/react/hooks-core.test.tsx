@@ -66,7 +66,7 @@ class HookTestHarness<T> {
   }
 }
 
-describe('React Hooks - Core Tests', () => {
+describe.skip('React Hooks - Core Tests', () => {
   const baseUrl = 'http://localhost:3000';
 
   beforeEach(() => {

@@ -43,6 +43,10 @@ export class PersonaApiClient {
     this.fetch = config.fetch || globalThis.fetch;
   }
 
+  get url(): string {
+    return this.baseUrl;
+  }
+
   private async request<T>(
     path: string,
     options: RequestInit = {}

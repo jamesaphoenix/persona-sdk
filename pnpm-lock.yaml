@@ -138,7 +138,7 @@ importers:
         specifier: ^8.0.0
         version: 8.15.4
       '@types/react':
-        specifier: ^18.0.0
+        specifier: ^18.3.23
         version: 18.3.23
       '@vitest/coverage-v8':
         specifier: ^3.2.3
@@ -152,6 +152,9 @@ importers:
       fastify-type-provider-zod:
         specifier: ^2.0.0
         version: 2.1.0(fastify@5.4.0)(zod@3.25.67)
+      react:
+        specifier: ^19.1.0
+        version: 19.1.0
       typedoc:
         specifier: ^0.26.0
         version: 0.26.11(typescript@5.7.3)
