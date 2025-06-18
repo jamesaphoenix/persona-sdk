@@ -66,7 +66,7 @@ class SchemaMockDatabaseClient implements DatabaseClient {
     const sql = text.toLowerCase();
 
     // Track migrations
-    if (sql.includes('create table') || sql.includes('alter table')) {
+    if (sql.includes('create table') || sql.includes('alter table') || sql.includes('create index')) {
       this.migrationHistory.push(text);
     }
 
@@ -127,6 +127,46 @@ class SchemaMockDatabaseClient implements DatabaseClient {
 
     if (sql.includes('show')) {
       return this.handleShowCommand(sql);
+    }
+
+    // Handle persona queries
+    if (sql.includes('select * from personas') || sql.includes('select count(*) from personas')) {
+      // Get all personas from data Map (keys starting with 'personas:')
+      const personas = Array.from(this.data.entries())
+        .filter(([key, _]) => key.startsWith('personas:'))
+        .map(([_, value]) => value);
+      
+      let filteredPersonas = personas;
+      
+      // Apply filters based on WHERE conditions
+      if (sql.includes('where') && values && values.length > 0) {
+        let paramIndex = 0;
+        
+        // Handle age range filters
+        if (sql.includes('age >=') && sql.includes('age <=')) {
+          const minAge = values[paramIndex++];
+          const maxAge = values[paramIndex++];
+          filteredPersonas = filteredPersonas.filter(p => 
+            p.age >= minAge && p.age <= maxAge
+          );
+        }
+        
+        // Handle occupation filter
+        if (sql.includes('occupation ilike')) {
+          const occupation = values[paramIndex++];
+          const cleanOccupation = occupation.replace(/%/g, '').toLowerCase();
+          filteredPersonas = filteredPersonas.filter(p => 
+            p.occupation && p.occupation.toLowerCase().includes(cleanOccupation)
+          );
+        }
+      }
+      
+      // Return count or data
+      if (sql.includes('count(*)')) {
+        return { rows: [{ count: String(filteredPersonas.length) }] as any, rowCount: 1 };
+      } else {
+        return { rows: filteredPersonas as any, rowCount: filteredPersonas.length };
+      }
     }
 
     return { rows: [], rowCount: 0 };

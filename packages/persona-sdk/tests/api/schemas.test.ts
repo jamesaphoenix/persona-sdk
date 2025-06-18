@@ -471,7 +471,11 @@ describe('API Schemas', () => {
         limit: '50' as any,
         offset: '10' as any,
       });
-      expect(result.success).toBe(false); // Zod doesn't coerce by default
+      expect(result.success).toBe(true); // Zod coerces with z.coerce
+      if (result.success) {
+        expect(result.data.limit).toBe(50);
+        expect(result.data.offset).toBe(10);
+      }
     });
   });
 

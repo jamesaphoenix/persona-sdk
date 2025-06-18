@@ -24,7 +24,7 @@ class InMemoryDatabaseClient implements DatabaseClient {
 
     // INSERT personas
     if (sql.includes('insert into personas')) {
-      const id = `${this.idCounter++}`;
+      const id = `12345678-1234-1234-1234-${String(this.idCounter++).padStart(12, '0')}`;
       const persona = {
         id,
         name: values![0],
@@ -84,7 +84,7 @@ class InMemoryDatabaseClient implements DatabaseClient {
 
     // INSERT groups
     if (sql.includes('insert into persona_groups')) {
-      const id = `${this.idCounter++}`;
+      const id = `12345678-1234-1234-1234-${String(this.idCounter++).padStart(12, '0')}`;
       const group = {
         id,
         name: values![0],
@@ -105,7 +105,7 @@ class InMemoryDatabaseClient implements DatabaseClient {
 
     // INSERT memberships
     if (sql.includes('insert into persona_group_members')) {
-      const membershipId = `${this.idCounter++}`;
+      const membershipId = `12345678-1234-1234-1234-${String(this.idCounter++).padStart(12, '0')}`;
       this.data.memberships.set(membershipId, {
         persona_id: values![0],
         group_id: values![1],

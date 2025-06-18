@@ -73,10 +73,10 @@ describe('MockModule', () => {
   });
 
   describe('Response Management', () => {
-    test('should allow response modification', () => {
+    test('should allow response modification', async () => {
       mockModule.setResponses(['new1', 'new2']);
       
-      expect(mockModule.predict('test')).resolves.toMatchObject({
+      await expect(mockModule.predict('test')).resolves.toMatchObject({
         output: 'new1'
       });
     });
@@ -117,12 +117,12 @@ describe('MockModule', () => {
       expect(mockModule.getPrompt()).toBe('Modified prompt');
     });
 
-    test('should clone responses array', () => {
+    test('should clone responses array', async () => {
       const cloned = mockModule.clone();
       cloned.setResponses(['cloned response']);
       
       // Original should be unchanged
-      expect(mockModule.predict('test')).resolves.toMatchObject({
+      await expect(mockModule.predict('test')).resolves.toMatchObject({
         output: 'response1'
       });
     });
@@ -192,7 +192,7 @@ describe('MockLanguageModel', () => {
       };
       
       // Should not throw with various options
-      expect(mockLM.generate('test', options)).resolves.toBeDefined();
+      await expect(mockLM.generate('test', options)).resolves.toBeDefined();
     });
   });
 
@@ -227,7 +227,7 @@ describe('MockLanguageModel', () => {
 
 describe('Factory Functions', () => {
   describe('createMockModule', () => {
-    test('should create module from QA pairs', () => {
+    test('should create module from QA pairs', async () => {
       const qaPairs = [
         { input: 'What is 2+2?', output: '4' },
         { input: 'What is 3+3?', output: '6' },
@@ -238,7 +238,7 @@ describe('Factory Functions', () => {
       expect(module.getPrompt()).toBe('Math solver: ');
       
       // Should predict with the provided outputs
-      expect(module.predict('test')).resolves.toMatchObject({ output: '4' });
+      await expect(module.predict('test')).resolves.toMatchObject({ output: '4' });
     });
 
     test('should use default prompt when not provided', () => {

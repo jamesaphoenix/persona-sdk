@@ -18,10 +18,23 @@ class MockApiDatabaseClient implements DatabaseClient {
 
   async query<T = any>(text: string, values?: any[]): Promise<QueryResult<T>> {
     const sql = text.toLowerCase();
+    
+    
+    // Stats query (complex with subqueries) - check early to avoid conflicts
+    if (sql.includes('total_personas') && sql.includes('total_groups') && sql.includes('avg_group_size')) {
+      return {
+        rows: [{
+          total_personas: String(this.data.personas.size),
+          total_groups: String(this.data.groups.size),
+          avg_group_size: '0',
+        }] as any,
+        rowCount: 1,
+      };
+    }
 
     // Personas operations
     if (sql.includes('insert into personas')) {
-      const id = String(this.idCounter++);
+      const id = `12345678-1234-1234-1234-${String(this.idCounter++).padStart(12, '0')}`;
       const persona = {
         id,
         name: values![0],
@@ -68,25 +81,85 @@ class MockApiDatabaseClient implements DatabaseClient {
     if (sql.includes('count(*)')) {
       let count = 0;
       if (sql.includes('personas')) {
-        count = this.data.personas.size;
+        let personas = Array.from(this.data.personas.values());
+        
+        // Apply same filtering logic as data queries
+        if (sql.includes('where') && sql.includes('name ilike')) {
+          const nameFilter = values![0];
+          const cleanFilter = nameFilter.replace(/%/g, '').toLowerCase();
+          personas = personas.filter(p => 
+            p.name.toLowerCase().includes(cleanFilter)
+          );
+        }
+        
+        count = personas.length;
       } else if (sql.includes('persona_groups')) {
         count = this.data.groups.size;
       }
       return { rows: [{ count: String(count) }] as any, rowCount: 1 };
     }
 
-    // Pagination queries
-    if (sql.includes('select * from personas') && sql.includes('limit')) {
-      const personas = Array.from(this.data.personas.values());
-      const limit = values![values!.length - 2] || 20;
-      const offset = values![values!.length - 1] || 0;
-      const paged = personas.slice(offset, offset + limit);
-      return { rows: paged as any, rowCount: paged.length };
+    // Complex select queries for personas
+    if (sql.includes('select * from personas')) {
+      let personas = Array.from(this.data.personas.values());
+      let paramIndex = 0;
+      
+      // Handle WHERE conditions
+      if (sql.includes('where')) {
+        if (sql.includes('name ilike') || sql.includes('name like')) {
+          const nameFilter = values![paramIndex++];
+          // Remove % wildcards and check if the name contains the filter
+          const cleanFilter = nameFilter.replace(/%/g, '').toLowerCase();
+          personas = personas.filter(p => 
+            p.name.toLowerCase().includes(cleanFilter)
+          );
+        }
+        
+        if (sql.includes('age >=') && sql.includes('age <=')) {
+          const minAge = values![paramIndex++];
+          const maxAge = values![paramIndex++];
+          personas = personas.filter(p => p.age >= minAge && p.age <= maxAge);
+        }
+        
+        if (sql.includes('occupation =')) {
+          const occupation = values![paramIndex++];
+          personas = personas.filter(p => p.occupation === occupation);
+        }
+      }
+      
+      // Handle ORDER BY
+      if (sql.includes('order by')) {
+        if (sql.includes('age')) {
+          personas.sort((a, b) => {
+            const result = (a.age || 0) - (b.age || 0);
+            return sql.includes('desc') ? -result : result;
+          });
+        } else if (sql.includes('name')) {
+          personas.sort((a, b) => {
+            const result = (a.name || '').localeCompare(b.name || '');
+            return sql.includes('desc') ? -result : result;
+          });
+        } else if (sql.includes('created_at')) {
+          personas.sort((a, b) => {
+            const result = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+            return sql.includes('desc') ? -result : result;
+          });
+        }
+      }
+      
+      // Handle LIMIT and OFFSET
+      if (sql.includes('limit')) {
+        const limit = values![values!.length - 2] || 20;
+        const offset = values![values!.length - 1] || 0;
+        personas = personas.slice(offset, offset + limit);
+      }
+      
+      return { rows: personas as any, rowCount: personas.length };
     }
 
     // Groups operations
     if (sql.includes('insert into persona_groups')) {
-      const id = String(this.idCounter++);
+      const id = `12345678-1234-1234-1234-${String(this.idCounter++).padStart(12, '0')}`;
       const group = {
         id,
         name: values![0],
@@ -106,7 +179,7 @@ class MockApiDatabaseClient implements DatabaseClient {
 
     // Memberships
     if (sql.includes('insert into persona_group_members')) {
-      const id = String(this.idCounter++);
+      const id = `12345678-1234-1234-1234-${String(this.idCounter++).padStart(12, '0')}`;
       this.data.memberships.set(id, {
         persona_id: values![0],
         group_id: values![1],
@@ -148,17 +221,6 @@ class MockApiDatabaseClient implements DatabaseClient {
       };
     }
 
-    // Stats
-    if (sql.includes('total_personas')) {
-      return {
-        rows: [{
-          total_personas: String(this.data.personas.size),
-          total_groups: String(this.data.groups.size),
-          avg_group_size: '0',
-        }] as any,
-        rowCount: 1,
-      };
-    }
 
     return { rows: [], rowCount: 0 };
   }
@@ -171,6 +233,7 @@ class MockApiDatabaseClient implements DatabaseClient {
     this.data.personas.clear();
     this.data.groups.clear();
     this.data.memberships.clear();
+    this.idCounter = 1;
   }
 }
 
@@ -299,7 +362,7 @@ describe('API Server', () => {
       it('should return 404 for non-existent persona', async () => {
         const response = await app.inject({
           method: 'GET',
-          url: '/personas/non-existent-id',
+          url: '/personas/12345678-1234-1234-1234-123456789012',
         });
 
         expect(response.statusCode).toBe(404);
@@ -404,7 +467,7 @@ describe('API Server', () => {
       it('should return 404 when deleting non-existent persona', async () => {
         const response = await app.inject({
           method: 'DELETE',
-          url: '/personas/non-existent',
+          url: '/personas/12345678-1234-1234-1234-123456789012',
         });
 
         expect(response.statusCode).toBe(404);

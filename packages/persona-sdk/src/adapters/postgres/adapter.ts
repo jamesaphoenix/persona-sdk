@@ -121,7 +121,12 @@ export class PostgresAdapter {
     }
     if (query.name) {
       conditions.push(`name ILIKE $${paramCount++}`);
-      values.push(`%${query.name}%`);
+      // Escape special LIKE characters to prevent them from being treated as wildcards
+      const escapedName = query.name
+        .replace(/\\/g, '\\\\')  // Escape backslashes first
+        .replace(/%/g, '\\%')    // Escape percent signs
+        .replace(/_/g, '\\_');   // Escape underscores
+      values.push(`%${escapedName}%`);
     }
     if (query.age?.min !== undefined) {
       conditions.push(`age >= $${paramCount++}`);
@@ -270,7 +275,12 @@ export class PostgresAdapter {
     }
     if (query.name) {
       conditions.push(`name ILIKE $${paramCount++}`);
-      values.push(`%${query.name}%`);
+      // Escape special LIKE characters to prevent them from being treated as wildcards
+      const escapedName = query.name
+        .replace(/\\/g, '\\\\')  // Escape backslashes first
+        .replace(/%/g, '\\%')    // Escape percent signs
+        .replace(/_/g, '\\_');   // Escape underscores
+      values.push(`%${escapedName}%`);
     }
 
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';

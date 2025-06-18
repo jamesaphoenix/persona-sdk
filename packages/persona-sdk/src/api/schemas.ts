@@ -11,9 +11,9 @@ export const metadataSchema = z.record(z.any()).default({});
 // Persona schemas
 export const createPersonaSchema = z.object({
   name: z.string().min(1).max(255),
-  age: z.number().int().min(0).max(150).optional(),
-  occupation: z.string().max(255).optional(),
-  sex: z.enum(['male', 'female', 'other']).optional(),
+  age: z.number().int().min(0).max(150).nullable().optional(),
+  occupation: z.string().min(0).max(255).nullable().optional(),
+  sex: z.enum(['male', 'female', 'other']).nullable().optional(),
   attributes: personaAttributesSchema.optional(),
   metadata: metadataSchema.optional(),
 });
@@ -30,15 +30,34 @@ export const updatePersonaSchema = z.object({
 export const personaQuerySchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().optional(),
-  age: z.object({
-    min: z.number().int().optional(),
-    max: z.number().int().optional(),
+  age: z.union([
+    z.string().transform((val) => {
+      try {
+        return JSON.parse(val);
+      } catch {
+        return val;
+      }
+    }),
+    z.object({
+      min: z.number().int().optional(),
+      max: z.number().int().optional(),
+    })
+  ]).refine((data) => {
+    // Apply validation to the final parsed result
+    if (typeof data === 'object' && data && 'min' in data && 'max' in data) {
+      if (data.min !== undefined && data.max !== undefined) {
+        return data.min <= data.max;
+      }
+    }
+    return true;
+  }, {
+    message: "Min age must be less than or equal to max age",
   }).optional(),
   occupation: z.string().optional(),
   sex: z.string().optional(),
   attributes: personaAttributesSchema.optional(),
-  limit: z.number().int().min(1).max(100).default(20),
-  offset: z.number().int().min(0).default(0),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  offset: z.coerce.number().int().min(0).default(0),
   orderBy: z.enum(['name', 'age', 'created_at', 'updated_at']).default('created_at'),
   orderDirection: z.enum(['asc', 'desc']).default('desc'),
 });

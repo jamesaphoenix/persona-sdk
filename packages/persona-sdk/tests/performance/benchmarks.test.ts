@@ -98,7 +98,7 @@ class BenchmarkDatabaseClient implements DatabaseClient {
 
     // Optimized insert
     if (sql.includes('insert into personas')) {
-      const id = `b_${++this.idCounter}`;
+      const id = `12345678-1234-1234-1234-${String(++this.idCounter).padStart(12, '0')}`;
       const persona = {
         id,
         name: values![0],
@@ -608,10 +608,10 @@ describe('Performance Benchmarks', () => {
             });
           
           case 2: // Update
-            return adapter.updatePersona(`b_${i}`, { age: 31 });
+            return adapter.updatePersona(`12345678-1234-1234-1234-${String(i).padStart(12, '0')}`, { age: 31 });
           
           case 3: // Delete
-            return adapter.deletePersona(`b_${i}`);
+            return adapter.deletePersona(`12345678-1234-1234-1234-${String(i).padStart(12, '0')}`);
           
           default:
             return Promise.resolve();

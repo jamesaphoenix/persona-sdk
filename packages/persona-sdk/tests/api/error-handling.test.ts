@@ -73,7 +73,7 @@ class ErrorMockDatabaseClient implements DatabaseClient {
     const sql = text.toLowerCase();
 
     if (sql.includes('insert into personas')) {
-      const id = `err_${this.idCounter++}`;
+      const id = `12345678-1234-1234-1234-${String(this.idCounter++).padStart(12, '0')}`;
       const persona = {
         id,
         name: values![0],
@@ -112,6 +112,57 @@ class ErrorMockDatabaseClient implements DatabaseClient {
       return { rows: personas as any, rowCount: personas.length };
     }
 
+    // Handle group operations
+    if (sql.includes('insert into persona_groups')) {
+      const id = `12345678-1234-1234-1234-${String(this.idCounter++).padStart(12, '0')}`;
+      const group = {
+        id,
+        name: values![0],
+        description: values![1],
+        metadata: values![2] || {},
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+      this.data.set(`group:${id}`, group);
+      return { rows: [group] as any, rowCount: 1 };
+    }
+
+    if (sql.includes('select * from persona_groups where id')) {
+      const group = this.data.get(`group:${values![0]}`);
+      return { rows: group ? [group] : [], rowCount: group ? 1 : 0 } as any;
+    }
+
+    // Handle membership operations
+    if (sql.includes('insert into persona_group_members')) {
+      const id = `mem_${this.idCounter++}`;
+      const membership = {
+        id,
+        persona_id: values![0],
+        group_id: values![1],
+        joined_at: new Date(),
+      };
+      this.data.set(`membership:${id}`, membership);
+      return { rows: [], rowCount: 1 };
+    }
+
+    if (sql.includes('delete from persona_group_members')) {
+      // Simulate membership deletion
+      return { rows: [], rowCount: 1 };
+    }
+
+    if (sql.includes('get_persona_group_with_members')) {
+      const group = this.data.get(`group:${values![0]}`);
+      if (!group) {
+        return { rows: [], rowCount: 0 };
+      }
+      
+      const result = {
+        ...group,
+        personas: [], // Empty for simplicity
+      };
+      return { rows: [result] as any, rowCount: 1 };
+    }
+
     return { rows: [], rowCount: 0 };
   }
 
@@ -128,15 +179,6 @@ class ErrorMockDatabaseClient implements DatabaseClient {
     }
   }
 
-  reset() {
-    this.data.clear();
-    this.idCounter = 1;
-    this.queryCount = 0;
-  }
-
-  getQueryCount() {
-    return this.queryCount;
-  }
 }
 
 describe('API Error Handling Tests', () => {
@@ -451,8 +493,8 @@ describe('API Error Handling Tests', () => {
       mockDb.setErrorMode('connection');
 
       // Try to add persona to group - should fail
-      await expect(client.addPersonaToGroup(persona.id, group.id))
-        .rejects.toThrow();
+      const result = await client.addPersonaToGroup(persona.id, group.id);
+      expect(result.success).toBe(false);
 
       // Try to query - should also fail
       await expect(client.getGroupWithMembers(group.id))
@@ -464,6 +506,9 @@ describe('API Error Handling Tests', () => {
 
   describe('Error Logging and Monitoring', () => {
     it('should include enough context in errors for debugging', async () => {
+      // Ensure we're not in error mode
+      mockDb.setErrorMode('none');
+      
       try {
         await client.updatePersona('12345678-1234-1234-1234-123456789012', { 
           name: 'New Name',

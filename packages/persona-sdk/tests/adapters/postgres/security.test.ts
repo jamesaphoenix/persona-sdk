@@ -57,6 +57,53 @@ class SecurityMockDatabaseClient implements DatabaseClient {
       return { rows: persona ? [persona] : [], rowCount: persona ? 1 : 0 } as any;
     }
 
+    if (sql.includes('update personas')) {
+      const id = values![values!.length - 1]; // ID is typically the last parameter
+      const persona = this.data.get(id);
+      if (persona) {
+        // Simple update logic - update attributes if provided
+        let valueIndex = 0;
+        if (sql.includes('name =')) persona.name = values![valueIndex++];
+        if (sql.includes('age =')) persona.age = values![valueIndex++];
+        if (sql.includes('occupation =')) persona.occupation = values![valueIndex++];
+        if (sql.includes('sex =')) persona.sex = values![valueIndex++];
+        if (sql.includes('attributes =')) persona.attributes = values![valueIndex++];
+        if (sql.includes('metadata =')) persona.metadata = values![valueIndex++];
+        persona.updated_at = new Date();
+        return { rows: [persona] as any, rowCount: 1 };
+      }
+      return { rows: [], rowCount: 0 };
+    }
+
+    // Handle general SELECT queries with filtering
+    if (sql.includes('select') && sql.includes('from personas')) {
+      let personas = Array.from(this.data.values());
+      
+      // Handle name ILIKE filtering
+      if (sql.includes('name ilike') && values && values.length > 0) {
+        const namePattern = values[0] as string;
+        
+        // Remove the % wildcards to get the escaped name
+        let searchName = namePattern.replace(/^%|%$/g, '');
+        
+        // Unescape the LIKE pattern characters for exact matching
+        searchName = searchName
+          .replace(/\\_/g, '_')        // Unescape underscores
+          .replace(/\\%/g, '%')        // Unescape percent signs  
+          .replace(/\\\\/g, '\\');     // Unescape backslashes
+        
+        // For security test, we want exact matches with the original characters
+        personas = personas.filter(p => p.name === searchName);
+      }
+      
+      return { rows: personas as any, rowCount: personas.length };
+    }
+
+    // Handle count queries
+    if (sql.includes('count(*)') && sql.includes('personas')) {
+      return { rows: [{ count: String(this.data.size) }] as any, rowCount: 1 };
+    }
+
     return { rows: [], rowCount: 0 };
   }
 
