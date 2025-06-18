@@ -1,18 +1,3 @@
-import createMDX from 'fumadocs-mdx/config';
-import { rehypeCodeDefaultOptions } from 'fumadocs-core/mdx-plugins';
-
-const withMDX = createMDX({
-  mdxOptions: {
-    rehypeCodeOptions: {
-      ...rehypeCodeDefaultOptions,
-      themes: {
-        light: 'github-light',
-        dark: 'github-dark',
-      },
-    },
-  },
-});
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
@@ -20,6 +5,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
 };
 
-export default withMDX(nextConfig);
+export default nextConfig;

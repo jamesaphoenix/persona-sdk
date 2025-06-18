@@ -76,4 +76,4 @@ jobs:
         run: pnpm install --frozen-lockfile --reporter=silent
         
       - name: Build package
-        run: pnpm build
+        run: cd packages/persona-sdk && pnpm build
