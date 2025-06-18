@@ -1,0 +1,10 @@
+{
+  "pages": [
+    "index",
+    "personas",
+    "distributions",
+    "prompt-optimization",
+    "ai-features",
+    "api"
+  ]
+}

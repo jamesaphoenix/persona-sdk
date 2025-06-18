@@ -76,5 +76,6 @@ export type { MediaDietItem, MediaConsumptionPattern, MediaDietConfig, MediaInfl
 export type { MediaToPersonaOptions, MediaToPersonaResult } from './tools/media-to-persona';
 export type { DistributionTool, OutputSchema, DistributionSelectionParams, TraitDefinition, IntelligentPersonaConfig, CorrelationAwareSelectionParams, CorrelationAwareResult, AutoCorrelationOptions, AutoCorrelationConfig } from './tools';
 export { SUPPORTED_MEDIA_TYPES } from './media/media-processor';
-export declare const VERSION = "0.1.0";
+export * from './prompt-optimizer/index.js';
+export declare const VERSION = "0.2.0";
 //# sourceMappingURL=index.d.ts.map

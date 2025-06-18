@@ -1,0 +1,324 @@
+---
+title: AI Features
+description: Enhance personas with AI-powered generation and analysis
+---
+
+# AI Features
+
+This guide covers AI-powered features including media-to-persona generation, intelligent distribution selection, and structured output generation.
+
+## Media-to-persona generation
+
+Convert social media posts and images into personas:
+
+```typescript
+import { MediaToPersonaGenerator } from '@jamesaphoenix/persona-sdk';
+
+const generator = new MediaToPersonaGenerator(
+  process.env.OPENAI_API_KEY
+);
+
+// From text post
+const textResult = await generator.fromTextPost(
+  'Just finished my morning yoga! Green smoothie time 🥬',
+  {
+    generateMultiple: false,
+    includeDistributions: true
+  }
+);
+
+console.log(textResult.persona);
+// { name: 'Wellness Enthusiast', age: 28, ... }
+
+console.log(textResult.distributions);
+// Suggested distributions for similar personas
+```
+
+## Image analysis
+
+Generate personas from images:
+
+```typescript
+// From local image
+const imageResult = await generator.fromImage('./team-photo.jpg', {
+  generateMultiple: true,
+  count: 5
+});
+
+// From URL
+const urlResult = await generator.fromImage(
+  'https://example.com/lifestyle.jpg',
+  { generateMultiple: false }
+);
+```
+
+## Media collections
+
+Process multiple media files:
+
+```typescript
+const collection = await generator.fromMediaCollection([
+  './post1.txt',
+  './profile-pic.jpg',
+  'https://example.com/bio.txt'
+], {
+  generateMultiple: true,
+  maxPersonasPerItem: 3
+});
+
+// Add to persona group
+const group = new PersonaGroup('Social Media Users');
+collection.personas.forEach(p => group.add(p));
+```
+
+## Intelligent distribution selection
+
+Let AI choose appropriate distributions:
+
+```typescript
+import { DistributionSelectorLangChain } from '@jamesaphoenix/persona-sdk';
+
+const selector = new DistributionSelectorLangChain(
+  process.env.OPENAI_API_KEY
+);
+
+// Get distribution recommendations
+const result = await selector.selectDistributions({
+  description: 'Tech startup employees in Silicon Valley',
+  attributes: ['age', 'salary', 'experience', 'stockOptions'],
+  constraints: {
+    age: { min: 22, max: 45 },
+    salary: { min: 80000 }
+  }
+});
+
+// Use recommendations
+const group = new PersonaGroup('Startup Team');
+group.generateFromDistributions(50, result.distributions);
+```
+
+## Structured output generation
+
+Generate insights with type safety:
+
+```typescript
+import { z } from 'zod';
+import { StructuredOutputGenerator } from '@jamesaphoenix/persona-sdk';
+
+// Define output schema
+const MarketInsightSchema = z.object({
+  segments: z.array(z.object({
+    name: z.string(),
+    size: z.number(),
+    characteristics: z.array(z.string())
+  })),
+  recommendations: z.array(z.string()),
+  risks: z.array(z.string())
+});
+
+// Generate insights
+const generator = new StructuredOutputGenerator(
+  process.env.OPENAI_API_KEY
+);
+
+const insights = await generator.generate(
+  group,
+  MarketInsightSchema,
+  'Analyze for product-market fit'
+);
+
+// Type-safe results
+insights.segments.forEach(segment => {
+  console.log(`${segment.name}: ${segment.size} users`);
+});
+```
+
+## Auto-correlation generation
+
+Automatically create realistic correlations:
+
+```typescript
+import { generateWithAutoCorrelations } from '@jamesaphoenix/persona-sdk';
+
+const group = await generateWithAutoCorrelations({
+  count: 100,
+  baseAttributes: {
+    occupation: 'Software Engineer',
+    sex: 'other'
+  },
+  targetAttributes: ['age', 'salary', 'experience', 'skills'],
+  context: 'Silicon Valley tech workers',
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+// AI creates appropriate correlations
+console.log(group.getStatistics('salary'));
+```
+
+## Correlation-aware selection
+
+Select distributions considering relationships:
+
+```typescript
+import { CorrelationAwareSelector } from '@jamesaphoenix/persona-sdk';
+
+const selector = new CorrelationAwareSelector(
+  process.env.OPENAI_API_KEY
+);
+
+const result = await selector.selectWithCorrelations({
+  description: 'Marketing professionals',
+  primaryAttribute: 'experience',
+  relatedAttributes: ['salary', 'seniority', 'teamSize'],
+  correlationStrength: 'strong'
+});
+
+// Get correlated distribution
+const distribution = result.correlatedDistribution;
+```
+
+## Media diet influence
+
+Simulate media influence on personas:
+
+```typescript
+import { MediaDietManager } from '@jamesaphoenix/persona-sdk';
+
+const dietManager = new MediaDietManager(
+  process.env.OPENAI_API_KEY
+);
+
+// Define media influences
+const influences = [
+  {
+    type: 'news' as const,
+    content: 'Tech layoffs increase 20%',
+    weight: 0.8
+  },
+  {
+    type: 'social' as const,
+    content: 'Remote work is the future',
+    weight: 0.6
+  }
+];
+
+// Apply influences
+for (const media of influences) {
+  await dietManager.applyMediaInfluence(group, media);
+}
+
+// Analyze changes
+const impactReport = dietManager.analyzeImpact(group);
+```
+
+## Intelligent persona factory
+
+Create complete personas with AI:
+
+```typescript
+import { createRealisticPersonas } from '@jamesaphoenix/persona-sdk';
+
+const personas = await createRealisticPersonas({
+  count: 20,
+  industry: 'healthcare',
+  roles: ['Doctor', 'Nurse', 'Administrator'],
+  location: 'Urban hospital',
+  includeTraits: ['workload', 'satisfaction', 'techAdoption'],
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+// Fully realized personas with correlations
+personas.forEach(p => {
+  console.log(`${p.name}: ${p.occupation}`);
+  console.log(`Traits:`, p.attributes);
+});
+```
+
+## Usage tracking
+
+Monitor AI token usage:
+
+```typescript
+// All AI methods return usage metadata
+const result = await generator.fromTextPost(text);
+
+console.log(`Tokens used: ${result.usage.total_tokens}`);
+console.log(`Cost estimate: $${result.usage.total_tokens * 0.000002}`);
+
+// Track across operations
+let totalTokens = 0;
+totalTokens += result.usage.total_tokens;
+```
+
+## Error handling
+
+Handle AI service errors gracefully:
+
+```typescript
+try {
+  const result = await generator.fromImage(imagePath);
+} catch (error) {
+  if (error.code === 'rate_limit_exceeded') {
+    // Wait and retry
+    await new Promise(r => setTimeout(r, 60000));
+  } else if (error.code === 'invalid_api_key') {
+    console.error('Check your OpenAI API key');
+  }
+}
+```
+
+## Caching strategies
+
+Optimize API usage with caching:
+
+```typescript
+// Enable caching for distribution selection
+const selector = new DistributionSelectorLangChain(apiKey, {
+  enableCache: true,
+  cacheExpiry: 3600 // 1 hour
+});
+
+// Results are cached by description hash
+const cached = await selector.selectDistributions({
+  description: 'Tech workers' // Same request uses cache
+});
+```
+
+## Best practices
+
+### API key security
+Never commit API keys. Use environment variables.
+
+### Rate limiting
+Implement exponential backoff for retries.
+
+### Cost management
+Monitor token usage and set budgets.
+
+### Validation
+Always validate AI-generated content.
+
+## Provider configuration
+
+Configure different AI providers:
+
+```typescript
+// OpenAI (default)
+const generator = new MediaToPersonaGenerator(openaiKey);
+
+// Custom LangChain model
+import { ChatAnthropic } from '@langchain/anthropic';
+
+const model = new ChatAnthropic({
+  apiKey: anthropicKey,
+  model: 'claude-3-sonnet'
+});
+
+const selector = new DistributionSelectorLangChain(model);
+```
+
+## Next steps
+
+- [Prompt Optimization](/docs/prompt-optimization) - Optimize AI prompts
+- [Examples](https://github.com/jamesaphoenix/persona-sdk/tree/main/examples) - Real-world examples
+- [API Reference](/docs/api) - Complete AI API reference

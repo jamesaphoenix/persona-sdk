@@ -16,7 +16,7 @@ import {
   MockModule,
   createMockLanguageModel,
   createTestDataset
-} from '@persona-sdk/prompt-optimizer';
+} from '../src/index.js';
 
 describe('Persona SDK + Prompt Optimizer Integration', () => {
   describe('Package imports', () => {

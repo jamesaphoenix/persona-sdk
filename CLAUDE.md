@@ -109,3 +109,12 @@ gh run view <run-id> --log-failed --repo jamesaphoenix/persona-sdk | head -50
 ```
 
 Always ensure all tests pass on all platforms (Ubuntu, macOS, Windows) before considering a task complete.
+
+## Documentation Best Practices
+
+### Writing Style
+- **Never put two paragraphs in a row** - This makes docs insanely readable and consumable
+- Use code examples liberally
+- Break up content with headers, lists, and code blocks
+- Keep explanations concise and actionable
+- Follow the Zod documentation style - highly scannable with short sections

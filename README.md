@@ -24,8 +24,8 @@ A TypeScript SDK for generating personas from statistical distributions with AI-
 - 🔗 Auto-correlation generation for realistic personas
 - 🚀 Integrated prompt optimization for enhanced AI performance
 
-### [@persona-sdk/prompt-optimizer](./packages/prompt-optimizer/)
-A TypeScript package for optimizing prompts using techniques inspired by DSPy, integrated within the persona-sdk monorepo.
+### Integrated Prompt Optimization
+Prompt optimization using techniques inspired by DSPy is now built directly into the SDK.
 
 **Features:**
 - 🚀 4 Advanced optimization algorithms (Bootstrap, COPRO, Random Search, Ensemble)
@@ -77,13 +77,15 @@ group.generateFromDistributions(100, {
 
 ### Prompt Optimizer Usage
 
+Prompt optimization is now integrated directly into the SDK:
+
 ```typescript
 import { 
   BootstrapOptimizer, 
   ExactMatch, 
   MockModule,
   createTestDataset 
-} from '@persona-sdk/prompt-optimizer';
+} from '@jamesaphoenix/persona-sdk';
 
 // Create a module to optimize
 const module = new MockModule('Answer the question: ');
@@ -114,7 +116,7 @@ import {
   FuzzyMatch,
   MockModule,
   createMockLanguageModel
-} from '@persona-sdk/prompt-optimizer';
+} from '@jamesaphoenix/persona-sdk';
 
 // Create a module for persona generation prompts
 const personaModule = new MockModule(
@@ -259,7 +261,7 @@ import {
   FuzzyMatch,
   PassageMatch,
   createMockLanguageModel
-} from '@persona-sdk/prompt-optimizer';
+} from '@jamesaphoenix/persona-sdk';
 
 // Create different optimizers
 const teacherModel = createMockLanguageModel();
@@ -367,21 +369,23 @@ const mostInfluenced = group.getAll()
 console.log('Most influenced personas:', mostInfluenced);
 ```
 
-## 🏗️ Monorepo Structure
+## 🏗️ Project Structure
 
 ```
 persona-sdk/
 ├── packages/
-│   ├── persona-sdk/          # Core persona generation package
-│   │   ├── src/
-│   │   ├── tests/
-│   │   ├── examples/
-│   │   └── docs/
-│   └── prompt-optimizer/     # Prompt optimization package
+│   └── persona-sdk/          # Main SDK package
 │       ├── src/
+│       │   ├── index.ts
+│       │   ├── persona.ts
+│       │   ├── persona-group.ts
+│       │   ├── distributions/
+│       │   ├── prompt-optimizer/  # Integrated prompt optimization
+│       │   ├── tools/
+│       │   └── types/
 │       ├── tests/
-│       ├── examples/
-│       └── docs/
+│       └── examples/
+├── docs/                    # Fumadocs documentation site
 ├── turbo.json               # Turborepo configuration
 ├── pnpm-workspace.yaml      # PNPM workspace configuration
 └── package.json             # Root package configuration
@@ -408,17 +412,25 @@ pnpm test:watch
 
 ## 📚 Documentation
 
-Each package includes extensive documentation:
+Comprehensive documentation is available at `/docs` using Fumadocs:
 
-- **README files** with usage examples
-- **API documentation** with TypeScript signatures
-- **Example files** demonstrating real-world usage
-- **Integration guides** for combining packages
+- **Getting Started** - Quick introduction and setup
+- **API Reference** - Complete TypeScript API documentation
+- **Guides** - In-depth tutorials for all features
+- **Examples** - Real-world usage patterns
 
-Generate documentation for all packages:
+Run documentation locally:
 
 ```bash
-pnpm docs
+cd docs
+pnpm dev
+```
+
+Build documentation:
+
+```bash
+cd docs
+pnpm build
 ```
 
 ## 🔧 Development
@@ -482,7 +494,7 @@ cd packages/persona-sdk
 npm publish --access public
 ```
 
-> **Note**: The prompt-optimizer package is included as part of the persona-sdk and does not need to be published separately.
+> **Note**: Prompt optimization features are now built directly into the persona-sdk package.
 
 ## 🎯 Use Cases
 

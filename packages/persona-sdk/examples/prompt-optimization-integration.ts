@@ -22,7 +22,7 @@ import {
   FuzzyMatch,
   MockModule,
   createMockLanguageModel
-} from '@persona-sdk/prompt-optimizer';
+} from '../src/index.js';
 
 /**
  * Example 1: Optimizing Persona Generation Prompts

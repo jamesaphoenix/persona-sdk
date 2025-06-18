@@ -1,0 +1,464 @@
+---
+title: API Reference
+description: Complete API documentation for Persona SDK
+---
+
+# API Reference
+
+Complete reference for all classes, methods, and types in Persona SDK.
+
+## Core Classes
+
+### Persona
+
+Represents an individual with attributes.
+
+```typescript
+class Persona<T extends PersonaAttributes = PersonaAttributes> {
+  readonly name: string;
+  readonly attributes: T;
+  
+  constructor(name: string, attributes: T);
+}
+```
+
+### PersonaBuilder
+
+Fluent API for building personas.
+
+```typescript
+class PersonaBuilder {
+  static create(): PersonaBuilder;
+  
+  withName(name: string): this;
+  withAge(age: number): this;
+  withOccupation(occupation: string): this;
+  withSex(sex: Sex): this;
+  withAttribute(key: string, value: any): this;
+  
+  randomPersona(): Persona;
+  build(): Persona;
+}
+```
+
+### PersonaGroup
+
+Manages collections of personas.
+
+```typescript
+class PersonaGroup<T extends PersonaAttributes> {
+  readonly name: string;
+  readonly personas: Persona<T>[];
+  readonly size: number;
+  
+  constructor(name: string, options?: PersonaGroupOptions);
+  
+  add(persona: Persona<T>): void;
+  remove(persona: Persona<T>): boolean;
+  clear(): void;
+  
+  generateFromDistributions(
+    count: number,
+    distributions: DistributionMap
+  ): void;
+  
+  getStatistics(attribute: string): {
+    mean?: number;
+    median?: number;
+    min?: number;
+    max?: number;
+    stdDev?: number;
+    count: number;
+  };
+  
+  generateStructuredOutput<T>(
+    schema: z.ZodType<T>,
+    context: string
+  ): Promise<T>;
+}
+```
+
+## Distributions
+
+### NormalDistribution
+
+Gaussian/bell curve distribution.
+
+```typescript
+class NormalDistribution implements Distribution<number> {
+  constructor(mean: number, stdDev: number);
+  
+  sample(): number;
+  sampleMany(n: number): number[];
+  
+  withMin(min: number): this;
+  withMax(max: number): this;
+  withRounding(): this;
+}
+```
+
+### UniformDistribution
+
+Equal probability distribution.
+
+```typescript
+class UniformDistribution implements Distribution<number> {
+  constructor(min: number, max: number);
+  
+  sample(): number;
+  sampleMany(n: number): number[];
+}
+```
+
+### CategoricalDistribution
+
+Discrete probability distribution.
+
+```typescript
+interface CategoryOption<T> {
+  value: T;
+  probability: number;
+}
+
+class CategoricalDistribution<T> implements Distribution<T> {
+  constructor(options: CategoryOption<T>[]);
+  
+  sample(): T;
+  sampleMany(n: number): T[];
+}
+```
+
+### CorrelatedDistribution
+
+Distribution with dependencies.
+
+```typescript
+class CorrelatedDistribution {
+  constructor(distributions: Record<string, Distribution<any>>);
+  
+  addConditional(conditional: ConditionalDistribution): void;
+  generate(): Record<string, any>;
+  getDistributions(): DistributionMap;
+}
+```
+
+## Prompt Optimization
+
+### BootstrapOptimizer
+
+Few-shot optimization with bootstrapping.
+
+```typescript
+interface BootstrapOptimizerOptions {
+  maxLabeled?: number;
+  maxBootstrapped?: number;
+  maxRounds?: number;
+  metric?: Metric;
+  teacherModel?: LanguageModel;
+  bootstrapThreshold?: number;
+  verbose?: boolean;
+}
+
+class BootstrapOptimizer {
+  constructor(options?: BootstrapOptimizerOptions);
+  
+  async optimize(
+    module: Module,
+    trainset: Example[],
+    valset?: Example[]
+  ): Promise<OptimizationResult>;
+}
+```
+
+### COPROOptimizer
+
+Compositional prompt optimization.
+
+```typescript
+interface COPROOptimizerOptions {
+  breadth?: number;
+  depth?: number;
+  temperature?: number;
+  numVariations?: number;
+  metric?: Metric;
+  verbose?: boolean;
+}
+
+class COPROOptimizer {
+  constructor(
+    model: LanguageModel,
+    options?: COPROOptimizerOptions
+  );
+  
+  async optimize(
+    module: Module,
+    trainset: Example[],
+    valset?: Example[]
+  ): Promise<OptimizationResult>;
+}
+```
+
+### RandomSearchOptimizer
+
+Random search through prompt space.
+
+```typescript
+interface RandomSearchOptimizerOptions {
+  numCandidates?: number;
+  budget?: number;
+  strategy?: SearchStrategy;
+  metric?: Metric;
+  temperature?: number;
+  earlyStopThreshold?: number;
+  patience?: number;
+  verbose?: boolean;
+}
+
+class RandomSearchOptimizer {
+  constructor(
+    options?: RandomSearchOptimizerOptions,
+    model?: LanguageModel
+  );
+  
+  async optimize(
+    module: Module,
+    trainset: Example[],
+    valset?: Example[]
+  ): Promise<OptimizationResult>;
+}
+```
+
+### EnsembleOptimizer
+
+Combines multiple optimized modules.
+
+```typescript
+interface EnsembleOptimizerOptions {
+  size?: number;
+  votingStrategy?: 'hard' | 'soft';
+  aggregation?: 'majority' | 'mean' | 'weighted';
+  reducer?: (outputs: any[]) => any;
+}
+
+class EnsembleOptimizer {
+  static fromOptimizationResults(
+    results: OptimizationResult[],
+    options?: EnsembleOptimizerOptions
+  ): EnsembleOptimizer;
+  
+  async predict(input: any): Promise<Prediction>;
+  async evaluate(examples: Example[], metric: Metric): Promise<number>;
+  
+  getStats(): {
+    moduleCount: number;
+    votingStrategy: string;
+    aggregation: string;
+  };
+}
+```
+
+## AI Tools
+
+### MediaToPersonaGenerator
+
+Convert media to personas.
+
+```typescript
+class MediaToPersonaGenerator {
+  constructor(apiKey: string);
+  
+  async fromTextPost(
+    text: string,
+    options?: MediaToPersonaOptions
+  ): Promise<MediaToPersonaResult>;
+  
+  async fromImage(
+    imagePath: string,
+    options?: MediaToPersonaOptions
+  ): Promise<MediaToPersonaResult>;
+  
+  async fromMediaCollection(
+    paths: string[],
+    options?: MediaToPersonaOptions
+  ): Promise<MediaToPersonaResult>;
+}
+```
+
+### DistributionSelectorLangChain
+
+AI-powered distribution selection.
+
+```typescript
+class DistributionSelectorLangChain {
+  constructor(apiKeyOrModel: string | BaseLanguageModel);
+  
+  async selectDistributions(
+    params: DistributionSelectionParams
+  ): Promise<{
+    distributions: DistributionMap;
+    reasoning: string;
+    usage?: UsageMetadata;
+  }>;
+}
+```
+
+### StructuredOutputGenerator
+
+Type-safe AI generation.
+
+```typescript
+class StructuredOutputGenerator {
+  constructor(apiKey: string);
+  
+  async generate<T>(
+    group: PersonaGroup,
+    schema: z.ZodType<T>,
+    context: string
+  ): Promise<T>;
+}
+```
+
+## Types
+
+### PersonaAttributes
+
+Base and extended persona attributes.
+
+```typescript
+interface BasePersonaAttributes {
+  age: number;
+  occupation: string;
+  sex: Sex;
+}
+
+interface PersonaAttributes extends BasePersonaAttributes {
+  [key: string]: AttributeValue;
+}
+
+type Sex = 'male' | 'female' | 'other';
+type AttributeValue = string | number | boolean | Date | 
+                     string[] | number[] | Record<string, any>;
+```
+
+### Distribution Types
+
+Core distribution interfaces.
+
+```typescript
+interface Distribution<T> {
+  sample(): T;
+  sampleMany(n: number): T[];
+}
+
+type DistributionSpec = Distribution<any> | AttributeValue;
+
+type DistributionMap = {
+  age: DistributionSpec;
+  occupation: DistributionSpec;
+  sex: DistributionSpec;
+  [key: string]: DistributionSpec;
+};
+```
+
+### Optimization Types
+
+Prompt optimization interfaces.
+
+```typescript
+interface Module {
+  predict(input: any): Promise<Prediction>;
+  getPrompt(): string;
+  setPrompt(prompt: string): void;
+  clone(): Module;
+}
+
+interface Example {
+  input: any;
+  output: any;
+}
+
+interface Prediction {
+  output: any;
+  confidence?: number;
+  metadata?: Record<string, any>;
+}
+
+interface OptimizationResult {
+  optimizedModule: Module;
+  finalScore: number;
+  history: OptimizationHistory[];
+  optimizationTimeMs: number;
+  roundsCompleted: number;
+}
+```
+
+### Metric Types
+
+Evaluation metric interfaces.
+
+```typescript
+interface Metric {
+  name: string;
+  evaluate(example: Example, prediction: Prediction): number;
+}
+
+interface CompositeMetricConfig {
+  metric: Metric;
+  weight: number;
+}
+```
+
+## Utilities
+
+### Mock implementations
+
+Testing utilities.
+
+```typescript
+function createMockModule(
+  qaPairs: Record<string, string>
+): MockModule;
+
+function createMockLanguageModel(
+  responses?: Record<string, string>,
+  defaultResponse?: string,
+  name?: string
+): MockLanguageModel;
+
+function createTestDataset(
+  size: number,
+  type: 'simple' | 'math' | 'reasoning' | 'persona'
+): Example[];
+```
+
+### Performance measurement
+
+Optimization performance tracking.
+
+```typescript
+async function measureOptimizationPerformance<T>(
+  operation: () => Promise<T>,
+  name: string
+): Promise<{ result: T; timeMs: number }>;
+```
+
+## Constants
+
+### Media types
+
+Supported media formats.
+
+```typescript
+const SUPPORTED_MEDIA_TYPES = {
+  text: ['.txt', '.md'],
+  image: ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+};
+```
+
+### Version
+
+SDK version.
+
+```typescript
+const VERSION = '0.2.0';
+```

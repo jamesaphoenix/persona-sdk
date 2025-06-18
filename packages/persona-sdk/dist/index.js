@@ -75,6 +75,8 @@ export { MediaProcessor } from './media/media-processor';
 export { MediaDietManager } from './media/media-diet';
 // Constants
 export { SUPPORTED_MEDIA_TYPES } from './media/media-processor';
+// Prompt Optimizer - Re-export everything from prompt-optimizer module
+export * from './prompt-optimizer/index.js';
 // Version
-export const VERSION = '0.1.0';
+export const VERSION = '0.2.0';
 //# sourceMappingURL=index.js.map

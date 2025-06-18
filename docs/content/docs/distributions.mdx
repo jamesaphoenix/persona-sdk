@@ -1,0 +1,273 @@
+---
+title: Statistical Distributions
+description: Generate realistic persona data using statistical distributions
+---
+
+# Statistical Distributions
+
+This guide covers using statistical distributions to generate realistic persona attributes at scale.
+
+## Normal distribution
+
+Generate values following a bell curve:
+
+```typescript
+import { NormalDistribution } from '@jamesaphoenix/persona-sdk';
+
+const ageDistribution = new NormalDistribution(35, 8);
+// Mean: 35, Standard deviation: 8
+
+// Generate single value
+const age = ageDistribution.sample();
+
+// Generate multiple values
+const ages = ageDistribution.sampleMany(100);
+```
+
+## Uniform distribution
+
+Generate values with equal probability:
+
+```typescript
+import { UniformDistribution } from '@jamesaphoenix/persona-sdk';
+
+const salaryDistribution = new UniformDistribution(40000, 120000);
+// Random values between 40k and 120k
+
+const salary = salaryDistribution.sample();
+```
+
+## Categorical distribution
+
+Generate discrete values with probabilities:
+
+```typescript
+import { CategoricalDistribution } from '@jamesaphoenix/persona-sdk';
+
+const roleDistribution = new CategoricalDistribution([
+  { value: 'Manager', probability: 0.2 },
+  { value: 'Senior Dev', probability: 0.3 },
+  { value: 'Developer', probability: 0.35 },
+  { value: 'Junior Dev', probability: 0.15 }
+]);
+
+const role = roleDistribution.sample();
+```
+
+## Exponential distribution
+
+Generate values with exponential decay:
+
+```typescript
+import { ExponentialDistribution } from '@jamesaphoenix/persona-sdk';
+
+const yearsExperience = new ExponentialDistribution(0.2);
+// Most values will be low, with occasional high values
+```
+
+## Beta distribution
+
+Generate values between 0 and 1 with shape control:
+
+```typescript
+import { BetaDistribution } from '@jamesaphoenix/persona-sdk';
+
+const satisfactionScore = new BetaDistribution(8, 2);
+// Skewed towards higher values (satisfied users)
+
+const score = satisfactionScore.sample(); // 0-1
+```
+
+## Using with persona groups
+
+Apply distributions when generating personas:
+
+```typescript
+import { PersonaGroup, NormalDistribution, CategoricalDistribution } from '@jamesaphoenix/persona-sdk';
+
+const team = new PersonaGroup('Product Team');
+
+team.generateFromDistributions(50, {
+  age: new NormalDistribution(32, 6),
+  occupation: new CategoricalDistribution([
+    { value: 'Product Manager', probability: 0.2 },
+    { value: 'UX Designer', probability: 0.3 },
+    { value: 'Engineer', probability: 0.5 }
+  ]),
+  sex: 'other',  // Fixed value
+  yearsAtCompany: new UniformDistribution(0.5, 8),
+  remotePreference: new CategoricalDistribution([
+    { value: 'remote', probability: 0.6 },
+    { value: 'hybrid', probability: 0.3 },
+    { value: 'office', probability: 0.1 }
+  ])
+});
+```
+
+## Correlated distributions
+
+Create realistic relationships between attributes:
+
+```typescript
+import { CorrelatedDistribution, NormalDistribution } from '@jamesaphoenix/persona-sdk';
+
+const correlated = new CorrelatedDistribution({
+  age: new NormalDistribution(35, 10),
+  income: new NormalDistribution(75000, 25000),
+  experience: new UniformDistribution(0, 20)
+});
+
+// Income increases with age
+correlated.addConditional({
+  attribute: 'income',
+  dependsOn: 'age',
+  transform: (income, age) => {
+    const ageFactor = (age - 22) / 10;
+    return income + (ageFactor * 15000);
+  }
+});
+
+// Experience can't exceed age - 22
+correlated.addConditional({
+  attribute: 'experience',
+  dependsOn: 'age',
+  transform: (exp, age) => Math.min(exp, Math.max(0, age - 22))
+});
+
+// Generate correlated values
+const attributes = correlated.generate();
+```
+
+## Common correlations
+
+Use pre-built correlation patterns:
+
+```typescript
+import { CommonCorrelations } from '@jamesaphoenix/persona-sdk';
+
+// Age-income correlation
+const ageIncome = CommonCorrelations.ageIncome();
+
+// Education-income correlation
+const eduIncome = CommonCorrelations.educationIncome();
+
+// Experience-salary correlation
+const expSalary = CommonCorrelations.experienceSalary({
+  baseMultiplier: 5000,
+  maxMultiplier: 15000
+});
+```
+
+## Persona correlation presets
+
+Apply industry-specific correlations:
+
+```typescript
+import { PersonaCorrelationPresets } from '@jamesaphoenix/persona-sdk';
+
+// Tech industry correlations
+const techCorrelations = PersonaCorrelationPresets.techIndustry();
+
+// Healthcare correlations
+const healthCorrelations = PersonaCorrelationPresets.healthcare();
+
+// Retail correlations
+const retailCorrelations = PersonaCorrelationPresets.retail();
+
+// Apply to a group
+const techTeam = new PersonaGroup('Tech Team');
+techTeam.generateFromDistributions(100, {
+  ...techCorrelations.getDistributions(),
+  sex: 'other'
+});
+```
+
+## Distribution statistics
+
+Analyze your distributions:
+
+```typescript
+const ages = new NormalDistribution(30, 5);
+
+// Get statistics
+console.log(`Mean: ${ages.mean}`);
+console.log(`Std Dev: ${ages.stdDev}`);
+console.log(`Variance: ${ages.variance}`);
+
+// For a persona group
+const stats = group.getStatistics('age');
+console.log(`Group age mean: ${stats.mean}`);
+console.log(`Group age range: ${stats.min} - ${stats.max}`);
+```
+
+## Custom distributions
+
+Implement your own distribution:
+
+```typescript
+import { Distribution } from '@jamesaphoenix/persona-sdk';
+
+class ParetoDistribution implements Distribution<number> {
+  constructor(
+    private alpha: number,
+    private xMin: number
+  ) {}
+
+  sample(): number {
+    const u = Math.random();
+    return this.xMin / Math.pow(u, 1 / this.alpha);
+  }
+
+  sampleMany(n: number): number[] {
+    return Array.from({ length: n }, () => this.sample());
+  }
+}
+
+// Use it
+const income = new ParetoDistribution(1.16, 30000);
+```
+
+## Validation and constraints
+
+Ensure generated values meet requirements:
+
+```typescript
+// With constraints
+const ageWithConstraints = new NormalDistribution(35, 10)
+  .withMin(18)      // No one under 18
+  .withMax(65)      // No one over 65
+  .withRounding();  // Round to integers
+
+// Custom validation
+const validatedIncome = {
+  sample(): number {
+    let value = incomeDistribution.sample();
+    // Ensure minimum wage
+    return Math.max(value, 15000);
+  }
+};
+```
+
+## Best practices
+
+### Choose appropriate distributions
+- **Normal**: Natural phenomena (height, IQ, test scores)
+- **Uniform**: Equal likelihood (random selection)
+- **Categorical**: Discrete choices (job titles, categories)
+- **Exponential**: Waiting times, rare events
+- **Beta**: Probabilities, percentages
+
+### Use realistic parameters
+Base distribution parameters on real data when possible.
+
+### Apply correlations
+Real-world attributes are often correlated.
+
+### Validate outputs
+Ensure generated values make logical sense.
+
+## Next steps
+
+- [Working with Personas](/docs/personas) - Create and manage personas
+- [AI Features](/docs/ai-features) - Enhance with AI
+- [API Reference](/docs/api) - Complete distribution API
