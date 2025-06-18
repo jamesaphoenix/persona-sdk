@@ -1,4 +1,4 @@
-# @open-person/persona-sdk Summary
+# @jamesaphoenix/persona-sdk Summary
 
 ## Overview
 
@@ -61,7 +61,7 @@ packages/persona-sdk/
 ## Quick Example
 
 ```typescript
-import { PersonaGroup, NormalDistribution } from '@open-person/persona-sdk';
+import { PersonaGroup, NormalDistribution } from '@jamesaphoenix/persona-sdk';
 
 // Create a group and generate personas
 // Note: You can mix distributions (vary per persona) with literal values (same for all)

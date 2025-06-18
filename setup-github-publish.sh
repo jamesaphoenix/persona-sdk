@@ -31,7 +31,7 @@ git add .
 
 # Create initial commit
 echo "💾 Creating initial commit..."
-git commit -m "Initial commit: Open Persona SDK v0.1.0
+git commit -m "Initial commit: Persona SDK v0.1.0
 
 - TypeScript SDK for persona generation
 - Statistical distributions support

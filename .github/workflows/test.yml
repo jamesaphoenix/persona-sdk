@@ -82,10 +82,12 @@ jobs:
         run: |
           export DISPLAY=
           export BROWSER=none
-          cd packages/persona-sdk && pnpm docs
-          cd ../prompt-optimizer && pnpm docs
+          export NO_BROWSER=1
+          cd packages/persona-sdk && NO_UPDATE_NOTIFIER=1 pnpm docs --no-open 2>/dev/null || pnpm docs
+          cd ../prompt-optimizer && NO_UPDATE_NOTIFIER=1 pnpm docs --no-open 2>/dev/null || pnpm docs
         env:
           CI: true
+          NO_BROWSER: 1
         
       - name: Upload docs artifact
         uses: actions/upload-artifact@v4

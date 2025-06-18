@@ -84,7 +84,7 @@ const randomPerson = PersonaBuilder.create()
 ## 3. PersonaGroup Management
 
 ```typescript
-import { PersonaGroup } from '@open-persona/persona-sdk';
+import { PersonaGroup } from '@jamesaphoenix/persona-sdk';
 
 // Create a group
 const customerBase = new PersonaGroup('Customers');
@@ -117,7 +117,7 @@ const highSpenders = customerBase.filter(
 ## 4. AI-Powered Insights (requires OpenAI API key)
 
 ```typescript
-import { StructuredOutputGenerator } from '@open-persona/persona-sdk';
+import { StructuredOutputGenerator } from '@jamesaphoenix/persona-sdk';
 import { z } from 'zod';
 
 // Set OPENAI_API_KEY in environment or pass directly

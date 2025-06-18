@@ -26,7 +26,7 @@
     "test:ui": "vitest --ui",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
-    "docs": "typedoc",
+    "docs": "DISPLAY= BROWSER=none typedoc --logLevel Error",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix"
   },

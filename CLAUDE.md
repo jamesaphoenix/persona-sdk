@@ -1,4 +1,4 @@
-# Open Person SDK Development Guidelines
+# Persona SDK Development Guidelines
 
 ## Project Overview
 

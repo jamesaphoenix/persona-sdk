@@ -366,6 +366,16 @@ pnpm build
 pnpm type-check
 ```
 
+## 🤝 Contributing
+
+This project was created entirely by [Claude Code](https://claude.ai/code). If you find a bug or want to add a feature:
+
+1. **Submit a PR** - Create a pull request with your changes
+2. **Claude Code reviews** - The AI will review your contribution
+3. **Automatic merge** - Valid PRs will be reviewed and merged
+
+We welcome all contributions!
+
 ## 📄 License
 
 MIT License - see LICENSE file for details.

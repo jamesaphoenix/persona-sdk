@@ -279,6 +279,16 @@ MIT License - see LICENSE file for details.
 - **Persona SDK**: Inspired by statistical modeling and modern AI tooling
 - **Prompt Optimizer**: Based on the excellent work in [DSPy](https://github.com/stanfordnlp/dspy) by Stanford NLP
 
+## 🤖 About This Project
+
+This entire codebase was created by [Claude Code](https://claude.ai/code), Anthropic's AI coding assistant. If you find a bug or have a feature request:
+
+1. **Raise a PR** - Submit a pull request with your proposed changes
+2. **Claude Code will review** - The AI assistant will review your contribution
+3. **Automatic merging** - Valid contributions will be reviewed and merged
+
+We welcome all contributions and look forward to building this project together with the community!
+
 ---
 
 **Built with TypeScript, tested thoroughly, and ready for production use.** 🚀

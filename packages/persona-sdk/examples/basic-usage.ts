@@ -15,7 +15,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 /**
- * Basic Usage Examples for @open-person/persona-sdk
+ * Basic Usage Examples for @jamesaphoenix/persona-sdk
  */
 
 async function basicPersonaCreation() {
