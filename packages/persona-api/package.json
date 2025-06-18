@@ -1,0 +1,39 @@
+{
+  "name": "@jamesaphoenix/persona-api",
+  "version": "0.1.0",
+  "description": "REST API for Persona SDK - Generate personas and insights via HTTP",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc --build",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "type-check": "tsc --noEmit",
+    "docker:build": "docker build -t persona-api .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env persona-api",
+    "docker:dev": "docker-compose up"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@fastify/helmet": "^12.0.1",
+    "@fastify/rate-limit": "^10.1.1",
+    "@fastify/swagger": "^9.4.0",
+    "@fastify/swagger-ui": "^5.2.0",
+    "@jamesaphoenix/persona-sdk": "workspace:*",
+    "fastify": "^5.2.0",
+    "fastify-plugin": "^5.0.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "tsx": "^4.19.2",
+    "typescript": "5.7.3",
+    "vitest": "^3.2.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

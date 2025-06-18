@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getPage, getPages } from '@/app/source';
 import { DocsPage, DocsBody } from 'fumadocs-ui/page';
-import { MDXContent } from '@/components/mdx-content';
+import { getMDXComponents } from '@/mdx-components';
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;
@@ -15,11 +15,15 @@ export default async function Page({ params }: PageProps) {
     notFound();
   }
 
+  // Type assertion to access MDX properties
+  const pageData = page.data as any;
+  const MDX = pageData.body;
+
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
+    <DocsPage toc={pageData.toc} full={pageData.full}>
       <DocsBody>
-        <h1 className="text-3xl font-bold">{page.data.title}</h1>
-        <MDXContent code={page.data.body} />
+        <h1 className="text-3xl font-bold">{pageData.title}</h1>
+        {MDX && <MDX components={getMDXComponents()} />}
       </DocsBody>
     </DocsPage>
   );
@@ -37,8 +41,10 @@ export async function generateMetadata({ params }: PageProps) {
 
   if (!page) notFound();
 
+  const pageData = page.data as any;
+
   return {
-    title: page.data.title,
-    description: page.data.description,
+    title: pageData.title || 'Persona SDK Documentation',
+    description: pageData.description || 'AI-powered persona generation documentation',
   };
 }

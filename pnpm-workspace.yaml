@@ -1,5 +1,6 @@
 packages:
   - packages/persona-sdk
+  - packages/persona-api
   - docs
 ignoredBuiltDependencies:
   - esbuild

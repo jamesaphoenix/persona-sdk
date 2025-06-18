@@ -1,0 +1,30 @@
+# Development Dockerfile
+FROM node:20-alpine
+
+# Install pnpm and development tools
+RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN apk add --no-cache bash git
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
+COPY package.json ./
+COPY tsconfig.json ./
+
+# Copy packages
+COPY packages ./packages
+
+# Install all dependencies (including dev)
+RUN pnpm install
+
+# Expose port
+EXPOSE 3000
+
+# Development volume mounts will override these
+VOLUME ["/app/packages/persona-sdk/src", "/app/packages/persona-api/src"]
+
+# Start in watch mode
+CMD ["pnpm", "--filter", "@jamesaphoenix/persona-api", "dev"]

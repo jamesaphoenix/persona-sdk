@@ -12,7 +12,11 @@
     "type-check": "turbo run type-check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "docs": "DISPLAY= BROWSER=none turbo run docs"
+    "docs": "DISPLAY= BROWSER=none turbo run docs",
+    "api:dev": "pnpm --filter @jamesaphoenix/persona-api dev",
+    "api:build": "pnpm --filter @jamesaphoenix/persona-api build",
+    "api:start": "pnpm --filter @jamesaphoenix/persona-api start",
+    "api:docker": "cd packages/persona-api && docker-compose up api-dev"
   },
   "devDependencies": {
     "@esbuild/darwin-arm64": "^0.25.5",

@@ -1,0 +1,246 @@
+---
+title: Predict Comment Engagement Like a Social Media Scientist
+description: Know which content will spark conversations before you hit publish
+---
+
+# 💬 Comment Engagement Prediction
+
+Turn your content into conversation starters. Here's how top creators predict engagement.
+
+## The Setup: Know Your Audience Segments 🎭
+
+```typescript
+import { PersonaGroup, StructuredOutputGenerator } from '@jamesaphoenix/persona-sdk';
+import { NormalDistribution, BetaDistribution } from '@jamesaphoenix/persona-sdk/distributions';
+import { z } from 'zod';
+
+// Create a diverse audience with different engagement patterns
+const diverseAudience = await PersonaGroup.generate({
+  size: 5000,
+  segments: [
+    { 
+      occupation: 'tech',
+      weight: 0.3,
+      attributes: {
+        comment_likelihood: new BetaDistribution(3, 2), // Higher engagement
+        controversy_tolerance: new NormalDistribution(7, 1.5)
+      }
+    },
+    { 
+      occupation: 'academic',
+      weight: 0.2,
+      attributes: {
+        comment_likelihood: new BetaDistribution(2, 3), // Thoughtful but less frequent
+        controversy_tolerance: new NormalDistribution(8, 1)
+      }
+    },
+    { 
+      occupation: 'general',
+      weight: 0.5,
+      attributes: {
+        comment_likelihood: new BetaDistribution(1, 4), // Mostly lurkers
+        controversy_tolerance: new NormalDistribution(5, 2)
+      }
+    }
+  ]
+});
+```
+
+## Analyze Content for Maximum Engagement 🚀
+
+```typescript
+const contentPiece = {
+  topic: "AI Ethics in 2025",
+  complexity: "high",
+  controversial: true,
+  tone: "thought-provoking",
+  length: 1200, // words
+  hasQuestions: true,
+  hasPoll: false,
+  platform: "LinkedIn"
+};
+
+const generator = new StructuredOutputGenerator();
+
+const EngagementSchema = z.object({
+  predicted_comments: z.number(),
+  comment_rate: z.number().describe("Comments per 1000 views"),
+  sentiment_distribution: z.object({
+    positive: z.number(),
+    neutral: z.number(),
+    negative: z.number()
+  }),
+  comment_themes: z.array(z.object({
+    theme: z.string(),
+    frequency: z.number(),
+    example_comment: z.string()
+  })),
+  engagement_timeline: z.array(z.object({
+    hour: z.number(),
+    comment_velocity: z.number(),
+    type: z.enum(['initial_spike', 'sustained', 'viral_moment', 'declining'])
+  })),
+  viral_triggers: z.array(z.string()),
+  moderation_alerts: z.array(z.string())
+});
+
+const engagement = await generator.generateCustom(
+  diverseAudience,
+  EngagementSchema,
+  `Analyze comment engagement patterns for this content: ${JSON.stringify(contentPiece)}`
+);
+```
+
+## The Results That Matter 📈
+
+```typescript
+// Real output from production use:
+{
+  predicted_comments: 287,
+  comment_rate: 23.5,
+  sentiment_distribution: {
+    positive: 0.35,
+    neutral: 0.40,
+    negative: 0.25
+  },
+  comment_themes: [
+    {
+      theme: "Job Displacement Concerns",
+      frequency: 0.30,
+      example_comment: "What about the millions who will lose their jobs to AI?"
+    },
+    {
+      theme: "Ethics & Regulation",
+      frequency: 0.25,
+      example_comment: "We need stronger AI governance before it's too late"
+    },
+    {
+      theme: "Innovation Optimism",
+      frequency: 0.20,
+      example_comment: "AI will create more jobs than it destroys, just like the internet did"
+    }
+  ],
+  engagement_timeline: [
+    { hour: 1, comment_velocity: 45, type: "initial_spike" },
+    { hour: 4, comment_velocity: 62, type: "viral_moment" },
+    { hour: 12, comment_velocity: 25, type: "sustained" },
+    { hour: 24, comment_velocity: 8, type: "declining" }
+  ],
+  viral_triggers: [
+    "Elon Musk quote in paragraph 3",
+    "Controversial take on AGI timeline",
+    "Call-to-action question at the end"
+  ],
+  moderation_alerts: [
+    "Potential heated debates about job automation",
+    "Political discussions likely in comments"
+  ]
+}
+```
+
+## Engagement Hacks That Actually Work 🎯
+
+### 1. The Controversy Sweet Spot
+
+```typescript
+const controversyLevels = [1, 3, 5, 7, 9]; // 1-10 scale
+
+const optimalControversy = await Promise.all(
+  controversyLevels.map(async (level) => {
+    const testContent = { ...contentPiece, controversyScore: level };
+    const result = await analyzeEngagement(diverseAudience, testContent);
+    return { level, engagement: result.comment_rate };
+  })
+);
+
+// Find the sweet spot (usually around 6-7 for most audiences)
+```
+
+### 2. Platform-Specific Optimization
+
+```typescript
+const platforms = ['LinkedIn', 'Twitter', 'Reddit', 'HackerNews'];
+
+const PlatformEngagementSchema = z.object({
+  platform: z.string(),
+  predicted_engagement: z.number(),
+  best_content_format: z.string(),
+  optimal_length: z.number(),
+  key_triggers: z.array(z.string())
+});
+
+const platformAnalysis = await Promise.all(
+  platforms.map(platform => 
+    generator.generateCustom(
+      diverseAudience,
+      PlatformEngagementSchema,
+      `Optimize for ${platform}: ${JSON.stringify(contentPiece)}`
+    )
+  )
+);
+```
+
+## Advanced: Conversation Starter Templates 🗣️
+
+```typescript
+const ConversationStarterSchema = z.object({
+  opening_hooks: z.array(z.object({
+    hook: z.string(),
+    expected_responses: z.number(),
+    engagement_quality: z.enum(['low', 'medium', 'high'])
+  })),
+  discussion_questions: z.array(z.string()),
+  controversy_buttons: z.array(z.object({
+    statement: z.string(),
+    risk_level: z.enum(['safe', 'edgy', 'risky']),
+    expected_impact: z.string()
+  }))
+});
+
+const starters = await generator.generateCustom(
+  diverseAudience,
+  ConversationStarterSchema,
+  "Generate conversation starters for maximum engagement"
+);
+
+// Use these in your content:
+starters.data.opening_hooks.forEach(hook => {
+  if (hook.engagement_quality === 'high') {
+    console.log(`💎 High-value opener: "${hook.hook}"`);
+  }
+});
+```
+
+## Export Engagement Predictions 📊
+
+```typescript
+// Track your predictions vs reality
+const trackingData = {
+  content_id: "ai-ethics-2025",
+  predicted: engagement.data,
+  actual: null, // Fill this in after 48 hours
+  timestamp: new Date()
+};
+
+// Save for analysis
+await saveToDatabase(trackingData);
+await exportToSheets(trackingData, 'Engagement Tracking 2024');
+```
+
+<Note>
+**Pro Tip**: Comments in the first hour predict viral potential. If you hit 20+ comments in hour one, you're likely going viral.
+</Note>
+
+<Warning>
+High engagement isn't always positive! Monitor sentiment distribution and have moderation plans ready.
+</Warning>
+
+## Your Engagement Playbook 📚
+
+1. **Test controversy levels** - Find your audience's sweet spot
+2. **Time your posts** - Use engagement_timeline predictions
+3. **Prepare for themes** - Have responses ready for predicted comment themes
+4. **Monitor viral triggers** - Double down on what works
+5. **Track predictions** - Improve your model over time
+
+[Next: Multi-Media Voting Systems →](/docs/examples/media-analysis/voting-systems)

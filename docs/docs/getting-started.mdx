@@ -1,0 +1,361 @@
+---
+title: Getting Started - Ship Your First Win in 5 Minutes
+description: From zero to predicting viral content in under 5 minutes. No BS, just results.
+---
+
+# 🚀 Your First Win in 5 Minutes
+
+Let's cut the fluff. You're here to ship features that actually work. Here's how to know what your users want before you write a single line of product code.
+
+## 30-Second Install ⚡
+
+```bash
+npm install @jamesaphoenix/persona-sdk
+# or
+pnpm add @jamesaphoenix/persona-sdk
+# or
+yarn add @jamesaphoenix/persona-sdk
+```
+
+## 2-Minute Quick Win: Predict Content Virality 🔥
+
+Copy this. Run it. See magic happen.
+
+```typescript
+import { PersonaGroup, StructuredOutputGenerator } from '@jamesaphoenix/persona-sdk';
+import { NormalDistribution } from '@jamesaphoenix/persona-sdk/distributions';
+import { z } from 'zod';
+
+// 1. Create your target audience (30 seconds)
+const audience = await PersonaGroup.generate({
+  size: 1000,
+  attributes: {
+    age: new NormalDistribution(28, 8),
+    interests: ['tech', 'startups', 'AI', 'productivity'],
+    platform_preference: ['twitter', 'linkedin', 'reddit']
+  }
+});
+
+// 2. Define what you want to know (30 seconds)
+const ContentAnalysisSchema = z.object({
+  viral_score: z.number().min(0).max(100),
+  best_headline: z.string(),
+  predicted_shares: z.number(),
+  best_platform: z.enum(['twitter', 'linkedin', 'reddit']),
+  top_comments: z.array(z.string()).length(3)
+});
+
+// 3. Ask AI to analyze (1 minute)
+const generator = new StructuredOutputGenerator();
+const analysis = await generator.generateCustom(
+  audience,
+  ContentAnalysisSchema,
+  "Analyze viral potential for article: 'How I Automated My Entire Job with ChatGPT'"
+);
+
+// 4. Get actionable insights
+console.log(`🔥 Viral Score: ${analysis.data.viral_score}/100`);
+console.log(`📰 Better Headline: "${analysis.data.best_headline}"`);
+console.log(`🚀 Predicted Shares: ${analysis.data.predicted_shares}`);
+console.log(`📱 Post on: ${analysis.data.best_platform}`);
+console.log(`💬 Expected comments:`, analysis.data.top_comments);
+```
+
+**Actual Output:**
+```
+🔥 Viral Score: 87/100
+📰 Better Headline: "I Secretly Automated My $150K Job (My Boss Still Doesn't Know)"
+🚀 Predicted Shares: 3,420
+📱 Post on: reddit
+💬 Expected comments: [
+  "This is exactly why companies are panicking about AI",
+  "Tutorial please! What prompts did you use?",
+  "Meanwhile I can't even get ChatGPT to format an email correctly 😂"
+]
+```
+
+## Core Concepts (2 Minutes) 🧠
+
+### 1. PersonaGroup = Your Audience
+
+Think of it as a focus group of 1000+ people, but instant and free:
+
+```typescript
+// Basic audience
+const users = new PersonaGroup('My Users');
+
+// Realistic audience with distributions
+const customers = await PersonaGroup.generate({
+  size: 5000,
+  attributes: {
+    age: new NormalDistribution(35, 10),
+    income: new UniformDistribution(30000, 150000),
+    tech_savviness: new BetaDistribution(3, 2)
+  }
+});
+
+// Segmented audience (like real markets)
+const market = await PersonaGroup.generate({
+  size: 10000,
+  segments: [
+    { name: "Power Users", weight: 0.2, attributes: { engagement: 'high' } },
+    { name: "Casual Users", weight: 0.6, attributes: { engagement: 'medium' } },
+    { name: "Churned Users", weight: 0.2, attributes: { engagement: 'low' } }
+  ]
+});
+```
+
+### 2. StructuredOutputGenerator = Your AI Analyst
+
+It turns personas into insights:
+
+```typescript
+const generator = new StructuredOutputGenerator(
+  'your-openai-key', // Optional, uses env var
+  'gpt-4o-mini',     // Fast and cheap
+  0.7                // Temperature
+);
+
+// Ask anything about your audience
+const insights = await generator.generateCustom(
+  yourAudience,
+  YourSchema,
+  "What features would make them upgrade to premium?"
+);
+```
+
+### 3. Statistical Distributions = Real Behavior
+
+Stop using fake data. Model reality:
+
+```typescript
+import { 
+  NormalDistribution,      // Bell curve (age, income)
+  UniformDistribution,     // Equal probability (random selection)
+  BetaDistribution,       // Probability ranges (conversion rates)
+  ExponentialDistribution, // Time-based events (churn, purchases)
+  CorrelatedDistribution  // Related attributes (age ↔ income)
+} from '@jamesaphoenix/persona-sdk/distributions';
+
+// Realistic correlated attributes
+const realistic = new CorrelatedDistribution({
+  age: new NormalDistribution(30, 10),
+  income: new NormalDistribution(50000, 20000),
+  experience: new UniformDistribution(0, 20)
+});
+
+// Income increases with age (realistic!)
+realistic.addCorrelation('income', 'age', 0.6);
+realistic.addConditional({
+  attribute: 'income',
+  dependsOn: 'age',
+  transform: (income, age) => income * (1 + (age - 25) * 0.02)
+});
+```
+
+## Real-World Examples (Pick Your Adventure) 🎯
+
+### For Content Creators: "Will This Go Viral?"
+
+```typescript
+const contentAudience = await PersonaGroup.generate({
+  size: 10000,
+  attributes: {
+    platform: ['youtube', 'tiktok', 'instagram'],
+    age: new NormalDistribution(22, 5),
+    attention_span: new ExponentialDistribution(0.5) // Short!
+  }
+});
+
+const VideoAnalysisSchema = z.object({
+  viral_probability: z.number(),
+  optimal_length_seconds: z.number(),
+  thumbnail_tips: z.array(z.string()),
+  first_3_seconds_hook: z.string(),
+  engagement_prediction: z.object({
+    likes: z.number(),
+    comments: z.number(),
+    shares: z.number()
+  })
+});
+
+const analysis = await generator.generateCustom(
+  contentAudience,
+  VideoAnalysisSchema,
+  "Analyze video idea: 'Day in the Life of a Solo Founder'"
+);
+
+// Know before you shoot!
+if (analysis.data.viral_probability > 0.7) {
+  console.log("🎬 START FILMING NOW!");
+  console.log(`⏱️ Keep it under ${analysis.data.optimal_length_seconds}s`);
+  console.log(`🎣 Hook: "${analysis.data.first_3_seconds_hook}"`);
+}
+```
+
+### For Product Teams: "What Features Actually Matter?"
+
+```typescript
+const ProductFeatureSchema = z.object({
+  feature_priorities: z.array(z.object({
+    feature: z.string(),
+    impact_score: z.number(),
+    development_effort: z.enum(['low', 'medium', 'high']),
+    expected_adoption: z.number()
+  })),
+  killer_feature: z.string(),
+  features_to_avoid: z.array(z.string()),
+  competitor_gaps: z.array(z.string())
+});
+
+const productInsights = await generator.generateCustom(
+  b2bAudience,
+  ProductFeatureSchema,
+  "What features would make SMBs switch from competitors?"
+);
+
+// Build what matters
+const mvpFeatures = productInsights.data.feature_priorities
+  .filter(f => f.impact_score > 8 && f.development_effort !== 'high')
+  .map(f => f.feature);
+```
+
+### For Marketers: "Messages That Convert"
+
+```typescript
+const MessagingTestSchema = z.object({
+  headlines: z.array(z.object({
+    text: z.string(),
+    conversion_rate: z.number(),
+    emotional_trigger: z.string()
+  })),
+  value_props: z.array(z.string()),
+  social_proof: z.string(),
+  urgency_trigger: z.string(),
+  objection_handlers: z.record(z.string(), z.string())
+});
+
+const messaging = await generator.generateCustom(
+  targetMarket,
+  MessagingTestSchema,
+  "Generate high-converting landing page copy for project management SaaS"
+);
+
+// Ship copy that converts
+const winner = messaging.data.headlines
+  .sort((a, b) => b.conversion_rate - a.conversion_rate)[0];
+
+console.log(`🏆 Winning headline: "${winner.text}"`);
+console.log(`💰 Expected conversion: ${(winner.conversion_rate * 100).toFixed(1)}%`);
+```
+
+## Environment Setup (.env) 🔧
+
+```bash
+# Required for AI features
+OPENAI_API_KEY=sk-...
+
+# Optional
+ANTHROPIC_API_KEY=...  # For Claude
+DATABASE_URL=...       # For persistence
+```
+
+## Pro Tips from the Trenches 💎
+
+### 1. Start Small, Win Fast
+```typescript
+// Don't do this first:
+const everyone = await PersonaGroup.generate({ size: 100000, ... });
+
+// Do this:
+const testGroup = await PersonaGroup.generate({ size: 100, ... });
+// Validate, then scale
+```
+
+### 2. Cache Expensive Operations
+```typescript
+import { writeFileSync, readFileSync } from 'fs';
+
+// Save generated personas
+const personas = await PersonaGroup.generate({ size: 10000, ... });
+writeFileSync('personas.json', JSON.stringify(personas.export()));
+
+// Reuse next time
+const cached = PersonaGroup.import(JSON.parse(readFileSync('personas.json')));
+```
+
+### 3. Test Multiple Variants Fast
+```typescript
+const variants = ['A', 'B', 'C', 'D', 'E'];
+const results = await Promise.all(
+  variants.map(v => testContentVariant(audience, v))
+);
+
+const winner = results.sort((a, b) => b.score - a.score)[0];
+```
+
+## What's Next? 🚂
+
+You've got the basics. Now go deeper:
+
+- **[CTR Prediction](/docs/examples/media-analysis/01-ctr-prediction)** - Predict clicks before publishing
+- **[A/B Testing](/docs/examples/surveys/02-ab-testing)** - Test without building  
+- **[Market Research](/docs/examples/surveys/01-market-research)** - Survey 10K users instantly
+- **[API Reference](/docs/api/overview)** - Every method documented
+
+## Get Help 💬
+
+- **GitHub Issues**: [Report bugs or request features](https://github.com/jamesaphoenix/persona-sdk/issues)
+- **Discord**: Join our community (coming soon)
+- **Twitter**: [@jamesaphoenix](https://twitter.com/jamesaphoenix) for updates
+
+## One Last Thing... 🎁
+
+Here's a complete script to analyze your competitors:
+
+```typescript
+import { PersonaGroup, StructuredOutputGenerator } from '@jamesaphoenix/persona-sdk';
+import { z } from 'zod';
+
+async function analyzeCompetitor(competitorName: string) {
+  // Their likely users
+  const theirUsers = await PersonaGroup.generate({
+    size: 1000,
+    attributes: {
+      satisfaction: new NormalDistribution(6, 2), // 1-10 scale
+      switching_likelihood: new BetaDistribution(2, 3),
+      pain_points: ['price', 'complexity', 'support', 'features']
+    }
+  });
+
+  const CompetitorAnalysisSchema = z.object({
+    weaknesses: z.array(z.string()),
+    switching_triggers: z.array(z.string()),
+    positioning_opportunity: z.string(),
+    feature_gaps: z.array(z.string()),
+    pricing_advantage: z.string(),
+    poaching_strategy: z.object({
+      target_segment: z.string(),
+      key_message: z.string(),
+      proof_points: z.array(z.string())
+    })
+  });
+
+  const generator = new StructuredOutputGenerator();
+  const analysis = await generator.generateCustom(
+    theirUsers,
+    CompetitorAnalysisSchema,
+    `How to win customers from ${competitorName}`
+  );
+
+  return analysis.data;
+}
+
+// Steal their unhappy customers 😈
+const strategy = await analyzeCompetitor('BigCorpCRM');
+console.log('🎯 Target:', strategy.poaching_strategy.target_segment);
+console.log('💬 Message:', strategy.poaching_strategy.key_message);
+console.log('🎪 Their weakness:', strategy.weaknesses[0]);
+```
+
+Now go ship something people actually want! 🚀
