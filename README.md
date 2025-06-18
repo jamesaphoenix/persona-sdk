@@ -2,6 +2,14 @@
 
 A comprehensive monorepo containing advanced TypeScript packages for AI-powered persona generation and prompt optimization.
 
+## 🚀 Installation
+
+```bash
+npm i @jamesaphoenix/persona-sdk
+# or
+npm i @jamesaphoenix/prompt-optimizer
+```
+
 ## 📦 Packages
 
 ### [@jamesaphoenix/persona-sdk](./packages/persona-sdk/)
@@ -27,7 +35,7 @@ A TypeScript package for optimizing prompts using techniques inspired by DSPy.
 
 ## 🚀 Quick Start
 
-### Installation
+### Development Setup
 
 ```bash
 # Install dependencies
