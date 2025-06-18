@@ -77,5 +77,17 @@ export type { MediaToPersonaOptions, MediaToPersonaResult } from './tools/media-
 export type { DistributionTool, OutputSchema, DistributionSelectionParams, TraitDefinition, IntelligentPersonaConfig, CorrelationAwareSelectionParams, CorrelationAwareResult, AutoCorrelationOptions, AutoCorrelationConfig } from './tools';
 export { SUPPORTED_MEDIA_TYPES } from './media/media-processor';
 export * from './prompt-optimizer/index.js';
+export { PostgresAdapter } from './adapters/postgres/adapter.js';
+export type { DatabaseClient, QueryResult, } from './adapters/postgres/adapter.js';
+export type { DatabaseConfig, PersonaRecord, PersonaGroupRecord, PersonaQuery, PersonaGroupQuery, CreatePersonaInput as CreatePersonaDbInput, UpdatePersonaInput as UpdatePersonaDbInput, CreatePersonaGroupInput as CreatePersonaGroupDbInput, UpdatePersonaGroupInput as UpdatePersonaGroupDbInput, PaginatedResult, } from './adapters/postgres/types.js';
+export { createServer, startServer } from './api/server.js';
+export type { ServerOptions } from './api/server.js';
+export { PersonaApiClient } from './api/client.js';
+export type { ApiClientConfig } from './api/client.js';
+export * from './api/schemas.js';
+export * from './api/react/hooks.js';
+export { PgDatabaseClient } from './adapters/postgres/clients/pg.js';
+export { SupabaseDatabaseClient } from './adapters/postgres/clients/supabase.js';
+export { PrismaDatabaseClient } from './adapters/postgres/clients/prisma.js';
 export declare const VERSION = "0.2.0";
 //# sourceMappingURL=index.d.ts.map

@@ -100,7 +100,7 @@ export const personaRoutes: FastifyPluginAsync = async (fastify) => {
     if (attributes) {
       Object.entries(attributes).forEach(([key, value]) => {
         if (!['age', 'occupation', 'sex'].includes(key)) {
-          builder = builder.withAttribute(key, value);
+          builder = builder.withAttribute(key, value as any);
         }
       });
     }

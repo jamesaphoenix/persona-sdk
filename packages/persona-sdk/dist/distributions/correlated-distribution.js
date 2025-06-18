@@ -72,14 +72,16 @@ export class CorrelatedDistribution {
             // Try to generate attributes whose dependencies are satisfied
             remaining.forEach((conditional, attr) => {
                 // Check if all dependencies are available
-                const allDependenciesSatisfied = conditional.conditions.every(cond => result[cond.dependsOn] !== undefined);
-                if (allDependenciesSatisfied) {
+                const allDependenciesSatisfied = conditional.conditions && conditional.conditions.every(cond => result[cond.dependsOn] !== undefined);
+                if (allDependenciesSatisfied && conditional.baseDistribution) {
                     // Generate with base distribution and apply all transforms
                     let value = conditional.baseDistribution.sample();
                     // Apply all transformations in sequence
-                    conditional.conditions.forEach(cond => {
-                        value = cond.transform(value, result[cond.dependsOn]);
-                    });
+                    if (conditional.conditions) {
+                        conditional.conditions.forEach(cond => {
+                            value = cond.transform(value, result[cond.dependsOn]);
+                        });
+                    }
                     result[attr] = value;
                     generated.add(attr);
                     remaining.delete(attr);
@@ -95,8 +97,10 @@ export class CorrelatedDistribution {
                 }
                 // Generate remaining attributes with base distributions only
                 remaining.forEach((conditional, attr) => {
-                    result[attr] = conditional.baseDistribution.sample();
-                    generated.add(attr);
+                    if (conditional.baseDistribution) {
+                        result[attr] = conditional.baseDistribution.sample();
+                        generated.add(attr);
+                    }
                 });
                 break;
             }
@@ -120,7 +124,7 @@ export class CorrelatedDistribution {
             visited.add(attr);
             recursionStack.add(attr);
             const conditional = remaining.get(attr);
-            if (conditional) {
+            if (conditional && conditional.conditions) {
                 for (const condition of conditional.conditions) {
                     if (remaining.has(condition.dependsOn) && hasCycle(condition.dependsOn)) {
                         return true;

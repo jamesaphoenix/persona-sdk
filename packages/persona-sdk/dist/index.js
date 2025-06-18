@@ -77,6 +77,20 @@ export { MediaDietManager } from './media/media-diet';
 export { SUPPORTED_MEDIA_TYPES } from './media/media-processor';
 // Prompt Optimizer - Re-export everything from prompt-optimizer module
 export * from './prompt-optimizer/index.js';
+// Database Adapter
+export { PostgresAdapter } from './adapters/postgres/adapter.js';
+// API Server
+export { createServer, startServer } from './api/server.js';
+// API Client
+export { PersonaApiClient } from './api/client.js';
+// API Schemas
+export * from './api/schemas.js';
+// React Hooks
+export * from './api/react/hooks.js';
+// Database Clients
+export { PgDatabaseClient } from './adapters/postgres/clients/pg.js';
+export { SupabaseDatabaseClient } from './adapters/postgres/clients/supabase.js';
+export { PrismaDatabaseClient } from './adapters/postgres/clients/prisma.js';
 // Version
 export const VERSION = '0.2.0';
 //# sourceMappingURL=index.js.map

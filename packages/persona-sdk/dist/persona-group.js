@@ -93,6 +93,17 @@ export class PersonaGroup {
         this._personas.push(persona);
     }
     /**
+     * Add a raw persona object to the group.
+     *
+     * @param rawPersona - Raw persona object with id, name, and attributes
+     */
+    addRaw(rawPersona) {
+        const persona = new Persona(rawPersona.name, rawPersona.attributes);
+        // Override the generated ID with the provided one
+        persona.id = rawPersona.id;
+        this.add(persona);
+    }
+    /**
      * Remove a persona by ID.
      *
      * @param personaId - ID of the persona to remove
@@ -388,6 +399,32 @@ export class PersonaGroup {
             attributeKeys: Array.from(allAttributes),
             commonAttributes
         };
+    }
+    /**
+     * Static method to generate a PersonaGroup with segments.
+     *
+     * @param config - Configuration for generating the group
+     * @returns Promise resolving to a new PersonaGroup
+     */
+    static async generate(config) {
+        const group = new PersonaGroup(`Generated Group ${Date.now()}`);
+        // Calculate personas per segment
+        let remaining = config.size;
+        const segmentSizes = config.segments.map((segment, index) => {
+            if (index === config.segments.length - 1) {
+                // Last segment gets remaining personas
+                return remaining;
+            }
+            const size = Math.floor(config.size * segment.weight);
+            remaining -= size;
+            return size;
+        });
+        // Generate personas for each segment
+        config.segments.forEach((segment, index) => {
+            const segmentSize = segmentSizes[index];
+            group.generateFromDistributions(segmentSize, segment.attributes);
+        });
+        return group;
     }
 }
 //# sourceMappingURL=persona-group.js.map

@@ -103,6 +103,18 @@ export class PersonaGroup<T extends PersonaAttributes = PersonaAttributes> {
   }
 
   /**
+   * Add a raw persona object to the group.
+   * 
+   * @param rawPersona - Raw persona object with id, name, and attributes
+   */
+  addRaw(rawPersona: { id: string; name: string; attributes: T }): void {
+    const persona = new Persona<T>(rawPersona.name, rawPersona.attributes);
+    // Override the generated ID with the provided one
+    (persona as any).id = rawPersona.id;
+    this.add(persona);
+  }
+
+  /**
    * Remove a persona by ID.
    * 
    * @param personaId - ID of the persona to remove
@@ -461,5 +473,42 @@ export class PersonaGroup<T extends PersonaAttributes = PersonaAttributes> {
       attributeKeys: Array.from(allAttributes),
       commonAttributes
     };
+  }
+
+  /**
+   * Static method to generate a PersonaGroup with segments.
+   * 
+   * @param config - Configuration for generating the group
+   * @returns Promise resolving to a new PersonaGroup
+   */
+  static async generate<T extends PersonaAttributes = PersonaAttributes>(config: {
+    size: number;
+    segments: Array<{
+      name?: string;
+      weight: number;
+      attributes: DistributionMap;
+    }>;
+  }): Promise<PersonaGroup<T>> {
+    const group = new PersonaGroup<T>(`Generated Group ${Date.now()}`);
+    
+    // Calculate personas per segment
+    let remaining = config.size;
+    const segmentSizes = config.segments.map((segment, index) => {
+      if (index === config.segments.length - 1) {
+        // Last segment gets remaining personas
+        return remaining;
+      }
+      const size = Math.floor(config.size * segment.weight);
+      remaining -= size;
+      return size;
+    });
+    
+    // Generate personas for each segment
+    config.segments.forEach((segment, index) => {
+      const segmentSize = segmentSizes[index];
+      group.generateFromDistributions(segmentSize, segment.attributes);
+    });
+    
+    return group;
   }
 }

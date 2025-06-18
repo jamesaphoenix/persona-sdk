@@ -80,6 +80,16 @@ export declare class PersonaGroup<T extends PersonaAttributes = PersonaAttribute
      */
     add(persona: Persona<T>): void;
     /**
+     * Add a raw persona object to the group.
+     *
+     * @param rawPersona - Raw persona object with id, name, and attributes
+     */
+    addRaw(rawPersona: {
+        id: string;
+        name: string;
+        attributes: T;
+    }): void;
+    /**
      * Remove a persona by ID.
      *
      * @param personaId - ID of the persona to remove
@@ -305,5 +315,19 @@ export declare class PersonaGroup<T extends PersonaAttributes = PersonaAttribute
         attributeKeys: string[];
         commonAttributes: Record<string, any>;
     };
+    /**
+     * Static method to generate a PersonaGroup with segments.
+     *
+     * @param config - Configuration for generating the group
+     * @returns Promise resolving to a new PersonaGroup
+     */
+    static generate<T extends PersonaAttributes = PersonaAttributes>(config: {
+        size: number;
+        segments: Array<{
+            name?: string;
+            weight: number;
+            attributes: DistributionMap;
+        }>;
+    }): Promise<PersonaGroup<T>>;
 }
 //# sourceMappingURL=persona-group.d.ts.map
