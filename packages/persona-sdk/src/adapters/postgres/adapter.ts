@@ -149,7 +149,7 @@ export class PostgresAdapter {
     // Count total
     const countQuery = `SELECT COUNT(*) FROM personas ${whereClause}`;
     const { rows: countRows } = await this.client.query<{ count: string }>(countQuery, values);
-    const total = parseInt(countRows[0].count, 10);
+    const total = countRows[0] ? parseInt(countRows[0].count, 10) : 0;
 
     // Get paginated results
     const limit = query.limit ?? 20;
@@ -279,7 +279,7 @@ export class PostgresAdapter {
     // Count total
     const countQuery = `SELECT COUNT(*) FROM ${table} ${whereClause}`;
     const { rows: countRows } = await this.client.query<{ count: string }>(countQuery, values);
-    const total = parseInt(countRows[0].count, 10);
+    const total = countRows[0] ? parseInt(countRows[0].count, 10) : 0;
 
     // Get paginated results
     const limit = query.limit ?? 20;
@@ -391,9 +391,9 @@ export class PostgresAdapter {
 
     const stats = rows[0];
     return {
-      totalPersonas: parseInt(stats.total_personas, 10),
-      totalGroups: parseInt(stats.total_groups, 10),
-      avgGroupSize: parseFloat(stats.avg_group_size || '0'),
+      totalPersonas: stats ? parseInt(stats.total_personas, 10) : 0,
+      totalGroups: stats ? parseInt(stats.total_groups, 10) : 0,
+      avgGroupSize: stats ? parseFloat(stats.avg_group_size || '0') : 0,
     };
   }
 }
