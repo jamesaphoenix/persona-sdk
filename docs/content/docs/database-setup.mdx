@@ -1,0 +1,423 @@
+---
+title: Database Setup
+description: How to set up PostgreSQL database for Persona SDK
+---
+
+# Database Setup
+
+The Persona SDK includes a powerful PostgreSQL adapter that enables persistent storage of personas and groups. This guide covers everything you need to get started.
+
+## Quick Start
+
+```bash
+# Install peer dependencies
+npm install pg @jamesaphoenix/persona-sdk
+
+# For Supabase users
+npm install @supabase/supabase-js @jamesaphoenix/persona-sdk
+
+# For Prisma users
+npm install @prisma/client prisma @jamesaphoenix/persona-sdk
+```
+
+## Database Schema
+
+Run this SQL to create the required tables:
+
+```sql
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Create tables
+-- Copy the schema from src/adapters/postgres/schema.sql
+```
+
+<Note>
+The full schema is available at `src/adapters/postgres/schema.sql`
+</Note>
+
+## Basic Usage
+
+### Using with node-postgres (pg)
+
+```typescript
+import { PgDatabaseClient, PostgresAdapter } from '@jamesaphoenix/persona-sdk';
+
+// Create database client
+const dbClient = new PgDatabaseClient({
+  connectionString: process.env.DATABASE_URL,
+  // or
+  host: 'localhost',
+  port: 5432,
+  database: 'personas',
+  user: 'postgres',
+  password: 'password',
+});
+
+// Create adapter
+const adapter = new PostgresAdapter(dbClient);
+
+// Use the adapter
+const persona = await adapter.createPersona({
+  name: 'Alice Johnson',
+  age: 28,
+  occupation: 'Software Engineer',
+  attributes: { skills: ['TypeScript', 'React'] }
+});
+```
+
+### Using with Supabase
+
+```typescript
+import { createClient } from '@supabase/supabase-js';
+import { SupabaseDatabaseClient, PostgresAdapter } from '@jamesaphoenix/persona-sdk';
+
+// Create Supabase client
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_KEY!
+);
+
+// Create database client
+const dbClient = new SupabaseDatabaseClient(supabase);
+
+// Create adapter
+const adapter = new PostgresAdapter(dbClient);
+```
+
+<Warning>
+Supabase requires a special RPC function for raw SQL queries. See the setup instructions below.
+</Warning>
+
+### Using with Prisma
+
+```typescript
+import { PrismaClient } from '@prisma/client';
+import { PrismaDatabaseClient, PostgresAdapter } from '@jamesaphoenix/persona-sdk';
+
+// Create Prisma client
+const prisma = new PrismaClient();
+
+// Create database client
+const dbClient = new PrismaDatabaseClient(prisma);
+
+// Create adapter
+const adapter = new PostgresAdapter(dbClient);
+```
+
+## CRUD Operations
+
+### Creating Personas
+
+```typescript
+// Single persona
+const persona = await adapter.createPersona({
+  name: 'Bob Smith',
+  age: 35,
+  occupation: 'Designer',
+  sex: 'male',
+  attributes: {
+    experience: 10,
+    specialties: ['UI', 'UX']
+  }
+});
+
+// Bulk creation
+const personas = await adapter.bulkCreatePersonas({
+  personas: [
+    { name: 'Person 1' },
+    { name: 'Person 2' },
+    { name: 'Person 3' }
+  ],
+  groupId: 'group-123' // Optional: add to group
+});
+```
+
+### Querying Personas
+
+```typescript
+// Query with filters
+const results = await adapter.queryPersonas({
+  name: 'John',           // Partial match
+  age: { min: 25, max: 35 },
+  occupation: 'Engineer',
+  limit: 20,
+  offset: 0,
+  orderBy: 'created_at',
+  orderDirection: 'desc'
+});
+
+console.log(`Found ${results.total} personas`);
+console.log(`Page ${results.page} of ${Math.ceil(results.total / results.pageSize)}`);
+```
+
+### Managing Groups
+
+```typescript
+// Create group
+const group = await adapter.createPersonaGroup({
+  name: 'Tech Team',
+  description: 'Software developers and engineers',
+  metadata: { department: 'Engineering' }
+});
+
+// Add personas to group
+await adapter.addPersonaToGroup(persona.id, group.id);
+
+// Get group with all members
+const groupWithMembers = await adapter.getPersonaGroupWithMembers(group.id);
+console.log(`Group has ${groupWithMembers.personas.length} members`);
+```
+
+## API Server
+
+Start a RESTful API server for your personas:
+
+```typescript
+import { createServer } from '@jamesaphoenix/persona-sdk';
+
+const server = await createServer({
+  databaseClient: dbClient,
+  port: 3000,
+  cors: true,
+  swagger: true, // Enables /docs endpoint
+});
+
+await server.listen({ port: 3000, host: '0.0.0.0' });
+console.log('API server running at http://localhost:3000');
+```
+
+### API Endpoints
+
+- `GET /health` - Health check
+- `GET /docs` - Swagger documentation
+- `POST /personas` - Create persona
+- `GET /personas/:id` - Get persona
+- `PATCH /personas/:id` - Update persona
+- `DELETE /personas/:id` - Delete persona
+- `GET /personas` - Query personas
+- `POST /personas/bulk` - Bulk create
+- `POST /groups` - Create group
+- `GET /groups/:id` - Get group
+- `GET /groups/:id/members` - Get group with members
+- `POST /memberships` - Add to group
+- `DELETE /memberships` - Remove from group
+- `GET /stats` - Database statistics
+
+## React Integration
+
+Use the provided React hooks for easy frontend integration:
+
+```tsx
+import { PersonaApiProvider, usePersonas, useCreatePersona } from '@jamesaphoenix/persona-sdk';
+
+function App() {
+  return (
+    <PersonaApiProvider config={{ baseUrl: 'http://localhost:3000' }}>
+      <PersonaList />
+    </PersonaApiProvider>
+  );
+}
+
+function PersonaList() {
+  const { data, loading, error, loadMore, hasMore } = usePersonas({ limit: 10 });
+  const createPersona = useCreatePersona();
+
+  const handleCreate = async () => {
+    await createPersona.mutate({
+      name: 'New Person',
+      age: 30
+    });
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <div>
+      {data?.data.map(persona => (
+        <div key={persona.id}>{persona.name}</div>
+      ))}
+      {hasMore && <button onClick={loadMore}>Load More</button>}
+      <button onClick={handleCreate}>Create Persona</button>
+    </div>
+  );
+}
+```
+
+## Advanced Features
+
+### Custom Database Clients
+
+Implement the `DatabaseClient` interface for any database:
+
+```typescript
+import type { DatabaseClient, QueryResult } from '@jamesaphoenix/persona-sdk';
+
+class MyCustomClient implements DatabaseClient {
+  async query<T>(text: string, values?: any[]): Promise<QueryResult<T>> {
+    // Your implementation
+    return { rows: [], rowCount: 0 };
+  }
+
+  async transaction<T>(callback: (client: DatabaseClient) => Promise<T>): Promise<T> {
+    // Your transaction implementation
+    return callback(this);
+  }
+}
+```
+
+### Supabase Setup
+
+For Supabase, create this RPC function:
+
+```sql
+CREATE OR REPLACE FUNCTION execute_sql(query text, params jsonb DEFAULT '[]'::jsonb)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  result jsonb;
+BEGIN
+  -- Execute the query and return results as JSON
+  -- This is a simplified version - enhance with proper security
+  EXECUTE format('SELECT jsonb_agg(row_to_json(t)) FROM (%s) t', query) INTO result;
+  RETURN COALESCE(result, '[]'::jsonb);
+END;
+$$;
+```
+
+### Prisma Schema
+
+Add to your `schema.prisma`:
+
+```prisma
+model Persona {
+  id         String   @id @default(uuid())
+  name       String
+  age        Int?
+  occupation String?
+  sex        String?
+  attributes Json     @default("{}")
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  
+  groups PersonaGroupMember[]
+  
+  @@map("personas")
+}
+
+// ... rest of schema
+```
+
+## Performance Tips
+
+### Indexing
+
+The schema includes indexes on commonly queried fields:
+- `name`
+- `age`
+- `occupation`
+- `attributes` (GIN index for JSONB)
+
+### Connection Pooling
+
+Configure connection pooling for production:
+
+```typescript
+const dbClient = new PgDatabaseClient({
+  connectionString: process.env.DATABASE_URL,
+  poolSize: 20, // Adjust based on load
+  ssl: { rejectUnauthorized: false } // For cloud databases
+});
+```
+
+### Batch Operations
+
+Use bulk operations for better performance:
+
+```typescript
+// Instead of creating personas one by one
+for (const data of personaData) {
+  await adapter.createPersona(data); // ❌ Slow
+}
+
+// Use bulk creation
+await adapter.bulkCreatePersonas({
+  personas: personaData // ✅ Fast
+});
+```
+
+## Migration Guide
+
+### From In-Memory to Database
+
+```typescript
+// Before: In-memory personas
+const group = new PersonaGroup('My Group');
+group.generateFromDistributions(100, { age: new NormalDistribution(30, 5) });
+
+// After: Database-backed personas
+const group = await adapter.createPersonaGroup({ name: 'My Group' });
+const personas = await adapter.bulkCreatePersonas({
+  personas: Array.from({ length: 100 }, () => ({
+    name: `Person ${Math.random()}`,
+    age: Math.round(new NormalDistribution(30, 5).sample())
+  })),
+  groupId: group.id
+});
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Connection refused**
+```bash
+# Check if PostgreSQL is running
+pg_isready
+
+# Check connection details
+psql -h localhost -U postgres -d personas
+```
+
+**Permission denied**
+```sql
+-- Grant permissions
+GRANT ALL PRIVILEGES ON DATABASE personas TO your_user;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO your_user;
+```
+
+**Slow queries**
+```sql
+-- Analyze query performance
+EXPLAIN ANALYZE SELECT * FROM personas WHERE age BETWEEN 25 AND 35;
+
+-- Update statistics
+ANALYZE personas;
+```
+
+## Best Practices
+
+### Security
+
+- Use environment variables for credentials
+- Enable SSL for production databases
+- Use connection pooling
+- Implement proper authentication on API endpoints
+
+### Data Integrity
+
+- Use transactions for multi-step operations
+- Add database constraints as needed
+- Regular backups
+- Monitor database performance
+
+### Scaling
+
+- Add read replicas for heavy read workloads
+- Partition large tables by date/group
+- Use database-specific features (e.g., PostgreSQL partial indexes)
+- Consider caching frequently accessed data

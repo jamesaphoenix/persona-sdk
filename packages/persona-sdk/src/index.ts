@@ -148,5 +148,45 @@ export { SUPPORTED_MEDIA_TYPES } from './media/media-processor';
 // Prompt Optimizer - Re-export everything from prompt-optimizer module
 export * from './prompt-optimizer/index.js';
 
+// Database Adapter
+export { PostgresAdapter } from './adapters/postgres/adapter.js';
+export type {
+  DatabaseClient,
+  QueryResult,
+} from './adapters/postgres/adapter.js';
+
+// Database Types
+export type {
+  DatabaseConfig,
+  PersonaRecord,
+  PersonaGroupRecord,
+  PersonaQuery,
+  PersonaGroupQuery,
+  CreatePersonaInput as CreatePersonaDbInput,
+  UpdatePersonaInput as UpdatePersonaDbInput,
+  CreatePersonaGroupInput as CreatePersonaGroupDbInput,
+  UpdatePersonaGroupInput as UpdatePersonaGroupDbInput,
+  PaginatedResult,
+} from './adapters/postgres/types.js';
+
+// API Server
+export { createServer, startServer } from './api/server.js';
+export type { ServerOptions } from './api/server.js';
+
+// API Client
+export { PersonaApiClient } from './api/client.js';
+export type { ApiClientConfig } from './api/client.js';
+
+// API Schemas
+export * from './api/schemas.js';
+
+// React Hooks
+export * from './api/react/hooks.js';
+
+// Database Clients
+export { PgDatabaseClient } from './adapters/postgres/clients/pg.js';
+export { SupabaseDatabaseClient } from './adapters/postgres/clients/supabase.js';
+export { PrismaDatabaseClient } from './adapters/postgres/clients/prisma.js';
+
 // Version
 export const VERSION = '0.2.0';
