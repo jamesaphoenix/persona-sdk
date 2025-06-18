@@ -77,22 +77,3 @@ jobs:
         
       - name: Build package
         run: pnpm build
-        
-      - name: Generate docs
-        run: |
-          export DISPLAY=
-          export BROWSER=none
-          export NO_BROWSER=1
-          cd packages/persona-sdk && NO_UPDATE_NOTIFIER=1 pnpm docs --no-open 2>/dev/null || pnpm docs
-          cd ../prompt-optimizer && NO_UPDATE_NOTIFIER=1 pnpm docs --no-open 2>/dev/null || pnpm docs
-        env:
-          CI: true
-          NO_BROWSER: 1
-        
-      - name: Upload docs artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: docs
-          path: |
-            packages/persona-sdk/docs
-            packages/prompt-optimizer/docs
