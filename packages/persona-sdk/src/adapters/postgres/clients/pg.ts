@@ -29,7 +29,7 @@ export class PgDatabaseClient implements DatabaseClient {
     const result = await this.pool.query(text, values);
     return {
       rows: result.rows,
-      rowCount: result.rowCount,
+      rowCount: result.rowCount || 0,
     };
   }
 
@@ -61,7 +61,7 @@ class PgTransactionClient implements DatabaseClient {
     const result = await this.client.query(text, values);
     return {
       rows: result.rows,
-      rowCount: result.rowCount,
+      rowCount: result.rowCount || 0,
     };
   }
 

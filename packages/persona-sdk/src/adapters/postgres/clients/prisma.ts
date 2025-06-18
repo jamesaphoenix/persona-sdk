@@ -2,7 +2,8 @@
  * Prisma client implementation
  */
 
-import type { PrismaClient } from '@prisma/client';
+// Prisma client is optional - handle case where it's not available
+type PrismaClient = any;
 import type { DatabaseClient, QueryResult } from '../adapter.js';
 
 export class PrismaDatabaseClient implements DatabaseClient {
@@ -10,7 +11,7 @@ export class PrismaDatabaseClient implements DatabaseClient {
 
   async query<T = any>(text: string, values?: any[]): Promise<QueryResult<T>> {
     // Prisma $queryRawUnsafe for dynamic queries
-    const rows = await this.prisma.$queryRawUnsafe<T[]>(text, ...(values || []));
+    const rows = await this.prisma.$queryRawUnsafe(text, ...(values || [])) as T[];
     
     return {
       rows,
@@ -19,7 +20,7 @@ export class PrismaDatabaseClient implements DatabaseClient {
   }
 
   async transaction<T>(callback: (client: DatabaseClient) => Promise<T>): Promise<T> {
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: any) => {
       const txClient = new PrismaTransactionClient(tx as any);
       return callback(txClient);
     });
@@ -30,7 +31,7 @@ class PrismaTransactionClient implements DatabaseClient {
   constructor(private tx: any) {}
 
   async query<T = any>(text: string, values?: any[]): Promise<QueryResult<T>> {
-    const rows = await this.tx.$queryRawUnsafe<T[]>(text, ...(values || []));
+    const rows = await this.tx.$queryRawUnsafe(text, ...(values || [])) as T[];
     return {
       rows,
       rowCount: rows.length,
