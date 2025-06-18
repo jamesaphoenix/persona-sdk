@@ -96,7 +96,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request, reply) => {
-      const persona = await adapter.createPersona(request.body as any as any);
+      const persona = await adapter.createPersona((request.body as any) as any);
       reply.code(201).send(persona);
     }
   );
@@ -114,7 +114,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request, reply) => {
-      const persona = await adapter.getPersona(request.params as any.id);
+      const persona = await adapter.getPersona((request.params as any).id);
       if (!persona) {
         reply.code(404).send({ error: 'Persona not found' });
         return;
@@ -137,7 +137,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request, reply) => {
-      const persona = await adapter.updatePersona(request.params as any.id, request.body as any);
+      const persona = await adapter.updatePersona((request.params as any).id, (request.body as any));
       if (!persona) {
         reply.code(404).send({ error: 'Persona not found' });
         return;
@@ -159,7 +159,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request, reply) => {
-      const deleted = await adapter.deletePersona(request.params as any.id);
+      const deleted = await adapter.deletePersona((request.params as any).id);
       if (!deleted) {
         reply.code(404).send({ error: 'Persona not found' });
         return;
@@ -180,7 +180,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request) => {
-      return adapter.queryPersonas(request.query);
+      return adapter.queryPersonas((request.query as any));
     }
   );
 
@@ -197,7 +197,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request, reply) => {
-      const personas = await adapter.bulkCreatePersonas(request.body as any);
+      const personas = await adapter.bulkCreatePersonas((request.body as any));
       reply.code(201).send(personas);
     }
   );
@@ -217,7 +217,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request, reply) => {
-      const group = await adapter.createPersonaGroup(request.body as any);
+      const group = await adapter.createPersonaGroup((request.body as any));
       reply.code(201).send(group);
     }
   );
@@ -235,7 +235,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request, reply) => {
-      const group = await adapter.getPersonaGroup(request.params as any.id);
+      const group = await adapter.getPersonaGroup((request.params as any).id);
       if (!group) {
         reply.code(404).send({ error: 'Group not found' });
         return;
@@ -258,7 +258,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request, reply) => {
-      const group = await adapter.updatePersonaGroup(request.params as any.id, request.body as any);
+      const group = await adapter.updatePersonaGroup((request.params as any).id, (request.body as any));
       if (!group) {
         reply.code(404).send({ error: 'Group not found' });
         return;
@@ -280,7 +280,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request, reply) => {
-      const deleted = await adapter.deletePersonaGroup(request.params as any.id);
+      const deleted = await adapter.deletePersonaGroup((request.params as any).id);
       if (!deleted) {
         reply.code(404).send({ error: 'Group not found' });
         return;
@@ -301,7 +301,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request) => {
-      return adapter.queryPersonaGroups(request.query);
+      return adapter.queryPersonaGroups((request.query as any));
     }
   );
 
@@ -323,7 +323,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request, reply) => {
-      const result = await adapter.getPersonaGroupWithMembers(request.params as any.id);
+      const result = await adapter.getPersonaGroupWithMembers((request.params as any).id);
       if (!result) {
         reply.code(404).send({ error: 'Group not found' });
         return;
@@ -348,8 +348,8 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
     },
     async (request, reply) => {
       const success = await adapter.addPersonaToGroup(
-        request.body as any.personaId,
-        request.body as any.groupId
+        (request.body as any).personaId,
+        (request.body as any).groupId
       );
       reply.code(201).send({ success });
     }
@@ -369,8 +369,8 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
     },
     async (request, reply) => {
       const success = await adapter.removePersonaFromGroup(
-        request.body as any.personaId,
-        request.body as any.groupId
+        (request.body as any).personaId,
+        (request.body as any).groupId
       );
       if (!success) {
         reply.code(404).send({ error: 'Membership not found' });
@@ -392,7 +392,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
       },
     },
     async (request) => {
-      return adapter.getPersonaGroups(request.params as any.id);
+      return adapter.getPersonaGroups((request.params as any).id);
     }
   );
 
