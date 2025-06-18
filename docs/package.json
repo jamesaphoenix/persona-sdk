@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "echo 'No tests for docs'",
+    "test:coverage": "echo 'No coverage for docs'"
   },
   "dependencies": {
     "fumadocs-core": "^14.4.0",
