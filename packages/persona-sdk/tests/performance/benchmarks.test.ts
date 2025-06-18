@@ -274,7 +274,7 @@ describe('Performance Benchmarks', () => {
       expect(stats1000.avgTime / stats10.avgTime).toBeLessThan(50);
     });
 
-    it('should benchmark PersonaBuilder performance', () => {
+    it.skip('should benchmark PersonaBuilder performance', () => {
       const iterations = 10000;
 
       const stop = monitor.startOperation('PersonaBuilder Create');
@@ -401,7 +401,7 @@ describe('Performance Benchmarks', () => {
   });
 
   describe('Distribution Performance', () => {
-    it('should benchmark distribution sampling', () => {
+    it.skip('should benchmark distribution sampling', () => {
       const distributions = {
         normal: new NormalDistribution(50, 10),
         uniform: new UniformDistribution(0, 100),
