@@ -104,6 +104,8 @@ export {
   MockLanguageModel,
   createMockModule,
   createMockLanguageModel,
+  createTestDataset,
+  measureOptimizationPerformance,
 } from './utils/index.js';
 
 // Version

@@ -14,7 +14,7 @@ export class RandomSearchOptimizer extends BaseOptimizer {
             ...this.config,
             numCandidates: config.numCandidates ?? 16,
             budget: config.budget ?? 100,
-            strategy: config.strategy ?? 'mutation',
+            strategy: config.strategy ?? 'random',
             metric: config.metric ?? ExactMatch,
         };
     }

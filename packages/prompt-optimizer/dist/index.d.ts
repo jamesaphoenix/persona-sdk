@@ -54,6 +54,6 @@ export type { Example, Prediction, Metric, Module, LanguageModel, GenerationOpti
 export { BaseOptimizer } from './types/index.js';
 export { BootstrapOptimizer, COPROOptimizer, RandomSearchOptimizer, EnsembleOptimizer, } from './optimizers/index.js';
 export { answerExactMatch, answerPassageMatch, answerFuzzyMatch, answerContainsMatch, answerNumericMatch, createCompositeMetric, ExactMatch, PassageMatch, FuzzyMatch, ContainsMatch, NumericMatch, createExactMatchMetric, createFuzzyMatchMetric, createNumericMatchMetric, } from './metrics/index.js';
-export { MockModule, MockLanguageModel, createMockModule, createMockLanguageModel, } from './utils/index.js';
+export { MockModule, MockLanguageModel, createMockModule, createMockLanguageModel, createTestDataset, measureOptimizationPerformance, } from './utils/index.js';
 export declare const VERSION = "0.1.0";
 //# sourceMappingURL=index.d.ts.map

@@ -236,7 +236,7 @@ export abstract class BaseOptimizer {
       }
     }
 
-    const averageScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const averageScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
     const evaluationTimeMs = Date.now() - startTime;
 
     return {

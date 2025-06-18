@@ -375,8 +375,13 @@ describe('RandomSearchOptimizer', () => {
   describe('Error Handling', () => {
     test('should handle module prediction failures', async () => {
       const faultyModule = createPerfectMockModule();
-      faultyModule.predict = vi.fn().mockImplementation(async () => {
-        throw new Error('Module prediction failed');
+      // Make clone return a module that always fails prediction
+      faultyModule.clone = vi.fn().mockImplementation(() => {
+        const clonedModule = createPerfectMockModule();
+        clonedModule.predict = vi.fn().mockImplementation(async () => {
+          throw new Error('Module prediction failed');
+        });
+        return clonedModule;
       });
 
       const result = await optimizer.optimize(faultyModule, mathDataset.slice(0, 2));

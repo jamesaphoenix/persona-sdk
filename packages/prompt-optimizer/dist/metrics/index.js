@@ -36,8 +36,8 @@ export function answerExactMatch(example, prediction, trace, frac = 1.0) {
     if (Array.isArray(example.output)) {
         const expectedAnswers = example.output.map(extractAnswer).map(normalizeText);
         const normalizedPredicted = normalizeText(predictedAnswer);
-        const matches = expectedAnswers.filter(expected => normalizeText(expected) === normalizedPredicted).length;
-        return Math.min(matches / (expectedAnswers.length * frac), 1.0);
+        const hasMatch = expectedAnswers.some(expected => normalizeText(expected) === normalizedPredicted);
+        return hasMatch ? 1.0 : 0.0;
     }
     // Handle single answer
     const normalizedExpected = normalizeText(expectedAnswer);

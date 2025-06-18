@@ -20,7 +20,7 @@ export class EnsembleOptimizer {
   constructor(config: EnsembleConfig) {
     this.config = {
       size: config.size,
-      reducer: config.reducer ?? this.defaultReducer,
+      reducer: config.reducer ?? this.defaultReducer.bind(this),
       votingStrategy: config.votingStrategy ?? 'hard',
     };
   }

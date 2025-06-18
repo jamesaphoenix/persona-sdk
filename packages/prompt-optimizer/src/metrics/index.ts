@@ -45,11 +45,11 @@ export function answerExactMatch(
     const expectedAnswers = example.output.map(extractAnswer).map(normalizeText);
     const normalizedPredicted = normalizeText(predictedAnswer);
     
-    const matches = expectedAnswers.filter(expected => 
+    const hasMatch = expectedAnswers.some(expected => 
       normalizeText(expected) === normalizedPredicted
-    ).length;
+    );
     
-    return Math.min(matches / (expectedAnswers.length * frac), 1.0);
+    return hasMatch ? 1.0 : 0.0;
   }
 
   // Handle single answer

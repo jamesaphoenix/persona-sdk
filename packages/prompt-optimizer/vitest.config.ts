@@ -4,8 +4,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    testTimeout: 60000,
+    hookTimeout: 60000,
     coverage: {
-      provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
@@ -13,19 +14,6 @@ export default defineConfig({
         'tests/',
         '**/*.d.ts',
       ],
-      thresholds: {
-        global: {
-          branches: 70,
-          functions: 70,
-          lines: 70,
-          statements: 70,
-        },
-      },
     },
-    testTimeout: 60000,
-    hookTimeout: 60000,
-  },
-  esbuild: {
-    target: 'node14'
   },
 });

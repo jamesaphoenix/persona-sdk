@@ -56,7 +56,7 @@ export { BootstrapOptimizer, COPROOptimizer, RandomSearchOptimizer, EnsembleOpti
 // Metrics
 export { answerExactMatch, answerPassageMatch, answerFuzzyMatch, answerContainsMatch, answerNumericMatch, createCompositeMetric, ExactMatch, PassageMatch, FuzzyMatch, ContainsMatch, NumericMatch, createExactMatchMetric, createFuzzyMatchMetric, createNumericMatchMetric, } from './metrics/index.js';
 // Utilities
-export { MockModule, MockLanguageModel, createMockModule, createMockLanguageModel, } from './utils/index.js';
+export { MockModule, MockLanguageModel, createMockModule, createMockLanguageModel, createTestDataset, measureOptimizationPerformance, } from './utils/index.js';
 // Version
 export const VERSION = '0.1.0';
 //# sourceMappingURL=index.js.map

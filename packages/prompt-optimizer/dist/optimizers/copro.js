@@ -57,7 +57,7 @@ export class COPROOptimizer extends BaseOptimizer {
                 .slice(0, this.coproConfig.breadth);
             // Update best if we found a better candidate
             const roundBest = topCandidates[0];
-            if (roundBest.score > bestScore) {
+            if (roundBest && roundBest.score > bestScore) {
                 bestScore = roundBest.score;
                 bestModule = module.clone();
                 bestModule.setPrompt(roundBest.prompt);
@@ -65,26 +65,35 @@ export class COPROOptimizer extends BaseOptimizer {
                     console.log(`🎉 New best score: ${bestScore.toFixed(3)}`);
                 }
             }
-            // Record round history
-            const roundTime = Date.now() - roundStartTime;
-            history.push({
-                round,
-                score: roundBest.score,
-                prompt: roundBest.prompt,
-                timeMs: roundTime,
-                metadata: {
-                    candidatesGenerated: newCandidates.length,
-                    candidatesEvaluated: evaluatedCandidates.length,
-                    averageScore: evaluatedCandidates.reduce((sum, c) => sum + c.score, 0) / evaluatedCandidates.length,
-                    bestCandidate: roundBest.metadata,
-                },
-            });
+            // Record round history (only if we have a valid best candidate)
+            if (roundBest) {
+                const roundTime = Date.now() - roundStartTime;
+                history.push({
+                    round,
+                    score: roundBest.score,
+                    prompt: roundBest.prompt,
+                    timeMs: roundTime,
+                    metadata: {
+                        candidatesGenerated: newCandidates.length,
+                        candidatesEvaluated: evaluatedCandidates.length,
+                        averageScore: evaluatedCandidates.length > 0 ? evaluatedCandidates.reduce((sum, c) => sum + c.score, 0) / evaluatedCandidates.length : 0,
+                        bestCandidate: roundBest.metadata,
+                    },
+                });
+            }
             // Prepare for next round
             currentCandidates = topCandidates;
             // Early stopping check
             if (bestScore >= this.coproConfig.earlyStoppingThreshold) {
                 if (this.coproConfig.verbose) {
                     console.log(`🛑 Early stopping at round ${round} (threshold: ${this.coproConfig.earlyStoppingThreshold})`);
+                }
+                break;
+            }
+            // Break if no candidates to continue with
+            if (topCandidates.length === 0) {
+                if (this.coproConfig.verbose) {
+                    console.log(`🛑 No more candidates to explore at round ${round}`);
                 }
                 break;
             }

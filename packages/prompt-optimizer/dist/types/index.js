@@ -36,7 +36,7 @@ export class BaseOptimizer {
                 totalOutputTokens += prediction.metadata.usage.outputTokens || 0;
             }
         }
-        const averageScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+        const averageScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
         const evaluationTimeMs = Date.now() - startTime;
         return {
             score: averageScore,

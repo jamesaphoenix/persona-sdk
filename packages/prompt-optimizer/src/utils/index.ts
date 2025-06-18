@@ -23,7 +23,7 @@ export class MockModule implements Module {
   }
 
   async predict(input: string | Record<string, any>): Promise<Prediction> {
-    const inputStr = typeof input === 'string' ? input : JSON.stringify(input);
+    const inputStr = typeof input === 'string' ? input : JSON.stringify(input ?? '');
     
     // Simulate some processing time
     await new Promise(resolve => setTimeout(resolve, 10));
@@ -40,9 +40,9 @@ export class MockModule implements Module {
         prompt: this.prompt,
         processingTimeMs: 10,
         usage: {
-          inputTokens: Math.floor(inputStr.length / 4),
-          outputTokens: Math.floor(response.length / 4),
-          totalTokens: Math.floor((inputStr.length + response.length) / 4),
+          inputTokens: Math.floor((inputStr?.length || 0) / 4),
+          outputTokens: Math.floor((response?.length || 0) / 4),
+          totalTokens: Math.floor(((inputStr?.length || 0) + (response?.length || 0)) / 4),
         },
       },
     };
@@ -285,7 +285,7 @@ export async function measureOptimizationPerformance<T>(
     return {
       result,
       timeMs,
-      memoryUsed: memoryUsed > 0 ? memoryUsed : undefined,
+      memoryUsed: memoryUsed,
     };
   } catch (error) {
     const endTime = Date.now();
