@@ -28,6 +28,7 @@
     "docs:watch": "typedoc --watch"
   },
   "dependencies": {
+    "@persona-sdk/prompt-optimizer": "workspace:*",
     "@langchain/core": "^0.3.59",
     "@langchain/openai": "^0.1.0",
     "langchain": "^0.3.0",

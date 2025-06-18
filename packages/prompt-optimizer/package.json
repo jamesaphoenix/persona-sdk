@@ -1,5 +1,5 @@
 {
-  "name": "@jamesaphoenix/prompt-optimizer",
+  "name": "@persona-sdk/prompt-optimizer",
   "version": "0.1.0",
   "description": "A TypeScript package for optimizing prompts using techniques inspired by DSPy",
   "type": "module",

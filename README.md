@@ -1,4 +1,4 @@
-# @jamesaphoenix/persona-sdk
+# Persona SDK
 
 A comprehensive monorepo containing advanced TypeScript packages for AI-powered persona generation and prompt optimization.
 
@@ -6,9 +6,9 @@ A comprehensive monorepo containing advanced TypeScript packages for AI-powered 
 
 ```bash
 npm i @jamesaphoenix/persona-sdk
-# or
-npm i @jamesaphoenix/prompt-optimizer
 ```
+
+> **Note**: The prompt-optimizer package is included as part of the persona-sdk monorepo and is automatically available when you install the main package.
 
 ## 📦 Packages
 
@@ -22,9 +22,10 @@ A TypeScript SDK for generating personas from statistical distributions with AI-
 - 🎬 Media-to-persona generation from text posts and images
 - 📈 Usage metadata tracking for cost monitoring
 - 🔗 Auto-correlation generation for realistic personas
+- 🚀 Integrated prompt optimization for enhanced AI performance
 
-### [@jamesaphoenix/prompt-optimizer](./packages/prompt-optimizer/)
-A TypeScript package for optimizing prompts using techniques inspired by DSPy.
+### [@persona-sdk/prompt-optimizer](./packages/prompt-optimizer/)
+A TypeScript package for optimizing prompts using techniques inspired by DSPy, integrated within the persona-sdk monorepo.
 
 **Features:**
 - 🚀 4 Advanced optimization algorithms (Bootstrap, COPRO, Random Search, Ensemble)
@@ -82,7 +83,7 @@ import {
   ExactMatch, 
   MockModule,
   createTestDataset 
-} from '@jamesaphoenix/prompt-optimizer';
+} from '@persona-sdk/prompt-optimizer';
 
 // Create a module to optimize
 const module = new MockModule('Answer the question: ');
@@ -113,7 +114,7 @@ import {
   FuzzyMatch,
   MockModule,
   createMockLanguageModel
-} from '@jamesaphoenix/prompt-optimizer';
+} from '@persona-sdk/prompt-optimizer';
 
 // Create a module for persona generation prompts
 const personaModule = new MockModule(
@@ -258,7 +259,7 @@ import {
   FuzzyMatch,
   PassageMatch,
   createMockLanguageModel
-} from '@jamesaphoenix/prompt-optimizer';
+} from '@persona-sdk/prompt-optimizer';
 
 // Create different optimizers
 const teacherModel = createMockLanguageModel();
@@ -470,20 +471,18 @@ pnpm clean
 
 ## 🚀 Publishing
 
-Both packages are configured for npm publishing:
+The main persona-sdk package is published to npm:
 
 ```bash
-# Build packages
+# Build all packages
 pnpm build
 
-# Publish persona-sdk
+# Publish persona-sdk (includes prompt-optimizer)
 cd packages/persona-sdk
 npm publish --access public
-
-# Publish prompt-optimizer
-cd packages/prompt-optimizer
-npm publish --access public
 ```
+
+> **Note**: The prompt-optimizer package is included as part of the persona-sdk and does not need to be published separately.
 
 ## 🎯 Use Cases
 

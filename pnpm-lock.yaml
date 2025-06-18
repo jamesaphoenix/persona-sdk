@@ -54,6 +54,9 @@ importers:
       '@langchain/openai':
         specifier: ^0.1.0
         version: 0.1.3
+      '@persona-sdk/prompt-optimizer':
+        specifier: workspace:*
+        version: link:../prompt-optimizer
       langchain:
         specifier: ^0.3.0
         version: 0.3.28(@langchain/core@0.3.59(openai@4.104.0(zod@3.25.67)))(openai@4.104.0(zod@3.25.67))
@@ -230,7 +233,6 @@ packages:
   '@esbuild/darwin-arm64@0.25.5':
     resolution: {integrity: sha512-GtaBgammVvdF7aPIgH2jxMDdivezgFu6iKpmT+48+F8Hhg5J/sfnDieg0aeG/jfSvkYQU2/pceFPDKlqZzwnfQ==}
     engines: {node: '>=18'}
-    cpu: [arm64]
     os: [darwin]
 
   '@esbuild/darwin-x64@0.21.5':

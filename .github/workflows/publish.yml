@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - 'packages/persona-sdk/package.json'
-      - 'packages/prompt-optimizer/package.json'
   release:
     types: [created]
   workflow_dispatch:
@@ -40,7 +39,7 @@ jobs:
       - name: Check if version changed
         id: version-check
         run: |
-          if git diff HEAD^ HEAD --name-only | grep -qE "packages/(persona-sdk|prompt-optimizer)/package.json"; then
+          if git diff HEAD^ HEAD --name-only | grep -q "packages/persona-sdk/package.json"; then
             echo "version_changed=true" >> $GITHUB_OUTPUT
           else
             echo "version_changed=false" >> $GITHUB_OUTPUT
@@ -74,11 +73,5 @@ jobs:
       - name: Publish persona-sdk to npm
         run: npm publish --access public
         working-directory: ./packages/persona-sdk
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          
-      - name: Publish prompt-optimizer to npm
-        run: npm publish --access public
-        working-directory: ./packages/prompt-optimizer
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
