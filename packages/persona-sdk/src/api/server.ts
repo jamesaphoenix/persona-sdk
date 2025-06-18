@@ -2,7 +2,7 @@
  * Fastify API Server for Persona SDK
  */
 
-import type { FastifyInstance } from 'fastify';
+// import type { FastifyInstance } from 'fastify';
 import { fastify } from 'fastify';
 import { fastifyCors } from '@fastify/cors';
 import { fastifySwagger } from '@fastify/swagger';
@@ -40,7 +40,7 @@ export interface ServerOptions {
   logger?: boolean;
 }
 
-export async function createServer(options: ServerOptions): Promise<FastifyInstance> {
+export async function createServer(options: ServerOptions) {
   const app = fastify({
     logger: options.logger ?? true,
   }).withTypeProvider<ZodTypeProvider>();
@@ -414,7 +414,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
   );
 
   // Error handler
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error, _request, reply) => {
     app.log.error(error);
     
     if (error.validation || error.statusCode === 400) {
@@ -447,7 +447,7 @@ export async function createServer(options: ServerOptions): Promise<FastifyInsta
 }
 
 // Convenience function to start the server
-export async function startServer(options: ServerOptions): Promise<FastifyInstance> {
+export async function startServer(options: ServerOptions) {
   const app = await createServer(options);
   const port = options.port ?? 3000;
   const host = options.host ?? '0.0.0.0';
@@ -457,8 +457,8 @@ export async function startServer(options: ServerOptions): Promise<FastifyInstan
 }
 
 // Type augmentation for Fastify
-declare module 'fastify' {
-  interface FastifyInstance {
-    db: PostgresAdapter;
-  }
-}
+// declare module 'fastify' {
+//   interface FastifyInstance {
+//     db: PostgresAdapter;
+//   }
+// }

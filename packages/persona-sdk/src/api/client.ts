@@ -101,7 +101,7 @@ export class PersonaApiClient {
     await this.request<void>(`/personas/${id}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': undefined,
+        'Content-Type': undefined as any,
       },
     });
   }
@@ -158,7 +158,7 @@ export class PersonaApiClient {
     await this.request<void>(`/groups/${id}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': undefined,
+        'Content-Type': undefined as any,
       },
     });
   }
