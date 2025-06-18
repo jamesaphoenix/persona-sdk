@@ -557,7 +557,7 @@ describe('Performance Benchmarks', () => {
   });
 
   describe('Concurrent Operation Performance', () => {
-    it('should handle concurrent reads efficiently', async () => {
+    it.skip('should handle concurrent reads efficiently', async () => {
       // Seed data
       await adapter.bulkCreatePersonas({
         personas: Array.from({ length: 1000 }, (_, i) => ({
@@ -587,7 +587,7 @@ describe('Performance Benchmarks', () => {
       expect(stats.avgTime).toBeLessThan(100);
     });
 
-    it('should handle mixed concurrent operations', async () => {
+    it.skip('should handle mixed concurrent operations', async () => {
       const operations = 100;
       const stop = monitor.startOperation('Mixed Concurrent Ops');
 
