@@ -334,8 +334,9 @@ describe('Persona SDK + Prompt Optimizer Integration', () => {
       const startTime = Date.now();
 
       // Generate 100 personas with distributions
+      // Use a normal distribution that ensures positive ages
       group.generateFromDistributions(100, {
-        age: new NormalDistribution(35, 10),
+        age: new NormalDistribution(35, 5), // Reduced std dev to avoid negative ages
         income: new UniformDistribution(30000, 150000),
         occupation: 'Various',
         sex: 'other'
