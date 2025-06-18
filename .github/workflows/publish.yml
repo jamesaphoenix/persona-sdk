@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'packages/persona-sdk/package.json'
+      - 'packages/prompt-optimizer/package.json'
   release:
     types: [created]
   workflow_dispatch:
@@ -30,18 +31,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
-      - name: Build package
+      - name: Build packages
         run: pnpm build
-        working-directory: ./packages/persona-sdk
       
       - name: Run tests
         run: pnpm test
-        working-directory: ./packages/persona-sdk
       
       - name: Check if version changed
         id: version-check
         run: |
-          if git diff HEAD^ HEAD --name-only | grep -q "packages/persona-sdk/package.json"; then
+          if git diff HEAD^ HEAD --name-only | grep -qE "packages/(persona-sdk|prompt-optimizer)/package.json"; then
             echo "version_changed=true" >> $GITHUB_OUTPUT
           else
             echo "version_changed=false" >> $GITHUB_OUTPUT
@@ -69,16 +68,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       
-      - name: Build package
+      - name: Build packages
         run: pnpm build
-        working-directory: ./packages/persona-sdk
         
       - name: Generate docs
-        run: pnpm docs
-        working-directory: ./packages/persona-sdk
+        run: |
+          cd packages/persona-sdk && DISPLAY= BROWSER=none pnpm docs
+          cd ../prompt-optimizer && DISPLAY= BROWSER=none pnpm docs
       
-      - name: Publish to npm
+      - name: Publish persona-sdk to npm
         run: npm publish --access public
         working-directory: ./packages/persona-sdk
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          
+      - name: Publish prompt-optimizer to npm
+        run: npm publish --access public
+        working-directory: ./packages/prompt-optimizer
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
