@@ -52,12 +52,17 @@ export class PersonaApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseUrl}${path}`;
-    const response = await this.fetch(url, {
-      ...options,
-      headers: {
+    // Filter out undefined header values
+    const headers = Object.fromEntries(
+      Object.entries({
         ...this.headers,
         ...options.headers,
-      },
+      }).filter(([_, value]) => value !== undefined)
+    );
+
+    const response = await this.fetch(url, {
+      ...options,
+      headers,
     });
 
     if (!response.ok) {
@@ -95,6 +100,9 @@ export class PersonaApiClient {
   async deletePersona(id: string): Promise<void> {
     await this.request<void>(`/personas/${id}`, {
       method: 'DELETE',
+      headers: {
+        'Content-Type': undefined,
+      },
     });
   }
 
@@ -149,6 +157,9 @@ export class PersonaApiClient {
   async deleteGroup(id: string): Promise<void> {
     await this.request<void>(`/groups/${id}`, {
       method: 'DELETE',
+      headers: {
+        'Content-Type': undefined,
+      },
     });
   }
 

@@ -55,7 +55,16 @@ export const personaQuerySchema = z.object({
   }).optional(),
   occupation: z.string().optional(),
   sex: z.string().optional(),
-  attributes: personaAttributesSchema.optional(),
+  attributes: z.preprocess((val) => {
+    if (typeof val === 'string') {
+      try {
+        return JSON.parse(val);
+      } catch {
+        return val;
+      }
+    }
+    return val;
+  }, personaAttributesSchema.optional()),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   offset: z.coerce.number().int().min(0).default(0),
   orderBy: z.enum(['name', 'age', 'created_at', 'updated_at']).default('created_at'),
@@ -80,8 +89,18 @@ export const personaGroupQuerySchema = z.object({
   name: z.string().optional(),
   limit: z.number().int().min(1).max(100).default(20),
   offset: z.number().int().min(0).default(0),
-  includeStats: z.boolean().default(false),
-  includeMembers: z.boolean().default(false),
+  includeStats: z.preprocess((val) => {
+    if (typeof val === 'string') {
+      return val === 'true';
+    }
+    return val;
+  }, z.boolean().default(false)),
+  includeMembers: z.preprocess((val) => {
+    if (typeof val === 'string') {
+      return val === 'true';
+    }
+    return val;
+  }, z.boolean().default(false)),
 });
 
 // Bulk operations

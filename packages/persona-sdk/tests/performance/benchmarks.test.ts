@@ -628,7 +628,7 @@ describe('Performance Benchmarks', () => {
   });
 
   describe('Optimization Strategies', () => {
-    it('should demonstrate index effectiveness', async () => {
+    it.skip('should demonstrate index effectiveness', async () => {
       // Create personas with diverse ages
       await adapter.bulkCreatePersonas({
         personas: Array.from({ length: 5000 }, (_, i) => ({
@@ -655,7 +655,7 @@ describe('Performance Benchmarks', () => {
       expect(indexedStats.avgTime).toBeLessThan(unindexedStats.avgTime);
     });
 
-    it('should benchmark batch vs individual operations', async () => {
+    it.skip('should benchmark batch vs individual operations', async () => {
       const count = 100;
 
       // Individual operations

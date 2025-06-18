@@ -20,7 +20,20 @@ class InMemoryDatabaseClient implements DatabaseClient {
   private idCounter = 1;
 
   async query<T = any>(text: string, values?: any[]): Promise<QueryResult<T>> {
-    const sql = text.toLowerCase();
+    const sql = text.toLowerCase().replace(/\s+/g, ' ').trim();
+
+    // Stats query - check for the exact pattern from PostgresAdapter.getStats()
+    if ((sql.includes('as total_personas') && sql.includes('as total_groups') && sql.includes('as avg_group_size')) ||
+        (sql.includes('count(*)') && sql.includes('personas') && sql.includes('persona_groups') && sql.includes('persona_group_stats'))) {
+      return {
+        rows: [{
+          total_personas: String(this.data.personas.size),
+          total_groups: String(this.data.groups.size),
+          avg_group_size: '0.00',
+        }] as any,
+        rowCount: 1,
+      };
+    }
 
     // INSERT personas
     if (sql.includes('insert into personas')) {
@@ -71,14 +84,48 @@ class InMemoryDatabaseClient implements DatabaseClient {
       return { rows: [{ count: String(this.data.personas.size) }] as any, rowCount: 1 };
     }
 
-    // SELECT personas with pagination
-    if (sql.includes('select * from personas') && sql.includes('limit')) {
-      const allPersonas = Array.from(this.data.personas.values());
-      const limit = values![values!.length - 2] || 20;
-      const offset = values![values!.length - 1] || 0;
-      const personas = allPersonas
-        .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
-        .slice(offset, offset + limit);
+    // SELECT personas with filtering and pagination
+    if (sql.includes('select * from personas')) {
+      let personas = Array.from(this.data.personas.values());
+      let paramIndex = 0;
+      
+      // Apply WHERE clause filters
+      if (sql.includes('where') && values && values.length > 0) {
+        // Handle occupation ILIKE filter
+        if (sql.includes('occupation ilike')) {
+          const occupationPattern = values[paramIndex++] as string;
+          const searchOccupation = occupationPattern.replace(/^%|%$/g, '');
+          personas = personas.filter(p => 
+            p.occupation && p.occupation.toLowerCase().includes(searchOccupation.toLowerCase())
+          );
+        }
+        
+        // Handle age range filters
+        if (sql.includes('age >=')) {
+          const minAge = values[paramIndex++];
+          personas = personas.filter(p => p.age >= minAge);
+        }
+        if (sql.includes('age <=')) {
+          const maxAge = values[paramIndex++];
+          personas = personas.filter(p => p.age <= maxAge);
+        }
+        
+        // Handle sex filter
+        if (sql.includes('sex =')) {
+          const sex = values[paramIndex++];
+          personas = personas.filter(p => p.sex === sex);
+        }
+      }
+      
+      // Sort and paginate
+      personas = personas.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
+      
+      if (sql.includes('limit') && values && values.length >= 2) {
+        const limit = values[values.length - 2] || 20;
+        const offset = values[values.length - 1] || 0;
+        personas = personas.slice(offset, offset + limit);
+      }
+      
       return { rows: personas as any, rowCount: personas.length };
     }
 
@@ -113,17 +160,6 @@ class InMemoryDatabaseClient implements DatabaseClient {
       return { rows: [], rowCount: 1 };
     }
 
-    // Stats query
-    if (sql.includes('total_personas')) {
-      return {
-        rows: [{
-          total_personas: String(this.data.personas.size),
-          total_groups: String(this.data.groups.size),
-          avg_group_size: '0',
-        }] as any,
-        rowCount: 1,
-      };
-    }
 
     // Default empty result
     return { rows: [], rowCount: 0 };
@@ -188,9 +224,9 @@ describe('API and SDK Integration', () => {
       // Save via API
       const created = await client.createPersona({
         name: persona.name,
-        age: persona.age,
-        occupation: persona.occupation,
-        sex: persona.sex,
+        age: persona.attributes.age,
+        occupation: persona.attributes.occupation,
+        sex: persona.attributes.sex,
         attributes: persona.attributes,
       });
 

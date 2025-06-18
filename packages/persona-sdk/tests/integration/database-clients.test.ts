@@ -21,7 +21,7 @@ class MockSupabaseClient {
     if (functionName === 'execute_sql') {
       // Handle raw SQL execution
       const { query, params: values } = params;
-      const sql = query.toLowerCase();
+      const sql = query.toLowerCase().replace(/\s+/g, ' ').trim();
       
       // Mock SQL execution
       if (sql.includes('insert into personas')) {
@@ -44,6 +44,99 @@ class MockSupabaseClient {
       if (sql.includes('select * from personas where id')) {
         const persona = this.data.get(values[0]);
         return { data: persona ? [persona] : [], error: null, count: persona ? 1 : 0 };
+      }
+
+      if (sql.includes('update personas') && sql.includes('where id')) {
+        const id = values[values.length - 1]; // ID is usually last parameter
+        const persona = this.data.get(id);
+        if (persona) {
+          // Update fields based on the query
+          if (sql.includes('name =')) persona.name = values[0];
+          if (sql.includes('age =')) {
+            const ageIndex = sql.includes('name =') ? 1 : 0;
+            persona.age = values[ageIndex];
+          }
+          if (sql.includes('occupation =')) {
+            let occIndex = 0;
+            if (sql.includes('name =')) occIndex++;
+            if (sql.includes('age =')) occIndex++;
+            persona.occupation = values[occIndex];
+          }
+          persona.updated_at = new Date();
+          return { data: [persona], error: null, count: 1 };
+        }
+        return { data: [], error: null, count: 0 };
+      }
+
+      if (sql.includes('delete from personas where id')) {
+        const id = values[0];
+        const deleted = this.data.delete(id);
+        return { data: [], error: null, count: deleted ? 1 : 0 };
+      }
+
+      if (sql.includes('select * from personas')) {
+        let personas = Array.from(this.data.values());
+        let paramIndex = 0;
+
+        // Apply WHERE clause filters
+        if (sql.includes('where') && values && values.length > 0) {
+          // Handle age range filters
+          if (sql.includes('age >=')) {
+            const minAge = values[paramIndex++];
+            personas = personas.filter(p => p.age >= minAge);
+          }
+          if (sql.includes('age <=')) {
+            const maxAge = values[paramIndex++];
+            personas = personas.filter(p => p.age <= maxAge);
+          }
+          
+          // Handle occupation filter
+          if (sql.includes('occupation ilike')) {
+            const occupationPattern = values[paramIndex++] as string;
+            const searchOccupation = occupationPattern.replace(/^%|%$/g, '');
+            personas = personas.filter(p => 
+              p.occupation && p.occupation.toLowerCase().includes(searchOccupation.toLowerCase())
+            );
+          }
+        }
+
+        // Apply pagination
+        if (sql.includes('limit') && values && values.length >= 2) {
+          const limit = values[values.length - 2] || 20;
+          const offset = values[values.length - 1] || 0;
+          personas = personas.slice(offset, offset + limit);
+        }
+
+        return { data: personas, error: null, count: personas.length };
+      }
+
+      if (sql.includes('count(*)') && sql.includes('personas')) {
+        return { data: [{ count: String(this.data.size) }], error: null, count: 1 };
+      }
+
+      // Handle stats query
+      if ((sql.includes('as total_personas') && sql.includes('as total_groups') && sql.includes('as avg_group_size')) ||
+          (sql.includes('count(*)') && sql.includes('personas') && sql.includes('persona_groups') && sql.includes('persona_group_stats'))) {
+        return {
+          data: [{
+            total_personas: String(this.data.size),
+            total_groups: '0',
+            avg_group_size: '0.00',
+          }],
+          error: null,
+          count: 1
+        };
+      }
+
+      // Handle generate_distribution_personas RPC call
+      if (sql.includes('generate_distribution_personas')) {
+        const count = values[0] || 10;
+        const personas = Array.from({ length: count }, (_, i) => ({
+          id: `sp_${this.idCounter++}`,
+          name: `Generated ${i}`,
+          age: Math.floor(Math.random() * 50) + 20,
+        }));
+        return { data: personas, error: null, count: personas.length };
       }
       
       return { data: [], error: null, count: 0 };
@@ -362,13 +455,170 @@ class MockPrismaClient {
   };
 
   $queryRawUnsafe = async (query: any, ...values: any[]) => {
-    // Simulate raw query for analytics
+    const sql = query.toLowerCase().replace(/\s+/g, ' ').trim();
+    
+    // Handle INSERT queries
+    if (sql.includes('insert into personas')) {
+      const id = `pr_${this.idCounter++}`;
+      const persona = {
+        id,
+        name: values[0],
+        age: values[1],
+        occupation: values[2],
+        sex: values[3],
+        attributes: values[4] || {},
+        metadata: values[5] || {},
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+      this.data.personas.set(id, persona);
+      return [persona];
+    }
+
+    if (sql.includes('insert into persona_groups')) {
+      const id = `prg_${this.idCounter++}`;
+      const group = {
+        id,
+        name: values[0],
+        description: values[1],
+        metadata: values[2] || {},
+        created_at: new Date(),
+        updated_at: new Date(),
+      };
+      this.data.personaGroups.set(id, group);
+      return [group];
+    }
+
+    if (sql.includes('insert into persona_group_members')) {
+      const id = `mem_${this.idCounter++}`;
+      const membership = {
+        id,
+        persona_id: values[0],
+        group_id: values[1],
+        joined_at: new Date(),
+      };
+      this.data.personaGroupMembers.set(id, membership);
+      return [];
+    }
+
+    // Handle SELECT queries
+    if (sql.includes('select * from personas where id')) {
+      const persona = this.data.personas.get(values[0]);
+      return persona ? [persona] : [];
+    }
+
+    if (sql.includes('select * from persona_groups where id')) {
+      const group = this.data.personaGroups.get(values[0]);
+      return group ? [group] : [];
+    }
+
+    if (sql.includes('get_persona_group_with_members')) {
+      const groupId = values[0];
+      const group = this.data.personaGroups.get(groupId);
+      if (!group) return [];
+      
+      const personas = [];
+      for (const membership of this.data.personaGroupMembers.values()) {
+        if (membership.group_id === groupId) {
+          const persona = this.data.personas.get(membership.persona_id);
+          if (persona) {
+            personas.push(persona);
+          }
+        }
+      }
+      
+      return [{
+        ...group,
+        personas: personas,
+      }];
+    }
+
+    if (sql.includes('update personas') && sql.includes('where id')) {
+      const id = values[values.length - 1];
+      const persona = this.data.personas.get(id);
+      if (persona) {
+        // Update fields based on the query
+        if (sql.includes('name =')) persona.name = values[0];
+        if (sql.includes('age =')) {
+          const ageIndex = sql.includes('name =') ? 1 : 0;
+          persona.age = values[ageIndex];
+        }
+        if (sql.includes('occupation =')) {
+          let occIndex = 0;
+          if (sql.includes('name =')) occIndex++;
+          if (sql.includes('age =')) occIndex++;
+          persona.occupation = values[occIndex];
+        }
+        persona.updated_at = new Date();
+        return [persona];
+      }
+      return [];
+    }
+
+    if (sql.includes('delete from personas where id')) {
+      const id = values[0];
+      const deleted = this.data.personas.delete(id);
+      return deleted ? [{ rowCount: 1 }] : [{ rowCount: 0 }];
+    }
+
+    if (sql.includes('select * from personas')) {
+      let personas = Array.from(this.data.personas.values());
+      let paramIndex = 0;
+
+      // Apply WHERE clause filters
+      if (sql.includes('where') && values && values.length > 0) {
+        // Handle age range filters
+        if (sql.includes('age >=')) {
+          const minAge = values[paramIndex++];
+          personas = personas.filter(p => p.age >= minAge);
+        }
+        if (sql.includes('age <=')) {
+          const maxAge = values[paramIndex++];
+          personas = personas.filter(p => p.age <= maxAge);
+        }
+        
+        // Handle occupation filter
+        if (sql.includes('occupation ilike')) {
+          const occupationPattern = values[paramIndex++] as string;
+          const searchOccupation = occupationPattern.replace(/^%|%$/g, '');
+          personas = personas.filter(p => 
+            p.occupation && p.occupation.toLowerCase().includes(searchOccupation.toLowerCase())
+          );
+        }
+      }
+
+      // Apply pagination
+      if (sql.includes('limit') && values && values.length >= 2) {
+        const limit = values[values.length - 2] || 20;
+        const offset = values[values.length - 1] || 0;
+        personas = personas.slice(offset, offset + limit);
+      }
+
+      return personas;
+    }
+
+    // Handle stats query - check before simple count query
+    if ((sql.includes('as total_personas') && sql.includes('as total_groups') && sql.includes('as avg_group_size')) ||
+        (sql.includes('count(*)') && sql.includes('personas') && sql.includes('persona_groups') && sql.includes('persona_group_stats'))) {
+      return [{
+        total_personas: String(this.data.personas.size),
+        total_groups: String(this.data.personaGroups.size),
+        avg_group_size: '0.00',
+      }];
+    }
+
+    if (sql.includes('count(*)') && sql.includes('personas')) {
+      return [{ count: String(this.data.personas.size) }];
+    }
+    
+    // Simulate analytics queries
     if (query.includes('AVG(age)')) {
       const personas = Array.from(this.data.personas.values());
       const ages = personas.filter(p => p.age).map(p => p.age);
       const avg = ages.reduce((a, b) => a + b, 0) / ages.length;
       return [{ avg_age: avg, total_count: personas.length }];
     }
+    
     return [];
   };
   
@@ -558,8 +808,8 @@ describe('Database Client Integration Tests', () => {
       });
 
       // Get count
-      const stats = await adapter.getPersonaStats();
-      expect(stats.totalCount).toBeGreaterThanOrEqual(20);
+      const stats = await adapter.getStats();
+      expect(stats.totalPersonas).toBeGreaterThanOrEqual(20);
     });
 
     it('should handle Prisma-specific query features', async () => {

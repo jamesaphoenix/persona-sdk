@@ -10,6 +10,7 @@ import { fastifySwaggerUi } from '@fastify/swagger-ui';
 import { jsonSchemaTransform } from 'fastify-type-provider-zod';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
+import { z } from 'zod';
 
 import { PostgresAdapter } from '../adapters/postgres/adapter.js';
 import type { DatabaseClient } from '../adapters/postgres/adapter.js';
@@ -461,6 +462,3 @@ declare module 'fastify' {
     db: PostgresAdapter;
   }
 }
-
-// Import for Zod types
-import { z } from 'zod';
