@@ -82,7 +82,8 @@ jobs:
         run: |
           export DISPLAY=
           export BROWSER=none
-          pnpm docs
+          cd packages/persona-sdk && pnpm docs
+          cd ../prompt-optimizer && pnpm docs
         env:
           CI: true
         
