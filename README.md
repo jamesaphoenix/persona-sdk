@@ -155,6 +155,217 @@ const optimizedResult = await optimizer.optimize(
 console.log(`Optimization improved score from baseline to ${optimizedResult.finalScore}`);
 ```
 
+## 📚 More Examples
+
+### Advanced Persona Generation with Correlations
+
+```typescript
+import { 
+  PersonaBuilder, 
+  CorrelatedDistribution,
+  NormalDistribution,
+  UniformDistribution,
+  ExponentialDistribution
+} from '@jamesaphoenix/persona-sdk';
+
+// Create correlated attributes for realistic personas
+const dist = new CorrelatedDistribution({
+  age: new NormalDistribution(35, 10),
+  income: new NormalDistribution(75000, 25000),
+  yearsExperience: new UniformDistribution(0, 20),
+  coffeePerDay: new ExponentialDistribution(0.3)
+});
+
+// Add realistic correlations
+dist.addConditional({
+  attribute: 'income',
+  dependsOn: 'age',
+  transform: (income, age) => {
+    // Income increases with age
+    const ageFactor = (age - 25) / 10;
+    return income + (ageFactor * 15000);
+  }
+});
+
+dist.addConditional({
+  attribute: 'yearsExperience',
+  dependsOn: 'age',
+  transform: (years, age) => {
+    // Experience can't exceed age - 22
+    return Math.min(years, Math.max(0, age - 22));
+  }
+});
+
+// Generate personas with realistic correlations
+const builder = new PersonaBuilder();
+const personas = Array.from({ length: 10 }, () => 
+  builder.fromDistributions(dist.getDistributions())
+);
+
+console.log('Generated personas with realistic age-income correlation');
+```
+
+### AI-Powered Persona Generation from Media
+
+```typescript
+import { 
+  MediaToPersonaGenerator,
+  PersonaGroup 
+} from '@jamesaphoenix/persona-sdk';
+
+// Initialize with your OpenAI API key
+const generator = new MediaToPersonaGenerator(process.env.OPENAI_API_KEY);
+
+// Generate persona from a social media post
+const socialPost = `
+Just finished my 5th marathon this year! 🏃‍♀️ 
+Morning runs + plant-based diet = unstoppable energy. 
+Who else is training for the NYC marathon?
+`;
+
+const result = await generator.fromTextPost(socialPost, {
+  generateMultiple: false,
+  includeDistributions: true
+});
+
+console.log('Generated persona:', result.persona);
+console.log('Inferred distributions:', result.distributions);
+console.log('Tokens used:', result.usage.total_tokens);
+
+// Generate multiple personas from an image
+const imageResult = await generator.fromImage('./lifestyle-photo.jpg', {
+  generateMultiple: true,
+  count: 5
+});
+
+// Create a persona group from the results
+const group = new PersonaGroup();
+imageResult.personas.forEach(p => group.addPersona(p));
+
+console.log('Group statistics:', group.getStats());
+```
+
+### Prompt Optimization with Different Strategies
+
+```typescript
+import {
+  BootstrapOptimizer,
+  COPROOptimizer,
+  RandomSearchOptimizer,
+  EnsembleOptimizer,
+  createCompositeMetric,
+  ExactMatch,
+  FuzzyMatch,
+  PassageMatch,
+  createMockLanguageModel
+} from '@jamesaphoenix/prompt-optimizer';
+
+// Create different optimizers
+const teacherModel = createMockLanguageModel();
+
+const bootstrapOpt = new BootstrapOptimizer({
+  maxLabeled: 10,
+  maxBootstrapped: 5,
+  teacherModel,
+  metric: ExactMatch
+});
+
+const coproOpt = new COPROOptimizer(teacherModel, {
+  breadth: 10,
+  depth: 3,
+  temperature: 0.7,
+  metric: FuzzyMatch
+});
+
+const randomOpt = new RandomSearchOptimizer({
+  numCandidates: 20,
+  budget: 50,
+  strategy: 'mutation',
+  metric: PassageMatch
+}, teacherModel);
+
+// Run optimizations in parallel
+const [bootstrapResult, coproResult, randomResult] = await Promise.all([
+  bootstrapOpt.optimize(module, trainset, valset),
+  coproOpt.optimize(module, trainset, valset),
+  randomOpt.optimize(module, trainset, valset)
+]);
+
+// Create an ensemble from the best optimizers
+const ensemble = EnsembleOptimizer.fromOptimizationResults(
+  [bootstrapResult, coproResult, randomResult],
+  { votingStrategy: 'soft' }
+);
+
+// Use the ensemble for predictions
+const ensemblePrediction = await ensemble.predict('What is 2+2?');
+console.log('Ensemble prediction:', ensemblePrediction.output);
+console.log('Confidence:', ensemblePrediction.confidence);
+```
+
+### Media Diet Influence on Personas
+
+```typescript
+import { 
+  MediaDietManager,
+  PersonaGroup,
+  PersonaBuilder
+} from '@jamesaphoenix/persona-sdk';
+
+// Create a group of personas
+const group = new PersonaGroup();
+const builder = new PersonaBuilder();
+
+// Add diverse personas
+for (let i = 0; i < 20; i++) {
+  group.addPersona(builder.randomPersona());
+}
+
+// Initialize media diet manager
+const dietManager = new MediaDietManager(process.env.OPENAI_API_KEY);
+
+// Define media content that will influence the group
+const mediaInfluences = [
+  {
+    type: 'news' as const,
+    content: 'Breaking: Tech industry sees record growth in AI sector',
+    weight: 0.8
+  },
+  {
+    type: 'social' as const,
+    content: 'Everyone is talking about sustainable living and eco-friendly choices',
+    weight: 0.6
+  },
+  {
+    type: 'advertisement' as const,
+    content: 'New fitness tracker: Monitor your health 24/7',
+    weight: 0.4
+  }
+];
+
+// Apply media influences over time
+for (const media of mediaInfluences) {
+  await dietManager.applyMediaInfluence(group, media);
+  console.log(`Applied ${media.type} influence`);
+}
+
+// Analyze how the group changed
+const groupStats = group.getStats();
+console.log('Group statistics after media influence:', groupStats);
+
+// Get the most influenced personas
+const mostInfluenced = group.getAll()
+  .sort((a, b) => {
+    // Sort by some criteria, e.g., techInterest attribute
+    const aInterest = a.attributes.techInterest as number || 0;
+    const bInterest = b.attributes.techInterest as number || 0;
+    return bInterest - aInterest;
+  })
+  .slice(0, 5);
+
+console.log('Most influenced personas:', mostInfluenced);
+```
+
 ## 🏗️ Monorepo Structure
 
 ```
