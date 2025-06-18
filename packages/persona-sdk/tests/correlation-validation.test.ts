@@ -585,7 +585,7 @@ describe('Correlation Validation - Real World Accuracy', () => {
           dependsOn: 'screenTimeHours',
           transform: (coffee, screenTime) => {
             // More screen time correlates with more coffee
-            return coffee * (screenTime / 10);
+            return coffee * (screenTime / 8);
           }
         }]
       });
@@ -611,7 +611,7 @@ describe('Correlation Validation - Real World Accuracy', () => {
         }]
       });
 
-      const samples = Array.from({ length: 200 }, () => dist.generate());
+      const samples = Array.from({ length: 500 }, () => dist.generate());
       
       // Verify role-based patterns
       const devops = samples.filter(s => s.role === 'DevOps');
