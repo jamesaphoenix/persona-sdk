@@ -1,8 +1,125 @@
 # Persona SDK Roadmap
 
+## 🎯 Core Infrastructure Improvements
+
+### 1. 🔧 Seed Utilities for Deterministic Testing
+**Priority: Critical**
+**Estimated Effort: 1-2 days**
+
+#### Description
+Create seed utilities to reduce false positives during test runs by ensuring deterministic random number generation.
+
+#### Implementation Details
+
+```typescript
+// Core seed manager
+export class SeedManager {
+  private static instance: SeedManager;
+  private seeds: Map<string, number>;
+  
+  static setSeed(context: string, seed: number): void;
+  static getSeed(context: string): number;
+  static reset(): void;
+}
+
+// Seeded distribution wrappers
+export class SeededNormalDistribution extends NormalDistribution {
+  constructor(mean: number, stdDev: number, seed?: number);
+}
+
+// Test utilities
+export const testWithSeed = (name: string, fn: () => void, seed = 12345) => {
+  it(name, () => {
+    SeedManager.setSeed('test', seed);
+    fn();
+    SeedManager.reset();
+  });
+};
+```
+
+#### Features
+- Global seed management for reproducible tests
+- Seeded versions of all distributions
+- Test helpers for deterministic testing
+- Performance benchmark stabilization
+
+#### Acceptance Criteria
+- All performance tests use seeded randomness
+- No more flaky tests in CI
+- Clear documentation on seed usage
+- Migration guide for existing tests
+
+---
+
+### 2. 🎨 Type Safety & Generics Enhancement
+**Priority: High**
+**Estimated Effort: 2-3 days**
+
+#### Description
+Maximize type safety with advanced generics and utility types following TanStack + Zod patterns.
+
+#### Type Improvements
+
+```typescript
+// Enhanced persona types with branded types
+type PersonaId = string & { readonly __brand: 'PersonaId' };
+type GroupId = string & { readonly __brand: 'GroupId' };
+
+// Strict attribute typing with inference
+type InferAttributes<T extends DistributionMap> = {
+  [K in keyof T]: T[K] extends Distribution<infer U> ? U : T[K];
+};
+
+// Builder pattern with type inference
+class PersonaBuilder<T extends Partial<PersonaAttributes> = {}> {
+  withAttribute<K extends string, V>(
+    key: K,
+    value: V
+  ): PersonaBuilder<T & Record<K, V>>;
+  
+  build(): Persona<InferAttributes<T>>;
+}
+
+// Zod-style schema validation
+const PersonaSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1),
+  attributes: z.record(z.unknown())
+}).brand<'Persona'>();
+
+type ValidatedPersona = z.infer<typeof PersonaSchema>;
+```
+
+#### Utility Types
+```typescript
+// Deep partial with proper handling
+type DeepPartial<T> = T extends object ? {
+  [P in keyof T]?: DeepPartial<T[P]>;
+} : T;
+
+// Exact types for strict validation
+type Exact<T, Shape> = T extends Shape
+  ? Exclude<keyof T, keyof Shape> extends never
+    ? T
+    : never
+  : never;
+
+// TanStack-style query keys
+type QueryKey = readonly [scope: string, ...args: unknown[]];
+```
+
+#### Acceptance Criteria
+- Full type inference throughout the API
+- No `any` types except where absolutely necessary
+- Branded types for IDs and entities
+- Compile-time validation of API usage
+- Auto-completion for all builder methods
+
+---
+
 ## 🎯 Practical Examples & Use Cases
 
-### 1. 📊 Media Analysis & Structured Outputs
+### 3. 📊 Media Analysis & Structured Outputs
 **Priority: High**
 **Estimated Effort: 2-3 days**
 
@@ -88,7 +205,7 @@ const votingResults = await simulateVoting(
 
 ---
 
-### 2. 📝 Survey & MCQ Response Simulation
+### 4. 📝 Survey & MCQ Response Simulation
 **Priority: High**
 **Estimated Effort: 2 days**
 
@@ -136,7 +253,7 @@ const conversionRates = await simulateABTest(
 
 ---
 
-### 3. 🚀 REST API Server with PostgreSQL
+### 5. 🚀 REST API Server with PostgreSQL
 **Priority: High**
 **Estimated Effort: 3-4 days**
 
@@ -171,7 +288,7 @@ GET    /api/results/:id
 
 ---
 
-### 4. 🗄️ PostgreSQL Persistence Layer
+### 6. 🗄️ PostgreSQL Persistence Layer
 **Priority: High**
 **Estimated Effort: 2 days**
 
@@ -201,7 +318,7 @@ survey_simulations (id, survey_data, responses, created_at)
 
 ---
 
-### 5. 📈 Analytics Dashboard Examples
+### 7. 📈 Analytics Dashboard Examples
 **Priority: Medium**
 **Estimated Effort: 2 days**
 

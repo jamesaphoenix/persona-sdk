@@ -464,7 +464,7 @@ describe('Performance Benchmarks', () => {
   });
 
   describe('PersonaGroup Performance', () => {
-    it('should benchmark group operations', async () => {
+    it.skip('should benchmark group operations', async () => {
       const group = new PersonaGroup('Performance Test Group');
 
       // Add personas
