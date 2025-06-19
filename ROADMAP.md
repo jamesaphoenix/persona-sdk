@@ -1013,6 +1013,285 @@ console.log(personas.getSegments()); // Natural clusters from data
 
 ---
 
+### 11. 🗃️ Database Runtime Testing Suite with Custom Runtimes
+**Status: Pending**
+**Priority: High**
+**Estimated Effort: 2-3 days**
+
+#### Description
+Generate comprehensive runtime tests for all database adapters (Prisma, Supabase, node-postgres) with custom runtime environments for each. This ensures our database persistence layer works correctly across different database providers and configurations. Each database provider needs its own isolated runtime testing environment with VCR cassettes for reproducible tests.
+
+#### Core Requirements
+- **Prisma Runtime Tests**: Full CRUD operations with schema migrations
+- **Supabase Runtime Tests**: Real-time subscriptions and auth integration
+- **Node-Postgres Runtime Tests**: Raw SQL operations and connection pooling
+- **Custom Runtime Environments**: Isolated test environments for each provider
+- **VCR Cassettes**: Record/replay for external API calls (Supabase Auth, etc.)
+- **Connection Testing**: Test connection pooling, timeouts, and error handling
+
+#### Testing Strategy
+
+##### A. Prisma Runtime Testing
+```typescript
+// tests/database/prisma-runtime.test.js
+import test from 'tape';
+import { PrismaDatabaseClient } from '@jamesaphoenix/persona-sdk';
+import { PrismaClient } from '@prisma/client';
+
+const runPrismaTests = async () => {
+  const prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: process.env.PRISMA_TEST_DATABASE_URL || 'postgresql://test:test@localhost:5433/persona_test'
+      }
+    }
+  });
+  
+  const client = new PrismaDatabaseClient(prisma);
+  
+  // Test persona creation
+  const persona = await client.createPersona({
+    name: 'Test Persona',
+    attributes: { age: 25, occupation: 'Developer', sex: 'other' },
+    groupId: null
+  });
+  
+  // Test persona retrieval
+  const retrieved = await client.getPersona(persona.id);
+  assert.equal(retrieved.name, 'Test Persona');
+  
+  // Test persona updates
+  const updated = await client.updatePersona(persona.id, {
+    attributes: { age: 26, occupation: 'Senior Developer', sex: 'other' }
+  });
+  assert.equal(updated.attributes.age, 26);
+  
+  // Test persona groups
+  const group = await client.createPersonaGroup({
+    name: 'Test Group',
+    description: 'Testing group'
+  });
+  
+  // Test pagination and filtering
+  const personas = await client.getPersonas({
+    limit: 10,
+    offset: 0,
+    groupId: group.id
+  });
+  
+  await client.deletePersona(persona.id);
+  await client.deletePersonaGroup(group.id);
+};
+```
+
+##### B. Supabase Runtime Testing
+```typescript
+// tests/database/supabase-runtime.test.js
+import test from 'tape';
+import { SupabaseDatabaseClient } from '@jamesaphoenix/persona-sdk';
+import { createClient } from '@supabase/supabase-js';
+import { VCRCassettes } from '../cassettes';
+
+const runSupabaseTests = async () => {
+  const cassettes = new VCRCassettes({
+    name: 'supabase-tests',
+    record: process.env.RECORD_CASSETTES === 'true'
+  });
+  
+  await cassettes.setup();
+  
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY
+  );
+  
+  const client = new SupabaseDatabaseClient(supabase);
+  
+  // Test real-time subscriptions
+  let realtimeUpdates = 0;
+  const channel = supabase
+    .channel('personas')
+    .on('postgres_changes', { 
+      event: '*', 
+      schema: 'public', 
+      table: 'personas' 
+    }, () => {
+      realtimeUpdates++;
+    })
+    .subscribe();
+  
+  // Test auth integration
+  const { data: user, error } = await supabase.auth.signUp({
+    email: 'test@example.com',
+    password: 'testpassword123'
+  });
+  
+  if (error) throw error;
+  
+  // Test Row Level Security
+  const persona = await client.createPersona({
+    name: 'User Persona',
+    attributes: { age: 30, occupation: 'Designer', sex: 'female' },
+    userId: user.user.id
+  });
+  
+  // Test that user can only see their own personas
+  const userPersonas = await client.getPersonas({ userId: user.user.id });
+  assert(userPersonas.data.every(p => p.userId === user.user.id));
+  
+  await channel.unsubscribe();
+  await cassettes.teardown();
+};
+```
+
+##### C. Node-Postgres Runtime Testing
+```typescript
+// tests/database/postgres-runtime.test.js
+import test from 'tape';
+import { PgDatabaseClient } from '@jamesaphoenix/persona-sdk';
+import { Pool } from 'pg';
+
+const runPostgresTests = async () => {
+  const pool = new Pool({
+    host: process.env.POSTGRES_HOST || 'localhost',
+    port: parseInt(process.env.POSTGRES_PORT || '5432'),
+    database: process.env.POSTGRES_DB || 'persona_test',
+    user: process.env.POSTGRES_USER || 'test',
+    password: process.env.POSTGRES_PASSWORD || 'test',
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  });
+  
+  const client = new PgDatabaseClient(pool);
+  
+  // Test connection pooling
+  const connections = await Promise.all(
+    Array.from({ length: 5 }, () => client.getPersonas({ limit: 1 }))
+  );
+  assert(connections.length === 5);
+  
+  // Test transactions
+  await client.withTransaction(async (trx) => {
+    const persona = await trx.createPersona({
+      name: 'Transactional Persona',
+      attributes: { age: 35, occupation: 'Manager', sex: 'male' }
+    });
+    
+    const group = await trx.createPersonaGroup({
+      name: 'Transactional Group',
+      description: 'Created in transaction'
+    });
+    
+    await trx.updatePersona(persona.id, { groupId: group.id });
+    
+    // Test rollback scenario
+    if (process.env.TEST_ROLLBACK) {
+      throw new Error('Intentional rollback');
+    }
+  });
+  
+  // Test connection error handling
+  const badPool = new Pool({ host: 'nonexistent-host' });
+  const badClient = new PgDatabaseClient(badPool);
+  
+  try {
+    await badClient.getPersonas();
+    assert(false, 'Should have thrown connection error');
+  } catch (error) {
+    assert(error.message.includes('connect'));
+  }
+  
+  await pool.end();
+};
+```
+
+##### D. Custom Runtime Environments
+```bash
+# scripts/setup-db-runtimes.sh
+#!/bin/bash
+
+# Setup Postgres Test Database
+docker run -d \
+  --name persona-postgres-test \
+  -e POSTGRES_USER=test \
+  -e POSTGRES_PASSWORD=test \
+  -e POSTGRES_DB=persona_test \
+  -p 5433:5432 \
+  postgres:15
+
+# Setup Supabase Local Development
+npx supabase start --db-port 5434
+
+# Setup Prisma Test Schema
+DATABASE_URL="postgresql://test:test@localhost:5433/persona_test" \
+npx prisma migrate dev --name init
+
+# Run database-specific runtime tests
+pnpm test:runtime:prisma
+pnpm test:runtime:supabase  
+pnpm test:runtime:postgres
+```
+
+#### Package.json Scripts
+```json
+{
+  "scripts": {
+    "test:runtime:prisma": "node --loader ./loader.js tests/database/prisma-runtime.test.js",
+    "test:runtime:supabase": "node --loader ./loader.js tests/database/supabase-runtime.test.js",
+    "test:runtime:postgres": "node --loader ./loader.js tests/database/postgres-runtime.test.js",
+    "test:runtime:db-all": "pnpm test:runtime:prisma && pnpm test:runtime:supabase && pnpm test:runtime:postgres",
+    "setup:db-runtimes": "bash scripts/setup-db-runtimes.sh",
+    "teardown:db-runtimes": "bash scripts/teardown-db-runtimes.sh"
+  }
+}
+```
+
+#### Docker Compose for Testing
+```yaml
+# docker-compose.test.yml
+version: '3.8'
+services:
+  postgres-test:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: persona_test
+    ports:
+      - "5433:5432"
+    
+  supabase-test:
+    image: supabase/postgres:15.1.0.117
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    command: 
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+```
+
+#### Acceptance Criteria
+- ✅ All three database adapters have comprehensive runtime tests
+- ✅ Each database provider has isolated test environment
+- ✅ Connection pooling and error handling tested
+- ✅ Transactions and rollback scenarios covered
+- ✅ Real-time features tested (Supabase subscriptions)
+- ✅ VCR cassettes for external API calls
+- ✅ Performance testing under load
+- ✅ CI/CD integration with parallel database testing
+
+#### Benefits
+- **Production Confidence**: Catch database-specific bugs before deployment
+- **Provider Comparison**: Validate performance across database providers
+- **Error Scenarios**: Test connection failures and recovery
+- **Real-time Features**: Ensure subscriptions and live updates work correctly
+- **Security Testing**: Validate Row Level Security and auth integration
+
+---
+
 ## Contributing
 
 To work on any of these examples:

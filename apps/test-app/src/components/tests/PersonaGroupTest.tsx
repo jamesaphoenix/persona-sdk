@@ -70,7 +70,7 @@ export function PersonaGroupTest() {
               group.add(persona1)
               group.add(persona2)
               
-              const removed = group.remove(persona1)
+              const removed = group.remove(persona1.name)
               
               if (!removed) {
                 throw new Error('remove() should return true when persona exists')
@@ -84,7 +84,7 @@ export function PersonaGroupTest() {
                 throw new Error('Wrong persona removed')
               }
               
-              const removedAgain = group.remove(persona1)
+              const removedAgain = group.remove(persona1.name)
               if (removedAgain) {
                 throw new Error('remove() should return false for non-existent persona')
               }
@@ -105,14 +105,16 @@ export function PersonaGroupTest() {
                 group.add(PersonaBuilder.create().withName(`Person ${i}`).build())
               }
               
-              if (group.size !== 5) {
-                throw new Error('Setup failed')
+              const expectedSize = 5;
+              if (group.size !== expectedSize) {
+                throw new Error(`Setup failed: expected ${expectedSize}, got ${group.size}`)
               }
               
               group.clear()
               
-              if (group.size !== 0) {
-                throw new Error(`Expected size 0 after clear, got ${group.size}`)
+              const currentSize: number = group.size;
+              if (currentSize !== 0) {
+                throw new Error(`Expected size 0 after clear, got ${currentSize}`)
               }
               
               if (group.personas.length !== 0) {
@@ -217,16 +219,19 @@ export function PersonaGroupTest() {
             onClick={() => runTest('PersonaGroup.generate', async () => {
               const group = await PersonaGroup.generate({
                 size: 25,
-                attributes: {
-                  age: new NormalDistribution(28, 6),
-                  occupation: new CategoricalDistribution([
-                    { value: 'Developer', probability: 0.5 },
-                    { value: 'Manager', probability: 0.3 },
+                segments: [{
+                  weight: 1.0,
+                  attributes: {
+                    age: new NormalDistribution(28, 6),
+                    occupation: new CategoricalDistribution([
+                      { value: 'Developer', probability: 0.5 },
+                      { value: 'Manager', probability: 0.3 },
                     { value: 'Designer', probability: 0.2 },
                   ]),
                   sex: 'other',
                   experience: new UniformDistribution(1, 10),
-                }
+                  }
+                }]
               })
               
               if (group.size !== 25) {

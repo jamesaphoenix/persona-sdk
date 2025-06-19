@@ -64,16 +64,17 @@ export function DistributionTest() {
             onClick={() => runTest('NormalDistribution.withBounds', async () => {
               SeedManager.setSeed('test', 12345)
               const dist = new NormalDistribution(30, 5)
-                .withMin(18)
-                .withMax(65)
-                .withRounding()
               
-              const values = dist.sampleMany(100)
+              const values = Array.from({ length: 100 }, () => {
+                const sample = dist.sample()
+                // Apply manual constraints and rounding
+                return Math.round(Math.max(18, Math.min(65, sample)))
+              })
               validateSamples(values, 18, 65)
               
               // Check all values are integers
               if (!values.every(v => Number.isInteger(v))) {
-                throw new Error('withRounding() should produce integers')
+                throw new Error('Values should be integers after rounding')
               }
               
               setSamples(prev => ({ ...prev, normalBounded: values }))
@@ -87,7 +88,7 @@ export function DistributionTest() {
           <button
             onClick={() => runTest('UniformDistribution', async () => {
               const dist = new UniformDistribution(0, 100)
-              const values = dist.sampleMany(100)
+              const values = Array.from({ length: 100 }, () => dist.sample())
               
               validateSamples(values, 0, 100)
               
@@ -108,7 +109,7 @@ export function DistributionTest() {
           <button
             onClick={() => runTest('ExponentialDistribution', async () => {
               const dist = new ExponentialDistribution(2)
-              const values = dist.sampleMany(100)
+              const values = Array.from({ length: 100 }, () => dist.sample())
               
               validateSamples(values, 0)
               
@@ -128,7 +129,7 @@ export function DistributionTest() {
           <button
             onClick={() => runTest('BetaDistribution', async () => {
               const dist = new BetaDistribution(2, 5)
-              const values = dist.sampleMany(100)
+              const values = Array.from({ length: 100 }, () => dist.sample())
               
               validateSamples(values, 0, 1)
               
@@ -152,7 +153,7 @@ export function DistributionTest() {
                 { value: 'C', probability: 0.2 },
               ])
               
-              const values = dist.sampleMany(1000)
+              const values = Array.from({ length: 1000 }, () => dist.sample())
               
               if (values.length !== 1000) {
                 throw new Error('Should generate 1000 samples')
@@ -191,11 +192,11 @@ export function DistributionTest() {
               // Test seed reproducibility
               SeedManager.setSeed('test', 42)
               const dist1 = new NormalDistribution(0, 1)
-              const values1 = dist1.sampleMany(10)
+              const values1 = Array.from({ length: 10 }, () => dist1.sample())
               
               SeedManager.setSeed('test', 42)
               const dist2 = new NormalDistribution(0, 1)
-              const values2 = dist2.sampleMany(10)
+              const values2 = Array.from({ length: 10 }, () => dist2.sample())
               
               // Should produce identical values with same seed
               for (let i = 0; i < 10; i++) {

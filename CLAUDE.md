@@ -21,6 +21,8 @@ This is a TypeScript SDK for generating personas from statistical distributions.
 - Use TDD approach with Vitest
 - NEVER use Jest - Vitest ALL THE WAY
 - NEVER disable tests - always fix the underlying issue instead of disabling tests
+- NEVER disable TypeScript type-checking - always fix the actual type errors
+- This is a production-grade project - maintain strict quality standards
 - Write tests first, then implementation
 - Focus on behavior testing
 - Test edge cases and error states

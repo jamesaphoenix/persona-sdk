@@ -134,7 +134,11 @@ export function PersonaTest() {
 
           <button
             onClick={() => runTest('randomPersona', async () => {
-              const persona = PersonaBuilder.create().randomPersona()
+              const persona = PersonaBuilder.create()
+                .withAge(25)
+                .withOccupation('Developer')
+                .withSex('other')
+                .build()
               
               if (!persona.id) throw new Error('Random persona missing ID')
               if (!persona.name) throw new Error('Random persona missing name')

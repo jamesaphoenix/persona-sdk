@@ -47,18 +47,17 @@ export function AIFeaturesTest() {
               checkApiKey()
               
               const selector = new DistributionSelectorLangChain(apiKey)
-              const result = await selector.selectDistributions({
-                description: 'Young tech professionals in Silicon Valley',
-                requirements: [
-                  'Age should skew younger (22-35)',
-                  'High income variation',
-                  'Mostly engineers and designers'
-                ],
-                attributes: ['age', 'income', 'occupation', 'experience_years'],
+              const result = await selector.selectDistribution({
+                attribute: 'age',
+                context: 'Young tech professionals in Silicon Valley aged 22-35 with high income variation, mostly engineers and designers',
+                constraints: {
+                  min: 22,
+                  max: 35
+                }
               })
               
-              if (!result.distributions) {
-                throw new Error('No distributions returned')
+              if (!result.distribution) {
+                throw new Error('No distribution returned')
               }
               
               if (!result.reasoning) {
@@ -162,10 +161,18 @@ export function AIFeaturesTest() {
                 marketSize: z.number(),
               })
               
+              // Create a test persona group for generateCustom
+              const group = new PersonaGroup('Developers')
+              group.generateFromDistributions(10, {
+                age: new NormalDistribution(28, 5),
+                occupation: 'Software Engineer',
+                sex: 'other',
+              })
+
               const result = await generator.generateCustom(
-                'A tool for developers to manage their API keys securely',
+                group,
                 ProductIdeaSchema,
-                'Generate a product idea based on this concept'
+                'Generate a product idea based on this concept: A tool for developers to manage their API keys securely'
               )
               
               if (!result.data) {
