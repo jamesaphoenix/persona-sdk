@@ -2,7 +2,8 @@
 
 ## 🎯 Core Infrastructure Improvements
 
-### 1. 🔧 Seed Utilities for Deterministic Testing
+### 1. ✅ Seed Utilities for Deterministic Testing
+**Status: COMPLETED**
 **Priority: Critical**
 **Estimated Effort: 1-2 days**
 
@@ -51,7 +52,8 @@ export const testWithSeed = (name: string, fn: () => void, seed = 12345) => {
 
 ---
 
-### 2. 🎨 Type Safety & Generics Enhancement
+### 2. ✅ Type Safety & Generics Enhancement
+**Status: COMPLETED**
 **Priority: High**
 **Estimated Effort: 2-3 days**
 
@@ -119,7 +121,8 @@ type QueryKey = readonly [scope: string, ...args: unknown[]];
 
 ## 🎯 Practical Examples & Use Cases
 
-### 3. 📊 Media Analysis & Structured Outputs
+### 3. ✅ Media Analysis & Structured Outputs
+**Status: COMPLETED**
 **Priority: High**
 **Estimated Effort: 2-3 days**
 
@@ -205,7 +208,8 @@ const votingResults = await simulateVoting(
 
 ---
 
-### 4. 📝 Survey & MCQ Response Simulation
+### 4. ✅ Survey & MCQ Response Simulation
+**Status: COMPLETED**
 **Priority: High**
 **Estimated Effort: 2 days**
 
@@ -253,7 +257,8 @@ const conversionRates = await simulateABTest(
 
 ---
 
-### 5. 🚀 REST API Server with PostgreSQL
+### 5. ✅ REST API Server with PostgreSQL
+**Status: COMPLETED**
 **Priority: High**
 **Estimated Effort: 3-4 days**
 
@@ -288,7 +293,8 @@ GET    /api/results/:id
 
 ---
 
-### 6. 🗄️ PostgreSQL Persistence Layer
+### 6. ✅ PostgreSQL Persistence Layer
+**Status: COMPLETED**
 **Priority: High**
 **Estimated Effort: 2 days**
 
@@ -645,10 +651,46 @@ export function AIFeaturesTest() {
 - [ ] Memory leaks under load
 - [ ] Performance under 1000+ personas
 
+#### Function Testing Diff Tracking
+**CRITICAL**: We must store a diff of functions that have been tested to ensure comprehensive coverage.
+
+```typescript
+// testing-manifest.json
+{
+  "lastUpdated": "2024-01-15T10:30:00Z",
+  "testedFunctions": {
+    "PersonaBuilder": {
+      "create": { "tested": true, "lastTest": "2024-01-15T10:30:00Z" },
+      "withName": { "tested": true, "lastTest": "2024-01-15T10:30:00Z" },
+      "withAge": { "tested": false, "lastTest": null },
+      "build": { "tested": true, "lastTest": "2024-01-15T10:30:00Z" }
+    },
+    "PersonaGroup": {
+      "constructor": { "tested": true, "lastTest": "2024-01-15T10:30:00Z" },
+      "add": { "tested": false, "lastTest": null },
+      "generateFromDistributions": { "tested": true, "lastTest": "2024-01-15T10:30:00Z" }
+    },
+    "NormalDistribution": {
+      "sample": { "tested": true, "lastTest": "2024-01-15T10:30:00Z" },
+      "sampleMany": { "tested": false, "lastTest": null }
+    }
+    // ... all other functions
+  },
+  "coverage": {
+    "total": 245,
+    "tested": 187,
+    "percentage": 76.3
+  }
+}
+```
+
 #### Acceptance Criteria
 - **MUST HAVE: Dedicated React test application** for UI/hook testing
 - **MUST HAVE: VCR cassettes** for all OpenAI API interactions
+- **MUST HAVE: Function testing diff tracking** with JSON manifest
 - Runtime test suite covering 100% of public APIs
+- Automated tracking of which functions have been tested at runtime
+- Function coverage dashboard showing tested vs untested methods
 - Automated end-to-end tests for critical workflows
 - Performance regression testing
 - Error scenario testing (network failures, bad data, etc.)
@@ -656,6 +698,7 @@ export function AIFeaturesTest() {
 - CI/CD pipeline runs full runtime test suite with cassettes
 - Manual testing playbook for releases
 - Zero OpenAI API calls during CI/CD (all cassette-based)
+- 100% function coverage before any release
 
 ---
 
@@ -665,6 +708,16 @@ export function AIFeaturesTest() {
 
 #### Problem Statement
 Current distributions lack semantic meaning - knowing age is normal and income is exponential doesn't help create semantically useful personas. What's needed is a way to input real survey data and create joint distributions that preserve correlations and relationships.
+
+#### SynC Framework Requirements
+For downscaled synthetic data to be useful, it needs to be **fair and consistent**:
+- **Fair**: Simulated data should mimic realistic distributions and correlations of the true population as closely as possible
+- **Consistent**: When we aggregate downscaled samples, results need to be consistent with the original data
+
+The multi-phase SynC framework ensures that:
+1. **Marginal distributions** of individual features align with real-world expectations
+2. **Feature correlations** are consistent with aggregated data  
+3. **Aggregated results** match the input data
 
 #### Proposed Solution: Survey → Joint Distribution → Personas
 
