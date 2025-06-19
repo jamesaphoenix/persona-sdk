@@ -1,0 +1,15 @@
+{
+  "request": {
+    "function": "PersonaBuilder.fromPrompt",
+    "args": [
+      "Create a 28-year-old tech professional living in San Francisco who loves gaming"
+    ],
+    "timestamp": "2025-06-19T12:55:31.060Z"
+  },
+  "response": {
+    "success": true,
+    "cassette": true
+  },
+  "timestamp": "2025-06-19T12:55:31.060Z",
+  "version": "1.0"
+}

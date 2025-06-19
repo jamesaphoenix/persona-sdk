@@ -1,0 +1,18 @@
+{
+  "request": {
+    "function": "PersonaBuilder.suggestAttributes",
+    "args": [
+      {
+        "industry": "gaming",
+        "targetAudience": "competitive players"
+      }
+    ],
+    "timestamp": "2025-06-19T12:55:30.046Z"
+  },
+  "response": {
+    "success": true,
+    "cassette": true
+  },
+  "timestamp": "2025-06-19T12:55:30.046Z",
+  "version": "1.0"
+}

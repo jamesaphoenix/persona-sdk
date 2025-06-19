@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+
+# Test results
+results/*.json
+
+# Keep cassettes and signatures in source control
+# Comment out these lines if you want to ignore them
+# cassettes/*.json
+# signatures/*.json
+
+# Keep directory structure
+!cassettes/.gitkeep
+!signatures/.gitkeep
+!results/.gitkeep
+
+# Misc
+.DS_Store
+*.log

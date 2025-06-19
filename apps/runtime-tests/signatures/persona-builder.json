@@ -1,0 +1,43 @@
+{
+  "PersonaBuilder.fromPrompt": {
+    "hash": "07f240c290cebaafd0f64a34e22ab316",
+    "name": "PersonaBuilder.fromPrompt",
+    "params": [
+      "prompt",
+      "options"
+    ],
+    "body": "async fromPrompt(prompt, options) {\n        return PersonaAI.fromPrompt(prompt, options);\n    }",
+    "lastModified": "2025-06-19T12:55:29.439Z"
+  },
+  "PersonaBuilder.generateMultiple": {
+    "hash": "536b939da6e040dd78015bbcac6f27bb",
+    "name": "PersonaBuilder.generateMultiple",
+    "params": [
+      "prompt",
+      "count",
+      "options"
+    ],
+    "body": "async generateMultiple(prompt, count, options) {\n        return PersonaAI.generateMultiple(prompt, count, options);\n    }",
+    "lastModified": "2025-06-19T12:55:29.440Z"
+  },
+  "PersonaBuilder.optimizePrompt": {
+    "hash": "4b6935765c4ecc5a9101d4c935f6198e",
+    "name": "PersonaBuilder.optimizePrompt",
+    "params": [
+      "basePrompt",
+      "options"
+    ],
+    "body": "async optimizePrompt(basePrompt, options) {\n        return PersonaAI.optimizePrompt(basePrompt, options);\n    }",
+    "lastModified": "2025-06-19T12:55:29.440Z"
+  },
+  "PersonaBuilder.suggestAttributes": {
+    "hash": "87f8ca53702ddec56e7e907583f0bd65",
+    "name": "PersonaBuilder.suggestAttributes",
+    "params": [
+      "context",
+      "options"
+    ],
+    "body": "async suggestAttributes(context, options) {\n        return PersonaAI.suggestAttributes(context, options);\n    }",
+    "lastModified": "2025-06-19T12:55:29.440Z"
+  }
+}

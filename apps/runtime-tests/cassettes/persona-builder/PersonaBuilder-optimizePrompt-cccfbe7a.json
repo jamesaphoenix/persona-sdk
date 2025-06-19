@@ -1,0 +1,15 @@
+{
+  "request": {
+    "function": "PersonaBuilder.optimizePrompt",
+    "args": [
+      "young developer"
+    ],
+    "timestamp": "2025-06-19T12:55:30.922Z"
+  },
+  "response": {
+    "success": true,
+    "cassette": true
+  },
+  "timestamp": "2025-06-19T12:55:30.922Z",
+  "version": "1.0"
+}

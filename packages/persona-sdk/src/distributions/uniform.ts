@@ -19,8 +19,8 @@ export class UniformDistribution extends BaseDistribution<number> {
     seed?: number
   ) {
     super(seed);
-    if (min >= max) {
-      throw new Error('Min must be less than max');
+    if (min > max) {
+      throw new Error('Min must be less than or equal to max');
     }
   }
 
@@ -28,6 +28,10 @@ export class UniformDistribution extends BaseDistribution<number> {
    * Sample uniformly from [min, max]
    */
   sample(): number {
+    // Handle single point distribution
+    if (this.min === this.max) {
+      return this.min;
+    }
     return this.random.real(this.min, this.max, true);
   }
 
@@ -43,6 +47,10 @@ export class UniformDistribution extends BaseDistribution<number> {
    */
   variance(): number {
     const range = this.max - this.min;
+    // Single point distribution has zero variance
+    if (range === 0) {
+      return 0;
+    }
     return (range * range) / 12;
   }
 
