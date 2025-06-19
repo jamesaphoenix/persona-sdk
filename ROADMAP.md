@@ -389,7 +389,13 @@ await insights.exportToCSV('media-analysis-results.csv');
 **Estimated Effort: 3-4 days**
 
 #### Description
-Since we've written so much code across React, API, and SDK packages, we need comprehensive runtime testing to catch bugs that unit tests might miss. Create a testing setup that manually tests every single function at runtime to confirm the entire application works end-to-end.
+Since we've written so much code across React, API, and SDK packages, we need comprehensive runtime testing to catch bugs that unit tests might miss. **This MUST include a dedicated React test application and VCR cassettes for all OpenAI API calls** to ensure reliable, repeatable testing without API costs.
+
+#### Core Requirements
+- **React Test Application**: Dedicated app for testing all SDK integrations
+- **VCR Cassettes**: Record/replay OpenAI API calls to avoid repeated costs
+- **Multi-Service Setup**: Postgres + API + React App + Documentation
+- **Manual Runtime Testing**: Every function tested at least once in real environment
 
 #### Testing Strategy
 
@@ -640,13 +646,143 @@ export function AIFeaturesTest() {
 - [ ] Performance under 1000+ personas
 
 #### Acceptance Criteria
+- **MUST HAVE: Dedicated React test application** for UI/hook testing
+- **MUST HAVE: VCR cassettes** for all OpenAI API interactions
 - Runtime test suite covering 100% of public APIs
 - Automated end-to-end tests for critical workflows
 - Performance regression testing
 - Error scenario testing (network failures, bad data, etc.)
 - Documentation examples must all be runnable
-- CI/CD pipeline runs full runtime test suite
+- CI/CD pipeline runs full runtime test suite with cassettes
 - Manual testing playbook for releases
+- Zero OpenAI API calls during CI/CD (all cassette-based)
+
+---
+
+### 9. 📊 Survey Data to Joint Distribution Pipeline
+**Priority: High**
+**Estimated Effort: 4-5 days**
+
+#### Problem Statement
+Current distributions lack semantic meaning - knowing age is normal and income is exponential doesn't help create semantically useful personas. What's needed is a way to input real survey data and create joint distributions that preserve correlations and relationships.
+
+#### Proposed Solution: Survey → Joint Distribution → Personas
+
+##### A. Survey Data Ingestion
+```typescript
+interface SurveyData {
+  responses: Record<string, any>[];
+  schema: {
+    [field: string]: {
+      type: 'numeric' | 'categorical' | 'ordinal';
+      description: string;
+      scale?: [number, number];
+    };
+  };
+  metadata: {
+    sampleSize: number;
+    demographics: Record<string, any>;
+    source: string;
+  };
+}
+
+class SurveyAnalyzer {
+  async analyzeCorrelations(data: SurveyData): Promise<CorrelationMatrix>;
+  async detectDistributions(data: SurveyData): Promise<DistributionFitting>;
+  async buildJointDistribution(data: SurveyData): Promise<JointDistribution>;
+}
+```
+
+##### B. Gaussian Copula Implementation
+```typescript
+// Based on sync gaussian copula paper approach
+class GaussianCopula {
+  constructor(
+    private marginalDistributions: Distribution[],
+    private correlationMatrix: number[][]
+  ) {}
+  
+  sample(n: number): PersonaAttributes[] {
+    // 1. Sample from multivariate normal with correlation structure
+    // 2. Transform through marginal CDFs to get correlated samples
+    // 3. Map back to original variable space
+  }
+}
+```
+
+##### C. LLM-Assisted Distribution Selection
+```typescript
+class SurveyToDistributionPipeline {
+  async processSurveyData(surveys: SurveyData[]): Promise<PersonaGroup> {
+    // 1. Analyze multiple survey datasets
+    const correlations = await this.analyzeCorrelations(surveys);
+    
+    // 2. LLM call to interpret semantic relationships
+    const distributionSpec = await this.llm.selectDistributions({
+      surveyData: surveys,
+      correlations: correlations,
+      prompt: "Create realistic joint distribution preserving relationships"
+    });
+    
+    // 3. Build joint distribution with correlations
+    const jointDist = new GaussianCopula(
+      distributionSpec.marginals,
+      correlations.matrix
+    );
+    
+    // 4. Generate semantically meaningful personas
+    return PersonaGroup.fromJointDistribution(jointDist, 1000);
+  }
+}
+```
+
+##### D. Example Workflow
+```typescript
+// Input: Multiple survey datasets
+const surveys = [
+  await loadSurvey('consumer-preferences-2024.csv'),
+  await loadSurvey('demographics-income-survey.csv'),
+  await loadSurvey('tech-adoption-survey.csv')
+];
+
+// Process: Extract joint distribution
+const pipeline = new SurveyToDistributionPipeline();
+const personas = await pipeline.processSurveyData(surveys);
+
+// Output: Semantically meaningful personas
+console.log(personas.getCorrelationMatrix('age', 'income')); // Real correlation
+console.log(personas.getSegments()); // Natural clusters from data
+```
+
+#### Key Features
+- **Real Data Foundation**: Use actual survey responses as input
+- **Correlation Preservation**: Maintain relationships between variables
+- **Semantic Understanding**: LLM interprets what correlations mean
+- **Joint Sampling**: Generate personas that respect multi-variable dependencies
+- **Validation**: Compare generated personas to original survey distributions
+
+#### Technical Implementation
+1. **Data Preprocessing**: Clean and normalize survey data
+2. **Correlation Analysis**: Detect linear and non-linear relationships
+3. **Marginal Fitting**: Fit appropriate distributions to each variable
+4. **Copula Construction**: Build Gaussian or other copula models
+5. **LLM Integration**: Use AI to interpret and enhance correlations
+6. **Validation Suite**: Ensure generated data matches input statistics
+
+#### Acceptance Criteria
+- Support for common survey formats (CSV, JSON, SPSS)
+- Automatic detection of variable types and relationships
+- Preservation of correlations in generated personas (>95% accuracy)
+- LLM-powered semantic enhancement of distributions
+- Documentation with real survey examples
+- Performance: Generate 10,000 personas in <30 seconds
+
+#### Benefits
+- **Realistic Personas**: Based on actual human data, not arbitrary distributions
+- **Preserves Relationships**: Age-income correlation, education-occupation patterns
+- **Scalable**: Works with any survey data structure
+- **AI-Enhanced**: LLM adds semantic understanding to statistical relationships
+- **Validation**: Generated personas can be compared to original survey data
 
 ---
 
