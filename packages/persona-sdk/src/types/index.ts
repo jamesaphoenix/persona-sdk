@@ -194,3 +194,12 @@ export interface AttributeCorrelation {
   correlation: number; // -1 to 1
   type?: 'linear' | 'exponential' | 'logarithmic';
 }
+
+// Re-export branded types
+export * from './branded';
+
+// Re-export inference types
+export * from './inference';
+
+// Re-export distribution types
+export * from './distribution';

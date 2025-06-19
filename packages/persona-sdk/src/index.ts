@@ -199,5 +199,16 @@ export {
   SeededDistributionFactory
 } from './distributions/seeded';
 
+// Enhanced Type-Safe Builders
+export { TypedPersonaBuilder } from './builders/typed-persona-builder';
+export type { ExtractAttributes, ExtractPersona } from './builders/typed-persona-builder';
+
+// Typed Persona Group
+export { TypedPersonaGroup } from './groups/typed-persona-group';
+export type { ExtractGroupAttributes, ExtractGroupPersonas } from './groups/typed-persona-group';
+
+// Validation Schemas
+export * from './schemas/validation';
+
 // Version
-export const VERSION = '0.2.0';
+export const VERSION = '0.3.0';
