@@ -82,12 +82,12 @@ export default function DistributionsPage() {
     
     const persona = PersonaBuilder.create()
       .withName('Statistical Person')
-      .withAge(distribution)
+      .withAge(25)
       .withOccupation('Worker')
       .withSex('other')
       .build()
     
-    alert(`Created persona with age: ${persona.age}`)
+    alert(`Created persona: ${persona.name}, Sample from distribution: ${distribution.sample()}`)
   }
 
   return (

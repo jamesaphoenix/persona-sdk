@@ -49,20 +49,33 @@ export class CategoricalDistribution<T> extends BaseDistribution<T> {
   ) {
     super(seed);
     
-    // Validate probabilities
-    const totalProb = categories.reduce((sum, cat) => sum + cat.probability, 0);
-    if (Math.abs(totalProb - 1) > 0.0001) {
-      throw new Error(`Probabilities must sum to 1, got ${totalProb}`);
+    // Validate that we have at least one category
+    if (categories.length === 0) {
+      throw new Error('At least one category is required');
     }
+    
+    // Validate that all probabilities are positive
+    for (const cat of categories) {
+      if (cat.probability <= 0) {
+        throw new Error('All probabilities must be positive');
+      }
+    }
+    
+    // Normalize probabilities if they don't sum to 1
+    const totalProb = categories.reduce((sum, cat) => sum + cat.probability, 0);
+    const normalizedCategories = categories.map(cat => ({
+      ...cat,
+      probability: cat.probability / totalProb
+    }));
 
     // Store values and probabilities
-    this.values = categories.map(cat => cat.value);
-    this.probabilities = categories.map(cat => cat.probability);
+    this.values = normalizedCategories.map(cat => cat.value);
+    this.probabilities = normalizedCategories.map(cat => cat.probability);
     
     // Build cumulative distribution
     this.cumulative = [];
     let sum = 0;
-    for (const cat of categories) {
+    for (const cat of normalizedCategories) {
       sum += cat.probability;
       this.cumulative.push(sum);
     }
@@ -107,7 +120,7 @@ export class CategoricalDistribution<T> extends BaseDistribution<T> {
   }
 
   /**
-   * Get the probabilities.
+   * Get the probabilities as an array (for compatibility).
    * 
    * @returns Array of values with their associated probabilities
    */
@@ -116,6 +129,19 @@ export class CategoricalDistribution<T> extends BaseDistribution<T> {
       value,
       probability: this.probabilities[i]
     }));
+  }
+
+  /**
+   * Get the probabilities as a record (for direct lookup).
+   * 
+   * @returns Object mapping values to their probabilities
+   */
+  getProbabilityMap(): Record<string, number> {
+    const result: Record<string, number> = {};
+    for (let i = 0; i < this.values.length; i++) {
+      result[String(this.values[i])] = this.probabilities[i];
+    }
+    return result;
   }
 
   /**

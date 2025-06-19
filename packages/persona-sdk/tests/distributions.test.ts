@@ -120,7 +120,7 @@ describe('Distributions', () => {
       ];
       const dist = new CategoricalDistribution(categories);
       
-      const probs = dist.getProbabilities();
+      const probs = dist.getProbabilityMap();
       expect(probs).toEqual({
         'A': 0.5,
         'B': 0.3,
@@ -149,7 +149,7 @@ describe('Distributions', () => {
       ];
       const dist = new CategoricalDistribution(categories);
       
-      const probs = dist.getProbabilities();
+      const probs = dist.getProbabilityMap();
       expect(probs['A']).toBeCloseTo(0.25, 5);
       expect(probs['B']).toBeCloseTo(0.5, 5);
       expect(probs['C']).toBeCloseTo(0.25, 5);
