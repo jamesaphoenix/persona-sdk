@@ -483,11 +483,147 @@ const testCompleteWorkflows = async () => {
 
 #### Testing Environment Setup
 ```bash
-# Multi-service testing environment
+# Multi-service testing environment with React test app
 docker-compose up -d postgres
 npm run api:start &
+npm run test-app:dev &  # React test application
 npm run docs:dev &
 npm run test:runtime
+```
+
+##### React Test Application
+Create a dedicated React app for testing all SDK integrations:
+
+```typescript
+// apps/test-app/
+├── src/
+│   ├── components/
+│   │   ├── PersonaTest.tsx        # Test PersonaBuilder & Persona class
+│   │   ├── GroupTest.tsx          # Test PersonaGroup functionality  
+│   │   ├── DistributionTest.tsx   # Test all distribution types
+│   │   ├── APITest.tsx            # Test all API endpoints
+│   │   ├── HooksTest.tsx          # Test all React hooks
+│   │   └── AIFeaturesTest.tsx     # Test AI-powered features
+│   ├── pages/
+│   │   ├── index.tsx              # Test dashboard
+│   │   ├── sdk-tests.tsx          # SDK function tests
+│   │   ├── api-tests.tsx          # API endpoint tests
+│   │   └── integration-tests.tsx  # End-to-end workflows
+│   ├── utils/
+│   │   ├── cassettes.ts           # VCR cassette management
+│   │   └── test-helpers.ts        # Testing utilities
+│   └── package.json
+```
+
+##### VCR Cassettes for OpenAI Calls
+Use HTTP cassettes to record/replay OpenAI API calls:
+
+```typescript
+// utils/cassettes.ts
+import { setupServer } from 'msw/node';
+import { HttpResponse, http } from 'msw';
+import fs from 'fs';
+import path from 'path';
+
+interface CassetteConfig {
+  name: string;
+  record: boolean; // true = record new, false = replay existing
+}
+
+export class VCRCassettes {
+  private server: any;
+  private cassettePath: string;
+  
+  constructor(private config: CassetteConfig) {
+    this.cassettePath = path.join(__dirname, '../cassettes', `${config.name}.json`);
+  }
+  
+  async setup() {
+    if (this.config.record) {
+      // Record mode: proxy to real OpenAI and save responses
+      this.server = setupServer(
+        http.post('https://api.openai.com/v1/*', async ({ request }) => {
+          const response = await fetch(request);
+          const data = await response.json();
+          
+          // Save to cassette file
+          this.saveToCassette(request.url, data);
+          
+          return HttpResponse.json(data);
+        })
+      );
+    } else {
+      // Replay mode: return saved responses
+      const cassette = this.loadCassette();
+      this.server = setupServer(
+        http.post('https://api.openai.com/v1/*', ({ request }) => {
+          const savedResponse = cassette[request.url];
+          return HttpResponse.json(savedResponse);
+        })
+      );
+    }
+    
+    this.server.listen();
+  }
+  
+  private saveToCassette(url: string, response: any) {
+    const cassette = this.loadCassette();
+    cassette[url] = response;
+    fs.writeFileSync(this.cassettePath, JSON.stringify(cassette, null, 2));
+  }
+  
+  private loadCassette() {
+    if (fs.existsSync(this.cassettePath)) {
+      return JSON.parse(fs.readFileSync(this.cassettePath, 'utf8'));
+    }
+    return {};
+  }
+}
+
+// Usage in tests
+const cassettes = new VCRCassettes({ 
+  name: 'ai-features-test',
+  record: process.env.RECORD_CASSETTES === 'true'
+});
+
+await cassettes.setup();
+```
+
+##### Example Test Components
+```typescript
+// components/AIFeaturesTest.tsx
+import { useState } from 'react';
+import { DistributionSelectorLangChain, StructuredOutputGenerator } from '@jamesaphoenix/persona-sdk';
+
+export function AIFeaturesTest() {
+  const [results, setResults] = useState<any>(null);
+  
+  const testDistributionSelector = async () => {
+    const selector = new DistributionSelectorLangChain(process.env.OPENAI_API_KEY);
+    
+    const result = await selector.selectDistributions({
+      description: "Tech startup employees in Silicon Valley",
+      requirements: ["Age should skew younger", "High income variation"],
+      attributes: ['age', 'income', 'experience']
+    });
+    
+    setResults({ type: 'distribution-selector', data: result });
+  };
+  
+  const testStructuredOutput = async () => {
+    const generator = new StructuredOutputGenerator(process.env.OPENAI_API_KEY);
+    // ... test structured output generation
+  };
+  
+  return (
+    <div className="ai-features-test">
+      <h2>AI Features Testing</h2>
+      <button onClick={testDistributionSelector}>Test Distribution Selector</button>
+      <button onClick={testStructuredOutput}>Test Structured Output</button>
+      {results && <pre>{JSON.stringify(results, null, 2)}</pre>}
+    </div>
+  );
+}
 ```
 
 #### Manual Testing Checklist
