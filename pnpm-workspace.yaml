@@ -2,5 +2,6 @@ packages:
   - packages/persona-sdk
   - packages/persona-api
   - docs
+  - apps/test-app
 ignoredBuiltDependencies:
   - esbuild

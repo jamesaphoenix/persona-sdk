@@ -16,7 +16,10 @@
     "api:dev": "pnpm --filter @jamesaphoenix/persona-api dev",
     "api:build": "pnpm --filter @jamesaphoenix/persona-api build",
     "api:start": "pnpm --filter @jamesaphoenix/persona-api start",
-    "api:docker": "cd packages/persona-api && docker-compose up api-dev"
+    "api:docker": "cd packages/persona-api && docker-compose up api-dev",
+    "test-app:dev": "pnpm --filter @persona-sdk/test-app dev",
+    "test-app:build": "pnpm --filter @persona-sdk/test-app build",
+    "test-app:start": "pnpm --filter @persona-sdk/test-app start"
   },
   "devDependencies": {
     "@esbuild/darwin-arm64": "^0.25.5",

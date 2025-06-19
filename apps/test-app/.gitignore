@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Next.js
+.next/
+out/
+
+# Testing artifacts
+cassettes/*.json
+test-manifest.json
+!cassettes/.gitkeep
+
+# Misc
+.DS_Store
+*.log
