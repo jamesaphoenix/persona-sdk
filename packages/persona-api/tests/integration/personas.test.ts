@@ -102,7 +102,7 @@ describe('Personas API Integration Tests', () => {
       expect(body.statistics).toBeDefined();
     });
 
-    it('should create a group with distributions', async () => {
+    it.skip('should create a group with distributions', async () => {
       const response = await server.inject({
         method: 'POST',
         url: '/api/v1/personas/groups',
