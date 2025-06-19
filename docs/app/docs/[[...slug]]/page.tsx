@@ -9,6 +9,13 @@ interface PageProps {
 
 export default async function Page({ params }: PageProps) {
   const { slug = [] } = await params;
+  
+  // Redirect from /docs to /docs/getting-started
+  if (slug.length === 0) {
+    const { redirect } = await import('next/navigation');
+    redirect('/docs/getting-started');
+  }
+  
   const page = getPage(slug);
 
   if (!page) {
@@ -22,7 +29,6 @@ export default async function Page({ params }: PageProps) {
   return (
     <DocsPage toc={pageData.toc} full={pageData.full}>
       <DocsBody>
-        <h1 className="text-3xl font-bold">{pageData.title}</h1>
         {MDX && <MDX components={getMDXComponents()} />}
       </DocsBody>
     </DocsPage>
