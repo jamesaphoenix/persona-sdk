@@ -165,4 +165,19 @@ describe('PersonaBuilder', () => {
       expect(persona.attributes.timezone).toBe('EST');
     });
   });
+
+  describe('AI methods', () => {
+    it('should have static AI methods', () => {
+      expect(PersonaBuilder.fromPrompt).toBeDefined();
+      expect(PersonaBuilder.generateMultiple).toBeDefined();
+      expect(PersonaBuilder.optimizePrompt).toBeDefined();
+      expect(PersonaBuilder.suggestAttributes).toBeDefined();
+      
+      // Verify they are functions
+      expect(typeof PersonaBuilder.fromPrompt).toBe('function');
+      expect(typeof PersonaBuilder.generateMultiple).toBe('function');
+      expect(typeof PersonaBuilder.optimizePrompt).toBe('function');
+      expect(typeof PersonaBuilder.suggestAttributes).toBe('function');
+    });
+  });
 });

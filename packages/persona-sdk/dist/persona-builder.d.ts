@@ -1,6 +1,7 @@
 import { PersonaAttributes, AttributeValue, Distribution, SexSchema } from './types';
 import { Persona } from './persona';
 import { z } from 'zod';
+import { AIOptions } from './ai/persona-ai';
 /**
  * Builder class for creating personas with a fluent API.
  *
@@ -231,5 +232,73 @@ export declare class PersonaBuilder {
      * ```
      */
     static create(): PersonaBuilder;
+    /**
+     * Create a persona from a text prompt using AI.
+     *
+     * @param prompt - Natural language description of the persona
+     * @param options - AI configuration options
+     * @returns Promise resolving to a new Persona instance
+     *
+     * @example
+     * ```typescript
+     * const persona = await PersonaBuilder.fromPrompt(
+     *   'Create a 28-year-old tech professional in SF who loves gaming',
+     *   { apiKey: process.env.OPENAI_API_KEY }
+     * );
+     * ```
+     */
+    static fromPrompt(prompt: string, options: AIOptions): Promise<Persona>;
+    /**
+     * Generate multiple diverse personas from a prompt.
+     *
+     * @param prompt - Natural language description of the personas
+     * @param count - Number of personas to generate
+     * @param options - AI configuration options
+     * @returns Promise resolving to an array of Persona instances
+     *
+     * @example
+     * ```typescript
+     * const team = await PersonaBuilder.generateMultiple(
+     *   'Create diverse startup team members',
+     *   5,
+     *   { apiKey: process.env.OPENAI_API_KEY }
+     * );
+     * ```
+     */
+    static generateMultiple(prompt: string, count: number, options: AIOptions): Promise<Persona[]>;
+    /**
+     * Optimize a prompt for better persona generation.
+     *
+     * @param basePrompt - Initial prompt to optimize
+     * @param options - AI configuration options
+     * @returns Promise resolving to an optimized prompt string
+     *
+     * @example
+     * ```typescript
+     * const optimized = await PersonaBuilder.optimizePrompt(
+     *   'young developer',
+     *   { apiKey: process.env.OPENAI_API_KEY }
+     * );
+     * // Returns: "Create a young developer aged 22-30, living in a tech hub..."
+     * ```
+     */
+    static optimizePrompt(basePrompt: string, options: AIOptions): Promise<string>;
+    /**
+     * Suggest relevant attributes based on context.
+     *
+     * @param context - Context object describing the use case
+     * @param options - AI configuration options
+     * @returns Promise resolving to an array of suggested attribute names
+     *
+     * @example
+     * ```typescript
+     * const attributes = await PersonaBuilder.suggestAttributes(
+     *   { industry: 'gaming', targetAudience: 'competitive' },
+     *   { apiKey: process.env.OPENAI_API_KEY }
+     * );
+     * // Returns: ['skill_level', 'gaming_hours', 'preferred_genres', ...]
+     * ```
+     */
+    static suggestAttributes(context: Record<string, any>, options: AIOptions): Promise<string[]>;
 }
 //# sourceMappingURL=persona-builder.d.ts.map

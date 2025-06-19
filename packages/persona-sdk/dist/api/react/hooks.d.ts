@@ -31,35 +31,35 @@ export declare function useApiClient(config: UseApiConfig): PersonaApiClient;
 export declare function usePersona(id: string, config: UseApiConfig): QueryState<PersonaResponse>;
 export declare function usePersonas(query: PersonaQuery | undefined, config: UseApiConfig): PaginatedQueryState<PersonaResponse>;
 export declare function useCreatePersona(config: UseApiConfig): MutationState<{
+    name: string;
+    attributes: Record<string, any>;
     age: number | null;
     occupation: string | null;
     sex: string | null;
     metadata: Record<string, any>;
-    name: string;
-    attributes: Record<string, any>;
     id: string;
     created_at: Date;
     updated_at: Date;
 }>;
 export declare function useUpdatePersona(config: UseApiConfig): MutationState<{
+    name: string;
+    attributes: Record<string, any>;
     age: number | null;
     occupation: string | null;
     sex: string | null;
     metadata: Record<string, any>;
-    name: string;
-    attributes: Record<string, any>;
     id: string;
     created_at: Date;
     updated_at: Date;
 }>;
 export declare function useDeletePersona(config: UseApiConfig): MutationState<void>;
 export declare function useBulkCreatePersonas(config: UseApiConfig): MutationState<{
+    name: string;
+    attributes: Record<string, any>;
     age: number | null;
     occupation: string | null;
     sex: string | null;
     metadata: Record<string, any>;
-    name: string;
-    attributes: Record<string, any>;
     id: string;
     created_at: Date;
     updated_at: Date;
@@ -73,16 +73,16 @@ export declare function usePersonaGroupWithMembers(id: string, config: UseApiCon
     personas: PersonaResponse[];
 }>;
 export declare function useCreatePersonaGroup(config: UseApiConfig): MutationState<{
-    metadata: Record<string, any>;
     name: string;
+    metadata: Record<string, any>;
     description: string | null;
     id: string;
     created_at: Date;
     updated_at: Date;
 }>;
 export declare function useUpdatePersonaGroup(config: UseApiConfig): MutationState<{
-    metadata: Record<string, any>;
     name: string;
+    metadata: Record<string, any>;
     description: string | null;
     id: string;
     created_at: Date;
@@ -96,8 +96,8 @@ export declare function useRemoveFromGroup(config: UseApiConfig): MutationState<
     success: boolean;
 }>;
 export declare function usePersonaGroupMemberships(personaId: string, config: UseApiConfig): QueryState<{
-    metadata: Record<string, any>;
     name: string;
+    metadata: Record<string, any>;
     description: string | null;
     id: string;
     created_at: Date;
@@ -108,74 +108,74 @@ export interface PersonaApiProviderProps {
     config: UseApiConfig;
     children: ReactNode;
 }
-export declare function PersonaApiProvider({ config, children }: PersonaApiProviderProps): import("react/jsx-runtime").JSX.Element;
+export declare function PersonaApiProvider({ config, children }: PersonaApiProviderProps): import("react/jsx-runtime.js").JSX.Element;
 export declare const usePersonaWithContext: (id: string) => QueryState<{
+    name: string;
+    attributes: Record<string, any>;
     age: number | null;
     occupation: string | null;
     sex: string | null;
     metadata: Record<string, any>;
-    name: string;
-    attributes: Record<string, any>;
     id: string;
     created_at: Date;
     updated_at: Date;
 }>;
 export declare const usePersonasWithContext: (query?: PersonaQuery) => PaginatedQueryState<{
+    name: string;
+    attributes: Record<string, any>;
     age: number | null;
     occupation: string | null;
     sex: string | null;
     metadata: Record<string, any>;
-    name: string;
-    attributes: Record<string, any>;
     id: string;
     created_at: Date;
     updated_at: Date;
 }>;
 export declare const useCreatePersonaWithContext: () => MutationState<{
+    name: string;
+    attributes: Record<string, any>;
     age: number | null;
     occupation: string | null;
     sex: string | null;
     metadata: Record<string, any>;
-    name: string;
-    attributes: Record<string, any>;
     id: string;
     created_at: Date;
     updated_at: Date;
 }>;
 export declare const useUpdatePersonaWithContext: () => MutationState<{
+    name: string;
+    attributes: Record<string, any>;
     age: number | null;
     occupation: string | null;
     sex: string | null;
     metadata: Record<string, any>;
-    name: string;
-    attributes: Record<string, any>;
     id: string;
     created_at: Date;
     updated_at: Date;
 }>;
 export declare const useDeletePersonaWithContext: () => MutationState<void>;
 export declare const useBulkCreatePersonasWithContext: () => MutationState<{
+    name: string;
+    attributes: Record<string, any>;
     age: number | null;
     occupation: string | null;
     sex: string | null;
     metadata: Record<string, any>;
-    name: string;
-    attributes: Record<string, any>;
     id: string;
     created_at: Date;
     updated_at: Date;
 }[]>;
 export declare const usePersonaGroupWithContext: (id: string) => QueryState<{
-    metadata: Record<string, any>;
     name: string;
+    metadata: Record<string, any>;
     description: string | null;
     id: string;
     created_at: Date;
     updated_at: Date;
 }>;
 export declare const usePersonaGroupsWithContext: (query?: PersonaGroupQuery) => PaginatedQueryState<{
-    metadata: Record<string, any>;
     name: string;
+    metadata: Record<string, any>;
     description: string | null;
     id: string;
     created_at: Date;
@@ -188,16 +188,16 @@ export declare const usePersonaGroupWithMembersWithContext: (id: string) => Quer
     personas: PersonaResponse[];
 }>;
 export declare const useCreatePersonaGroupWithContext: () => MutationState<{
-    metadata: Record<string, any>;
     name: string;
+    metadata: Record<string, any>;
     description: string | null;
     id: string;
     created_at: Date;
     updated_at: Date;
 }>;
 export declare const useUpdatePersonaGroupWithContext: () => MutationState<{
-    metadata: Record<string, any>;
     name: string;
+    metadata: Record<string, any>;
     description: string | null;
     id: string;
     created_at: Date;
@@ -211,8 +211,8 @@ export declare const useRemoveFromGroupWithContext: () => MutationState<{
     success: boolean;
 }>;
 export declare const usePersonaGroupMembershipsWithContext: (personaId: string) => QueryState<{
-    metadata: Record<string, any>;
     name: string;
+    metadata: Record<string, any>;
     description: string | null;
     id: string;
     created_at: Date;

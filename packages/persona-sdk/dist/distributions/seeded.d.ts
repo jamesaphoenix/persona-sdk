@@ -9,6 +9,8 @@ declare abstract class SeededDistribution<T> implements Distribution<T> {
     protected context: string;
     constructor(context?: string);
     abstract sample(): T;
+    abstract mean(): T;
+    abstract toString(): string;
     /**
      * Generate multiple samples
      */
@@ -22,10 +24,13 @@ declare abstract class SeededDistribution<T> implements Distribution<T> {
  * Seeded normal distribution
  */
 export declare class SeededNormalDistribution extends SeededDistribution<number> {
-    private mean;
-    private stdDev;
-    constructor(mean: number, stdDev: number, context?: string);
+    private _mean;
+    private _stdDev;
+    constructor(_mean: number, _stdDev: number, context?: string);
     sample(): number;
+    mean(): number;
+    variance(): number;
+    toString(): string;
     getMean(): number;
     getStdDev(): number;
 }
@@ -33,10 +38,13 @@ export declare class SeededNormalDistribution extends SeededDistribution<number>
  * Seeded uniform distribution
  */
 export declare class SeededUniformDistribution extends SeededDistribution<number> {
-    private min;
-    private max;
-    constructor(min: number, max: number, context?: string);
+    private _min;
+    private _max;
+    constructor(_min: number, _max: number, context?: string);
     sample(): number;
+    mean(): number;
+    variance(): number;
+    toString(): string;
     getMin(): number;
     getMax(): number;
 }
@@ -44,19 +52,25 @@ export declare class SeededUniformDistribution extends SeededDistribution<number
  * Seeded exponential distribution
  */
 export declare class SeededExponentialDistribution extends SeededDistribution<number> {
-    private lambda;
-    constructor(lambda: number, context?: string);
+    private _lambda;
+    constructor(_lambda: number, context?: string);
     sample(): number;
+    mean(): number;
+    variance(): number;
+    toString(): string;
     getLambda(): number;
 }
 /**
  * Seeded beta distribution
  */
 export declare class SeededBetaDistribution extends SeededDistribution<number> {
-    private alpha;
-    private beta;
-    constructor(alpha: number, beta: number, context?: string);
+    private _alpha;
+    private _beta;
+    constructor(_alpha: number, _beta: number, context?: string);
     sample(): number;
+    mean(): number;
+    variance(): number;
+    toString(): string;
     getAlpha(): number;
     getBeta(): number;
 }
@@ -64,13 +78,15 @@ export declare class SeededBetaDistribution extends SeededDistribution<number> {
  * Seeded categorical distribution
  */
 export declare class SeededCategoricalDistribution<T> extends SeededDistribution<T> {
-    private items;
-    private weights;
+    private _items;
+    private _weights;
     constructor(categories: Array<{
         value: T;
         probability: number;
     }>, context?: string);
     sample(): T;
+    mean(): T;
+    toString(): string;
     getCategories(): Array<{
         value: T;
         probability: number;

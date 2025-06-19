@@ -24,4 +24,10 @@ export const BasePersonaAttributesSchema = z.object({
  * Uses passthrough to allow custom fields beyond the base requirements.
  */
 export const PersonaAttributesSchema = BasePersonaAttributesSchema.passthrough();
+// Re-export branded types
+export * from './branded';
+// Re-export inference types
+export * from './inference';
+// Re-export distribution types
+export * from './distribution';
 //# sourceMappingURL=index.js.map

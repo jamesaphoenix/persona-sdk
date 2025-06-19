@@ -120,6 +120,28 @@ describe('Persona', () => {
     });
   });
 
+  describe('getters', () => {
+    it('should provide getters for base attributes', () => {
+      const persona = new Persona('Test User', {
+        age: 30,
+        occupation: 'Engineer',
+        sex: 'female' as const,
+        location: 'NYC'
+      });
+      
+      // Test getters
+      expect(persona.age).toBe(30);
+      expect(persona.occupation).toBe('Engineer');
+      expect(persona.sex).toBe('female');
+      
+      // Test that attributes still contains everything
+      expect(persona.attributes.age).toBe(30);
+      expect(persona.attributes.occupation).toBe('Engineer');
+      expect(persona.attributes.sex).toBe('female');
+      expect(persona.attributes.location).toBe('NYC');
+    });
+  });
+
   describe('methods', () => {
     it('should clone a persona', () => {
       const original = new Persona('Original', { 

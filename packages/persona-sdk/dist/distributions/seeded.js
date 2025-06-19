@@ -27,99 +27,144 @@ class SeededDistribution {
  * Seeded normal distribution
  */
 export class SeededNormalDistribution extends SeededDistribution {
-    mean;
-    stdDev;
-    constructor(mean, stdDev, context = 'test') {
+    _mean;
+    _stdDev;
+    constructor(_mean, _stdDev, context = 'test') {
         super(context);
-        this.mean = mean;
-        this.stdDev = stdDev;
+        this._mean = _mean;
+        this._stdDev = _stdDev;
     }
     sample() {
-        return DeterministicRandom.normal(this.mean, this.stdDev, this.context);
+        return DeterministicRandom.normal(this._mean, this._stdDev, this.context);
+    }
+    mean() {
+        return this._mean;
+    }
+    variance() {
+        return this._stdDev * this._stdDev;
+    }
+    toString() {
+        return `SeededNormal(μ=${this._mean}, σ=${this._stdDev}, context=${this.context})`;
     }
     getMean() {
-        return this.mean;
+        return this._mean;
     }
     getStdDev() {
-        return this.stdDev;
+        return this._stdDev;
     }
 }
 /**
  * Seeded uniform distribution
  */
 export class SeededUniformDistribution extends SeededDistribution {
-    min;
-    max;
-    constructor(min, max, context = 'test') {
+    _min;
+    _max;
+    constructor(_min, _max, context = 'test') {
         super(context);
-        this.min = min;
-        this.max = max;
+        this._min = _min;
+        this._max = _max;
     }
     sample() {
-        return DeterministicRandom.uniform(this.min, this.max, this.context);
+        return DeterministicRandom.uniform(this._min, this._max, this.context);
+    }
+    mean() {
+        return (this._min + this._max) / 2;
+    }
+    variance() {
+        return Math.pow(this._max - this._min, 2) / 12;
+    }
+    toString() {
+        return `SeededUniform(min=${this._min}, max=${this._max}, context=${this.context})`;
     }
     getMin() {
-        return this.min;
+        return this._min;
     }
     getMax() {
-        return this.max;
+        return this._max;
     }
 }
 /**
  * Seeded exponential distribution
  */
 export class SeededExponentialDistribution extends SeededDistribution {
-    lambda;
-    constructor(lambda, context = 'test') {
+    _lambda;
+    constructor(_lambda, context = 'test') {
         super(context);
-        this.lambda = lambda;
+        this._lambda = _lambda;
     }
     sample() {
-        return DeterministicRandom.exponential(this.lambda, this.context);
+        return DeterministicRandom.exponential(this._lambda, this.context);
+    }
+    mean() {
+        return 1 / this._lambda;
+    }
+    variance() {
+        return 1 / (this._lambda * this._lambda);
+    }
+    toString() {
+        return `SeededExponential(λ=${this._lambda}, context=${this.context})`;
     }
     getLambda() {
-        return this.lambda;
+        return this._lambda;
     }
 }
 /**
  * Seeded beta distribution
  */
 export class SeededBetaDistribution extends SeededDistribution {
-    alpha;
-    beta;
-    constructor(alpha, beta, context = 'test') {
+    _alpha;
+    _beta;
+    constructor(_alpha, _beta, context = 'test') {
         super(context);
-        this.alpha = alpha;
-        this.beta = beta;
+        this._alpha = _alpha;
+        this._beta = _beta;
     }
     sample() {
-        return DeterministicRandom.beta(this.alpha, this.beta, this.context);
+        return DeterministicRandom.beta(this._alpha, this._beta, this.context);
+    }
+    mean() {
+        return this._alpha / (this._alpha + this._beta);
+    }
+    variance() {
+        const sum = this._alpha + this._beta;
+        return (this._alpha * this._beta) / (sum * sum * (sum + 1));
+    }
+    toString() {
+        return `SeededBeta(α=${this._alpha}, β=${this._beta}, context=${this.context})`;
     }
     getAlpha() {
-        return this.alpha;
+        return this._alpha;
     }
     getBeta() {
-        return this.beta;
+        return this._beta;
     }
 }
 /**
  * Seeded categorical distribution
  */
 export class SeededCategoricalDistribution extends SeededDistribution {
-    items;
-    weights;
+    _items;
+    _weights;
     constructor(categories, context = 'test') {
         super(context);
-        this.items = categories.map(c => c.value);
-        this.weights = categories.map(c => c.probability);
+        this._items = categories.map(c => c.value);
+        this._weights = categories.map(c => c.probability);
     }
     sample() {
-        return DeterministicRandom.categorical(this.items, this.weights, this.context);
+        return DeterministicRandom.categorical(this._items, this._weights, this.context);
+    }
+    mean() {
+        // For categorical distributions, return the most likely item
+        const maxIndex = this._weights.indexOf(Math.max(...this._weights));
+        return this._items[maxIndex];
+    }
+    toString() {
+        return `SeededCategorical(items=${this._items.length}, context=${this.context})`;
     }
     getCategories() {
-        return this.items.map((item, i) => ({
+        return this._items.map((item, i) => ({
             value: item,
-            probability: this.weights[i]
+            probability: this._weights[i]
         }));
     }
 }

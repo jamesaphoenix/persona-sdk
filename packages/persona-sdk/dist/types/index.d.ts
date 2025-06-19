@@ -193,4 +193,7 @@ export interface AttributeCorrelation {
     correlation: number;
     type?: 'linear' | 'exponential' | 'logarithmic';
 }
+export * from './branded';
+export * from './inference';
+export * from './distribution';
 //# sourceMappingURL=index.d.ts.map

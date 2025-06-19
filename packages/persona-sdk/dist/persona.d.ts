@@ -128,6 +128,21 @@ export declare class Persona<T extends PersonaAttributes = PersonaAttributes> {
      */
     get attributes(): T;
     /**
+     * Get the persona's age.
+     * @returns The age of the persona
+     */
+    get age(): number;
+    /**
+     * Get the persona's occupation.
+     * @returns The occupation of the persona
+     */
+    get occupation(): string;
+    /**
+     * Get the persona's sex.
+     * @returns The sex of the persona
+     */
+    get sex(): string;
+    /**
      * Get required base attributes.
      *
      * Extracts only the required fields (age, occupation, sex) from attributes.
@@ -158,9 +173,10 @@ export declare class Persona<T extends PersonaAttributes = PersonaAttributes> {
      * Creates a deep copy of the persona with all attributes preserved
      * but a new unique identifier.
      *
+     * @param newName - Optional new name for the clone (defaults to original name)
      * @returns A new Persona instance with the same attributes
      */
-    clone(): Persona<T>;
+    clone(newName?: string): Persona<T>;
     /**
      * Convert to plain object.
      *

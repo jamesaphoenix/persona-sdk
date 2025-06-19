@@ -61,6 +61,10 @@ export { Persona } from './persona';
 export { PersonaGroup } from './persona-group';
 export { PersonaBuilder } from './persona-builder';
 
+// AI functionality
+export { PersonaAI } from './ai/persona-ai';
+export type { AIOptions } from './ai/persona-ai';
+
 // Distributions
 export {
   NormalDistribution,

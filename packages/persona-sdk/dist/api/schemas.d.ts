@@ -13,18 +13,18 @@ export declare const createPersonaSchema: z.ZodObject<{
     metadata: z.ZodOptional<z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>>;
 }, "strip", z.ZodTypeAny, {
     name: string;
+    attributes?: Record<string, any> | undefined;
     age?: number | null | undefined;
     occupation?: string | null | undefined;
     sex?: "male" | "female" | "other" | null | undefined;
     metadata?: Record<string, any> | undefined;
-    attributes?: Record<string, any> | undefined;
 }, {
     name: string;
+    attributes?: Record<string, any> | undefined;
     age?: number | null | undefined;
     occupation?: string | null | undefined;
     sex?: "male" | "female" | "other" | null | undefined;
     metadata?: Record<string, any> | undefined;
-    attributes?: Record<string, any> | undefined;
 }>;
 export declare const updatePersonaSchema: z.ZodObject<{
     name: z.ZodOptional<z.ZodString>;
@@ -34,19 +34,19 @@ export declare const updatePersonaSchema: z.ZodObject<{
     attributes: z.ZodOptional<z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>>;
     metadata: z.ZodOptional<z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>>;
 }, "strip", z.ZodTypeAny, {
+    name?: string | undefined;
+    attributes?: Record<string, any> | undefined;
     age?: number | null | undefined;
     occupation?: string | null | undefined;
     sex?: "male" | "female" | "other" | null | undefined;
     metadata?: Record<string, any> | undefined;
-    name?: string | undefined;
-    attributes?: Record<string, any> | undefined;
 }, {
+    name?: string | undefined;
+    attributes?: Record<string, any> | undefined;
     age?: number | null | undefined;
     occupation?: string | null | undefined;
     sex?: "male" | "female" | "other" | null | undefined;
     metadata?: Record<string, any> | undefined;
-    name?: string | undefined;
-    attributes?: Record<string, any> | undefined;
 }>;
 export declare const personaQuerySchema: z.ZodObject<{
     id: z.ZodOptional<z.ZodString>;
@@ -74,27 +74,27 @@ export declare const personaQuerySchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     limit: number;
     offset: number;
-    orderBy: "age" | "name" | "created_at" | "updated_at";
+    orderBy: "name" | "age" | "created_at" | "updated_at";
     orderDirection: "asc" | "desc";
+    name?: string | undefined;
+    attributes?: Record<string, any> | undefined;
     age?: any;
     occupation?: string | undefined;
     sex?: string | undefined;
-    name?: string | undefined;
-    attributes?: Record<string, any> | undefined;
     id?: string | undefined;
 }, {
+    name?: string | undefined;
+    attributes?: unknown;
     age?: string | {
         min?: number | undefined;
         max?: number | undefined;
     } | undefined;
     occupation?: string | undefined;
     sex?: string | undefined;
-    name?: string | undefined;
-    attributes?: unknown;
     id?: string | undefined;
     limit?: number | undefined;
     offset?: number | undefined;
-    orderBy?: "age" | "name" | "created_at" | "updated_at" | undefined;
+    orderBy?: "name" | "age" | "created_at" | "updated_at" | undefined;
     orderDirection?: "asc" | "desc" | undefined;
 }>;
 export declare const createPersonaGroupSchema: z.ZodObject<{
@@ -115,12 +115,12 @@ export declare const updatePersonaGroupSchema: z.ZodObject<{
     description: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     metadata: z.ZodOptional<z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>>;
 }, "strip", z.ZodTypeAny, {
-    metadata?: Record<string, any> | undefined;
     name?: string | undefined;
+    metadata?: Record<string, any> | undefined;
     description?: string | null | undefined;
 }, {
-    metadata?: Record<string, any> | undefined;
     name?: string | undefined;
+    metadata?: Record<string, any> | undefined;
     description?: string | null | undefined;
 }>;
 export declare const personaGroupQuerySchema: z.ZodObject<{
@@ -155,38 +155,38 @@ export declare const bulkCreatePersonasSchema: z.ZodObject<{
         metadata: z.ZodOptional<z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>>;
     }, "strip", z.ZodTypeAny, {
         name: string;
+        attributes?: Record<string, any> | undefined;
         age?: number | null | undefined;
         occupation?: string | null | undefined;
         sex?: "male" | "female" | "other" | null | undefined;
         metadata?: Record<string, any> | undefined;
-        attributes?: Record<string, any> | undefined;
     }, {
         name: string;
+        attributes?: Record<string, any> | undefined;
         age?: number | null | undefined;
         occupation?: string | null | undefined;
         sex?: "male" | "female" | "other" | null | undefined;
         metadata?: Record<string, any> | undefined;
-        attributes?: Record<string, any> | undefined;
     }>, "many">;
     groupId: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     personas: {
         name: string;
+        attributes?: Record<string, any> | undefined;
         age?: number | null | undefined;
         occupation?: string | null | undefined;
         sex?: "male" | "female" | "other" | null | undefined;
         metadata?: Record<string, any> | undefined;
-        attributes?: Record<string, any> | undefined;
     }[];
     groupId?: string | undefined;
 }, {
     personas: {
         name: string;
+        attributes?: Record<string, any> | undefined;
         age?: number | null | undefined;
         occupation?: string | null | undefined;
         sex?: "male" | "female" | "other" | null | undefined;
         metadata?: Record<string, any> | undefined;
-        attributes?: Record<string, any> | undefined;
     }[];
     groupId?: string | undefined;
 }>;
@@ -237,25 +237,25 @@ export declare const personaResponseSchema: z.ZodObject<{
     created_at: z.ZodDate;
     updated_at: z.ZodDate;
 }, "strip", z.ZodTypeAny, {
+    name: string;
+    attributes: Record<string, any>;
     age: number | null;
     occupation: string | null;
     sex: string | null;
     metadata: Record<string, any>;
-    name: string;
-    attributes: Record<string, any>;
     id: string;
     created_at: Date;
     updated_at: Date;
 }, {
+    name: string;
     age: number | null;
     occupation: string | null;
     sex: string | null;
-    name: string;
     id: string;
     created_at: Date;
     updated_at: Date;
-    metadata?: Record<string, any> | undefined;
     attributes?: Record<string, any> | undefined;
+    metadata?: Record<string, any> | undefined;
 }>;
 export declare const personaGroupResponseSchema: z.ZodObject<{
     id: z.ZodString;
@@ -265,8 +265,8 @@ export declare const personaGroupResponseSchema: z.ZodObject<{
     created_at: z.ZodDate;
     updated_at: z.ZodDate;
 }, "strip", z.ZodTypeAny, {
-    metadata: Record<string, any>;
     name: string;
+    metadata: Record<string, any>;
     description: string | null;
     id: string;
     created_at: Date;

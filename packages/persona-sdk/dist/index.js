@@ -59,6 +59,8 @@
 export { Persona } from './persona';
 export { PersonaGroup } from './persona-group';
 export { PersonaBuilder } from './persona-builder';
+// AI functionality
+export { PersonaAI } from './ai/persona-ai';
 // Distributions
 export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution, CorrelatedDistribution, CommonCorrelations, PersonaCorrelationPresets } from './distributions';
 export { BasePersonaAttributesSchema, PersonaAttributesSchema, SexSchema } from './types';
@@ -94,6 +96,12 @@ export { PrismaDatabaseClient } from './adapters/postgres/clients/prisma.js';
 // Seeding Utilities
 export { SeedManager, testWithSeed, DeterministicRandom } from './utils/seed-manager';
 export { SeededNormalDistribution, SeededUniformDistribution, SeededExponentialDistribution, SeededBetaDistribution, SeededCategoricalDistribution, SeededDistributionFactory } from './distributions/seeded';
+// Enhanced Type-Safe Builders
+export { TypedPersonaBuilder } from './builders/typed-persona-builder';
+// Typed Persona Group
+export { TypedPersonaGroup } from './groups/typed-persona-group';
+// Validation Schemas
+export * from './schemas/validation';
 // Version
-export const VERSION = '0.2.0';
+export const VERSION = '0.3.0';
 //# sourceMappingURL=index.js.map

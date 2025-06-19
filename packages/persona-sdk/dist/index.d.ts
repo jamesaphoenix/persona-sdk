@@ -58,6 +58,8 @@
 export { Persona } from './persona';
 export { PersonaGroup } from './persona-group';
 export { PersonaBuilder } from './persona-builder';
+export { PersonaAI } from './ai/persona-ai';
+export type { AIOptions } from './ai/persona-ai';
 export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution, CorrelatedDistribution, CommonCorrelations, PersonaCorrelationPresets } from './distributions';
 export type { AttributeValue, BasePersonaAttributes, PersonaAttributes, Sex, Distribution, DistributionSpec, DistributionMap, PersonaGroupOptions, StructuredOutput, AttributeCorrelation } from './types';
 export type { ConditionalDistribution } from './distributions/correlated-distribution';
@@ -91,5 +93,10 @@ export { SupabaseDatabaseClient } from './adapters/postgres/clients/supabase.js'
 export { PrismaDatabaseClient } from './adapters/postgres/clients/prisma.js';
 export { SeedManager, testWithSeed, DeterministicRandom } from './utils/seed-manager';
 export { SeededNormalDistribution, SeededUniformDistribution, SeededExponentialDistribution, SeededBetaDistribution, SeededCategoricalDistribution, SeededDistributionFactory } from './distributions/seeded';
-export declare const VERSION = "0.2.0";
+export { TypedPersonaBuilder } from './builders/typed-persona-builder';
+export type { ExtractAttributes, ExtractPersona } from './builders/typed-persona-builder';
+export { TypedPersonaGroup } from './groups/typed-persona-group';
+export type { ExtractGroupAttributes, ExtractGroupPersonas } from './groups/typed-persona-group';
+export * from './schemas/validation';
+export declare const VERSION = "0.3.0";
 //# sourceMappingURL=index.d.ts.map
