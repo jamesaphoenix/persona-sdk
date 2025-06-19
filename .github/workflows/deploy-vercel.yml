@@ -37,12 +37,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
         
-      - name: Build documentation
-        run: pnpm --filter @persona-sdk/docs build
-        working-directory: ./
+      - name: Build SDK first (docs dependency)
+        run: pnpm --filter @jamesaphoenix/persona-sdk build
         
       - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_TEAM_ID }}
+        run: |
+          vercel link --yes --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_TEAM_ID }}
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_TEAM_ID }}
         working-directory: ./docs
         
       - name: Build Project Artifacts

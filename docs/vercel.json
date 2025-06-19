@@ -1,7 +1,12 @@
 {
   "buildCommand": "cd .. && pnpm --filter @persona-sdk/docs build",
-  "outputDirectory": ".docusaurus",
-  "framework": "docusaurus-2",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
   "installCommand": "cd .. && pnpm install",
-  "devCommand": "pnpm dev"
+  "devCommand": "pnpm dev",
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  }
 }
