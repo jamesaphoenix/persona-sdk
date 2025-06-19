@@ -384,6 +384,136 @@ await insights.exportToCSV('media-analysis-results.csv');
 
 ---
 
+### 8. 🧪 Comprehensive Runtime Testing Suite
+**Priority: Critical**
+**Estimated Effort: 3-4 days**
+
+#### Description
+Since we've written so much code across React, API, and SDK packages, we need comprehensive runtime testing to catch bugs that unit tests might miss. Create a testing setup that manually tests every single function at runtime to confirm the entire application works end-to-end.
+
+#### Testing Strategy
+
+##### A. SDK Function Testing
+```typescript
+// Test every distribution at runtime
+const testAllDistributions = async () => {
+  const distributions = [
+    new NormalDistribution(30, 5),
+    new UniformDistribution(18, 65),
+    new CategoricalDistribution([...]),
+    new ExponentialDistribution(0.1),
+    // ... all other distributions
+  ];
+  
+  for (const dist of distributions) {
+    // Test sampling
+    const samples = dist.sampleMany(1000);
+    assert(samples.length === 1000);
+    assert(samples.every(s => typeof s === 'number'));
+    
+    // Test statistics
+    const stats = calculateStats(samples);
+    assert(stats.mean !== undefined);
+    // ... more assertions
+  }
+};
+```
+
+##### B. API Endpoint Testing
+```typescript
+// Test every API endpoint with real data
+const testAllAPIEndpoints = async () => {
+  const baseUrl = 'http://localhost:3000';
+  
+  // Test persona creation
+  const persona = await fetch(`${baseUrl}/personas`, {
+    method: 'POST',
+    body: JSON.stringify({ name: 'Test', age: 30 })
+  });
+  assert(persona.status === 201);
+  
+  // Test group creation
+  const group = await fetch(`${baseUrl}/groups`, {
+    method: 'POST', 
+    body: JSON.stringify({ name: 'Test Group' })
+  });
+  assert(group.status === 201);
+  
+  // Test every endpoint systematically...
+};
+```
+
+##### C. React Hook Testing
+```typescript
+// Test all React hooks with real renders
+const testAllReactHooks = () => {
+  render(
+    <PersonaApiProvider config={{ baseUrl: 'http://localhost:3000' }}>
+      <TestComponent />
+    </PersonaApiProvider>
+  );
+  
+  // Test usePersonas
+  // Test useCreatePersona
+  // Test useGroups
+  // etc...
+};
+```
+
+##### D. Integration Testing
+```typescript
+// Test complete workflows end-to-end
+const testCompleteWorkflows = async () => {
+  // Workflow 1: SDK -> API -> Database -> React
+  const group = new PersonaGroup('Test');
+  group.generateFromDistributions(100, { age: new NormalDistribution(30, 5) });
+  
+  // Save to API
+  const saved = await apiClient.saveGroup(group);
+  
+  // Verify in database
+  const fromDb = await dbClient.getGroup(saved.id);
+  assert(fromDb.personas.length === 100);
+  
+  // Verify in React
+  const { data } = render(<GroupDisplay id={saved.id} />);
+  assert(data.personas.length === 100);
+};
+```
+
+#### Testing Environment Setup
+```bash
+# Multi-service testing environment
+docker-compose up -d postgres
+npm run api:start &
+npm run docs:dev &
+npm run test:runtime
+```
+
+#### Manual Testing Checklist
+- [ ] All 15+ distribution types work correctly
+- [ ] All 20+ API endpoints return expected responses
+- [ ] All React hooks render without errors
+- [ ] Database migrations run successfully
+- [ ] Swagger docs load and are accurate
+- [ ] All example code in docs actually works
+- [ ] Cross-browser compatibility (Chrome, Firefox, Safari)
+- [ ] Mobile responsiveness
+- [ ] Error handling in all edge cases
+- [ ] Memory leaks under load
+- [ ] Performance under 1000+ personas
+
+#### Acceptance Criteria
+- Runtime test suite covering 100% of public APIs
+- Automated end-to-end tests for critical workflows
+- Performance regression testing
+- Error scenario testing (network failures, bad data, etc.)
+- Documentation examples must all be runnable
+- CI/CD pipeline runs full runtime test suite
+- Manual testing playbook for releases
+
+---
+
 ## Contributing
 
 To work on any of these examples:
