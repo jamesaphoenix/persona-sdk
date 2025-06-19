@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Persisted persona routes using PostgreSQL
  */

@@ -48,7 +48,15 @@ const databasePlugin: FastifyPluginAsync = async (fastify) => {
   }
 
   // Create database client and adapter
-  const dbClient = new PgDatabaseClient(pool);
+  const dbClient = new PgDatabaseClient({
+    host: config.host,
+    port: config.port,
+    database: config.database,
+    user: config.user,
+    password: config.password,
+    ssl: config.ssl,
+    poolSize: config.maxConnections
+  });
   const adapter = new PostgresAdapter(dbClient);
 
   // Note: Database schema should be initialized separately via migrations
