@@ -131,6 +131,9 @@ importers:
       '@types/node':
         specifier: ^22.10.7
         version: 22.15.32
+      '@types/pg':
+        specifier: ^8.15.4
+        version: 8.15.4
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
@@ -293,6 +296,7 @@ packages:
   '@esbuild/darwin-arm64@0.25.5':
     resolution: {integrity: sha512-GtaBgammVvdF7aPIgH2jxMDdivezgFu6iKpmT+48+F8Hhg5J/sfnDieg0aeG/jfSvkYQU2/pceFPDKlqZzwnfQ==}
     engines: {node: '>=18'}
+    cpu: [arm64]
     os: [darwin]
 
   '@esbuild/darwin-x64@0.25.5':
@@ -2648,9 +2652,6 @@ packages:
     peerDependencies:
       pg: '>=8.0'
 
-  pg-protocol@1.10.0:
-    resolution: {integrity: sha512-IpdytjudNuLv8nhlHs/UrVBhU0e78J0oIS/0AVdTbWxSOkFUVdsHC/NrorO6nXsQNDTT1kzDSOMJubBQviX18Q==}
-
   pg-protocol@1.10.1:
     resolution: {integrity: sha512-9YS3ZonDj0Lxny//aF0ITPdfrEPgKWCJvONsSXAaIUhgpzlzl5JgaZNlbTFxvYNfm2terGEnHeOSUlF6qRGBzw==}
 
@@ -4467,7 +4468,7 @@ snapshots:
   '@types/pg@8.15.4':
     dependencies:
       '@types/node': 22.15.32
-      pg-protocol: 1.10.0
+      pg-protocol: 1.10.1
       pg-types: 2.2.0
 
   '@types/phoenix@1.6.6': {}
@@ -6122,8 +6123,6 @@ snapshots:
   pg-pool@3.10.1(pg@8.16.1):
     dependencies:
       pg: 8.16.1
-
-  pg-protocol@1.10.0: {}
 
   pg-protocol@1.10.1: {}
 

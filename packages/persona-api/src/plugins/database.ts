@@ -51,14 +51,8 @@ const databasePlugin: FastifyPluginAsync = async (fastify) => {
   const dbClient = new PgDatabaseClient(pool);
   const adapter = new PostgresAdapter(dbClient);
 
-  // Initialize database schema
-  try {
-    await adapter.initialize();
-    fastify.log.info('Database schema initialized');
-  } catch (error) {
-    fastify.log.error('Failed to initialize database schema:', error);
-    throw error;
-  }
+  // Note: Database schema should be initialized separately via migrations
+  // The adapter assumes the schema already exists
 
   // Decorate fastify instance
   fastify.decorate('db', {

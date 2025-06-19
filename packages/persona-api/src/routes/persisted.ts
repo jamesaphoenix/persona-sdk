@@ -12,8 +12,7 @@ import {
   BetaDistribution,
   ExponentialDistribution,
   CategoricalDistribution,
-  StructuredOutputGenerator,
-  MockStructuredOutputGenerator
+  StructuredOutputGenerator
 } from '@jamesaphoenix/persona-sdk';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -133,7 +132,7 @@ export const persistedRoutes: FastifyPluginAsync = async (server) => {
       });
     }
 
-    const { name, attributes } = request.body;
+    const { name, attributes } = request.body as z.infer<typeof GeneratePersistedPersonaSchema>;
     
     // Build persona
     let builder = PersonaBuilder.create();
@@ -157,10 +156,10 @@ export const persistedRoutes: FastifyPluginAsync = async (server) => {
     
     if (attributes?.income) {
       if (typeof attributes.income === 'number') {
-        builder = builder.withIncome(attributes.income);
+        builder = builder.withAttribute('income', attributes.income);
       } else if (attributes.income.distribution === 'exponential') {
         const dist = new ExponentialDistribution(attributes.income.lambda);
-        builder = builder.withIncome(Math.round(dist.sample()));
+        builder = builder.withAttribute('income', Math.round(dist.sample()));
       }
     }
     
@@ -174,7 +173,7 @@ export const persistedRoutes: FastifyPluginAsync = async (server) => {
     }
     
     if (attributes?.interests) {
-      builder = builder.withInterests(attributes.interests);
+      builder = builder.withAttribute('interests', attributes.interests);
     }
     
     if (attributes?.occupation) {
@@ -240,7 +239,7 @@ export const persistedRoutes: FastifyPluginAsync = async (server) => {
       });
     }
 
-    const { name, size, distributions } = request.body;
+    const { name, size, distributions } = request.body as z.infer<typeof GeneratePersistedGroupSchema>;
     const group = new PersonaGroup(name);
     
     // Generate personas based on distributions
@@ -268,13 +267,13 @@ export const persistedRoutes: FastifyPluginAsync = async (server) => {
       if (distributions?.income) {
         if (distributions.income.type === 'exponential') {
           const dist = new ExponentialDistribution(distributions.income.params.lambda!);
-          builder = builder.withIncome(Math.round(dist.sample()));
+          builder = builder.withAttribute('income', Math.round(dist.sample()));
         } else if (distributions.income.type === 'normal') {
           const dist = new NormalDistribution(
             distributions.income.params.mean!,
             distributions.income.params.stdDev!
           );
-          builder = builder.withIncome(Math.round(dist.sample()));
+          builder = builder.withAttribute('income', Math.round(dist.sample()));
         }
       }
       
@@ -375,7 +374,7 @@ export const persistedRoutes: FastifyPluginAsync = async (server) => {
       });
     }
 
-    const { filters, limit, offset, orderBy, order } = request.body;
+    const { filters, limit, offset, orderBy, order } = request.body as z.infer<typeof QueryPersonasSchema>;
     
     // Build where clause
     const where: any = {};
@@ -500,7 +499,16 @@ export const persistedRoutes: FastifyPluginAsync = async (server) => {
           apiKey: process.env.OPENAI_API_KEY,
           model: 'gpt-4o-mini'
         })
-      : new MockStructuredOutputGenerator();
+      : {
+          analyzeCTR: async () => ({
+            platformAnalysis: {
+              instagram: { baseCTR: 0.02, adjustedCTR: 0.025, engagementFactors: ['visual content'] },
+              twitter: { baseCTR: 0.015, adjustedCTR: 0.018, engagementFactors: ['trending topics'] }
+            },
+            recommendations: ['Focus on visual content'],
+            summary: 'Mock CTR analysis'
+          })
+        };
     
     const analysis = await generator.analyzeCTR({
       personaGroup,
@@ -599,7 +607,20 @@ export const persistedRoutes: FastifyPluginAsync = async (server) => {
           apiKey: process.env.OPENAI_API_KEY,
           model: 'gpt-4o-mini'
         })
-      : new MockStructuredOutputGenerator();
+      : {
+          simulateSurvey: async () => ({
+            responses: [{
+              personaId: personas[0].id,
+              personaName: personas[0].name,
+              answers: { q1: 'yes', q2: 5 }
+            }],
+            summary: {
+              totalResponses: 1,
+              completionRate: 1.0,
+              insights: ['Mock survey response']
+            }
+          })
+        };
     
     const simulation = await generator.simulateSurvey({
       personaGroup,
