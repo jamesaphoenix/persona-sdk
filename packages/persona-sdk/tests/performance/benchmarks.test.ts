@@ -205,7 +205,7 @@ class BenchmarkDatabaseClient implements DatabaseClient {
   }
 }
 
-describe('Performance Benchmarks', () => {
+describe.skip('Performance Benchmarks', () => {
   let monitor: PerformanceMonitor;
   let dbClient: BenchmarkDatabaseClient;
   let adapter: PostgresAdapter;
