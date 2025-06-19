@@ -180,9 +180,9 @@ console.log(\`✨ Best headline: "\${insights.data.best_headline}"\`);
       <div className="container mx-auto px-4 py-20">
         <div className="mx-auto max-w-6xl space-y-12">
           <div className="text-center space-y-4">
-            <h2 className="text-3xl font-bold">Built for Modern Marketing & Product Teams</h2>
+            <h2 className="text-3xl font-bold">Real-World Use Cases</h2>
             <p className="text-xl text-muted-foreground">
-              Real examples from teams shipping 10x faster
+              Practical examples for developers and teams
             </p>
           </div>
           
@@ -190,13 +190,12 @@ console.log(\`✨ Best headline: "\${insights.data.best_headline}"\`);
             <Link href="/docs/examples/media-analysis/02-comment-engagement" className="group space-y-4 rounded-xl border p-6 transition-all hover:shadow-lg hover:border-blue-500">
               <div className="flex items-start justify-between">
                 <h3 className="text-lg font-semibold group-hover:text-blue-600">
-                  Predict Reddit Virality
+                  Content Engagement Analysis
                 </h3>
                 <span className="text-2xl">🚀</span>
               </div>
               <p className="text-muted-foreground">
-                One founder tested 50 post variations in simulation, found a 67% CTR improvement,
-                and hit #1 on r/programming with 8.5k upvotes.
+                Simulate audience reactions to different content types and predict engagement patterns.
               </p>
               <p className="text-sm text-blue-600 group-hover:underline">
                 See how →
@@ -206,13 +205,12 @@ console.log(\`✨ Best headline: "\${insights.data.best_headline}"\`);
             <Link href="/docs/examples/surveys/01-market-research" className="group space-y-4 rounded-xl border p-6 transition-all hover:shadow-lg hover:border-blue-500">
               <div className="flex items-start justify-between">
                 <h3 className="text-lg font-semibold group-hover:text-blue-600">
-                  $125K Saved on Market Research
+                  Market Research Simulation
                 </h3>
                 <span className="text-2xl">💰</span>
               </div>
               <p className="text-muted-foreground">
-                SaaS startup simulated 10,000 survey responses, found their ICP, 
-                and reached product-market fit 3 months faster.
+                Generate synthetic survey responses to validate product concepts and find target segments.
               </p>
               <p className="text-sm text-blue-600 group-hover:underline">
                 Learn how →
@@ -222,32 +220,30 @@ console.log(\`✨ Best headline: "\${insights.data.best_headline}"\`);
             <Link href="/docs/examples/media-analysis/03-voting-systems" className="group space-y-4 rounded-xl border p-6 transition-all hover:shadow-lg hover:border-blue-500">
               <div className="flex items-start justify-between">
                 <h3 className="text-lg font-semibold group-hover:text-blue-600">
-                  2.4x More Front-Page Hits
+                  Voting & Polling Systems
                 </h3>
                 <span className="text-2xl">📈</span>
               </div>
               <p className="text-muted-foreground">
-                Content team predicts performance across Reddit, HackerNews, and ProductHunt.
-                Only publishes guaranteed winners.
+                Model voting behavior and predict outcomes for democratic processes and product decisions.
               </p>
               <p className="text-sm text-blue-600 group-hover:underline">
-                Start winning →
+                Start building →
               </p>
             </Link>
             
             <Link href="/docs/examples/marketing/structured-output-magic" className="group space-y-4 rounded-xl border p-6 transition-all hover:shadow-lg hover:border-blue-500">
               <div className="flex items-start justify-between">
                 <h3 className="text-lg font-semibold group-hover:text-blue-600">
-                  Complete GTM in 2 Hours
+                  AI-Powered Insights
                 </h3>
                 <span className="text-2xl">🎯</span>
               </div>
               <p className="text-muted-foreground">
-                AI analyzes your personas and generates positioning, messaging, 
-                and campaign ideas that actually resonate.
+                Generate structured insights from persona groups using type-safe AI integration.
               </p>
               <p className="text-sm text-blue-600 group-hover:underline">
-                Generate yours →
+                Try it out →
               </p>
             </Link>
           </div>
@@ -259,15 +255,15 @@ console.log(\`✨ Best headline: "\${insights.data.best_headline}"\`);
         <div className="container mx-auto px-4 py-20">
           <div className="mx-auto max-w-3xl text-center space-y-8">
             <h2 className="text-4xl font-bold">
-              Ready to Ship Like You Know the Future? 🔮
+              Ready to Build Better Products? 🚀
             </h2>
             <p className="text-xl text-muted-foreground">
-              Join 50+ teams using Persona SDK to build products people actually want.
-              No more guessing. Just data-driven wins.
+              Generate realistic personas with statistical distributions and AI-powered insights.
+              Built for developers who need reliable, reproducible data.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/docs/getting-started" className="inline-flex h-12 items-center justify-center rounded-md bg-gradient-to-r from-blue-600 to-purple-600 px-8 text-base font-medium text-white shadow-lg transition-all hover:shadow-xl hover:scale-105">
-                Start Free →
+              <Link href="/docs" className="inline-flex h-12 items-center justify-center rounded-md bg-gradient-to-r from-blue-600 to-purple-600 px-8 text-base font-medium text-white shadow-lg transition-all hover:shadow-xl hover:scale-105">
+                Get Started →
               </Link>
               <Link href="https://github.com/jamesaphoenix/persona-sdk" className="inline-flex h-12 items-center justify-center rounded-md border-2 border-gray-300 bg-white px-8 text-base font-medium text-gray-700 transition-all hover:border-gray-400 hover:shadow-md dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700">
                 ⭐ Star on GitHub
