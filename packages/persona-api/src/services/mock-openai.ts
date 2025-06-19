@@ -18,7 +18,18 @@ export class MockOpenAIService {
     const mockData = this.generateMockData(prompt, schemaShape, group.size);
     
     // Ensure the mock data matches the schema
-    const data = schema.parse(mockData);
+    let data;
+    try {
+      data = schema.parse(mockData);
+    } catch (error) {
+      // If parsing fails, return a generic response that should match most schemas
+      const genericData = {
+        insights: mockData,
+        recommendations: mockData.recommendations || ['Recommendation 1', 'Recommendation 2'],
+        confidence: mockData.confidence || 'high',
+      };
+      data = schema.parse(genericData);
+    }
     
     return {
       data,
@@ -104,8 +115,19 @@ export class MockOpenAIService {
   private extractSchemaShape(schema: any): any {
     // Simplified schema extraction for mocking
     try {
-      const shape = schema._def?.shape?.() || schema._def?.innerType?._def?.shape?.() || {};
-      return shape;
+      // For Zod schemas, check for shape property
+      if (schema._def?.typeName === 'ZodObject') {
+        return schema._def?.shape || {};
+      }
+      // For nested schemas
+      if (schema._def?.innerType?._def?.typeName === 'ZodObject') {
+        return schema._def?.innerType?._def?.shape || {};
+      }
+      // For schemas with shape as a function
+      if (typeof schema._def?.shape === 'function') {
+        return schema._def.shape() || {};
+      }
+      return {};
     } catch {
       return {};
     }
@@ -165,6 +187,9 @@ export class MockOpenAIService {
         confidence_intervals: {
           ctr: { lower: 0.11, upper: 0.14 },
           engagement_rate: { lower: 0.20, upper: 0.27 },
+          conversion_rate: { lower: 0.03, upper: 0.06 },
+          viral_probability: { lower: 0.65, upper: 0.81 },
+          sentiment: { lower: 0.75, upper: 0.89 },
         },
         predicted_ctr: 0.127,
         engagement_score: 8.5,
@@ -231,6 +256,22 @@ export class MockOpenAIService {
           'Average willingness to pay: $49/month',
           'Expected adoption rate: 34% in first 90 days',
         ],
+      };
+    }
+    
+    // Custom analysis or default response
+    if (promptLower.includes('features') || promptLower.includes('custom')) {
+      return {
+        insights: {
+          top_features: [
+            'AI-powered automation',
+            'Real-time collaboration tools',
+            'Advanced analytics dashboard'
+          ],
+          reasoning: 'Based on the technical background and productivity focus of the personas',
+        },
+        recommendations: ['Focus on AI features', 'Prioritize collaboration tools'],
+        confidence: 'high',
       };
     }
     

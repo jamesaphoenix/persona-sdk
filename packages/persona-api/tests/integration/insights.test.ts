@@ -6,6 +6,8 @@ describe('Insights API Integration Tests', () => {
   let server: FastifyInstance;
 
   beforeAll(async () => {
+    // Set mock mode for tests
+    process.env.MOCK_OPENAI = 'true';
     server = buildServer();
     await server.listen({ port: 0 });
   });
@@ -21,6 +23,7 @@ describe('Insights API Integration Tests', () => {
       attributes: {
         age: 28,
         occupation: 'Software Engineer',
+        sex: 'female',
         interests: ['tech', 'startups'],
         income: 95000,
       },
@@ -31,6 +34,7 @@ describe('Insights API Integration Tests', () => {
       attributes: {
         age: 35,
         occupation: 'Product Manager',
+        sex: 'male',
         interests: ['business', 'tech'],
         income: 120000,
       },
@@ -41,6 +45,7 @@ describe('Insights API Integration Tests', () => {
       attributes: {
         age: 42,
         occupation: 'Designer',
+        sex: 'female',
         interests: ['design', 'art'],
         income: 85000,
       },
@@ -96,21 +101,26 @@ describe('Insights API Integration Tests', () => {
     });
 
     it('should handle custom analysis with schema', async () => {
+      const payload = {
+        personas: samplePersonas,
+        analysis_type: 'custom',
+        custom_prompt: 'What are the top 3 product features this audience would want?',
+        output_schema: {
+          top_features: {
+            type: 'array',
+            items: { type: 'string' },
+          },
+          reasoning: { type: 'string' },
+        },
+      };
+      
       const response = await server.inject({
         method: 'POST',
         url: '/api/v1/insights/analyze',
-        payload: {
-          personas: samplePersonas,
-          analysis_type: 'custom',
-          custom_prompt: 'What are the top 3 product features this audience would want?',
-          output_schema: {
-            top_features: {
-              type: 'array',
-              items: { type: 'string' },
-            },
-            reasoning: { type: 'string' },
-          },
+        headers: {
+          'content-type': 'application/json',
         },
+        payload: JSON.stringify(payload),
       });
 
       expect(response.statusCode).toBe(200);
@@ -134,22 +144,27 @@ describe('Insights API Integration Tests', () => {
 
   describe('POST /api/v1/insights/predict', () => {
     it('should predict content performance metrics', async () => {
+      const payload = {
+        personas: samplePersonas,
+        content: {
+          title: 'How AI is Transforming Software Development',
+          type: 'blog',
+          description: 'An in-depth look at AI tools for developers',
+          metadata: {
+            readTime: 7,
+            hasImages: true,
+          },
+        },
+        metrics: ['ctr', 'engagement_rate', 'viral_probability'],
+      };
+      
       const response = await server.inject({
         method: 'POST',
         url: '/api/v1/insights/predict',
-        payload: {
-          personas: samplePersonas,
-          content: {
-            title: 'How AI is Transforming Software Development',
-            type: 'blog',
-            description: 'An in-depth look at AI tools for developers',
-            metadata: {
-              readTime: 7,
-              hasImages: true,
-            },
-          },
-          metrics: ['ctr', 'engagement_rate', 'viral_probability'],
+        headers: {
+          'content-type': 'application/json',
         },
+        payload: JSON.stringify(payload),
       });
 
       expect(response.statusCode).toBe(200);

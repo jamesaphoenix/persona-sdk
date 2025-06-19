@@ -77,24 +77,18 @@ const createDistribution = (config: any) => {
 
 export const personaRoutes: FastifyPluginAsync = async (fastify) => {
   // Generate a single persona
-  fastify.post('/', {
-    schema: {
-      description: 'Generate a single persona',
-      tags: ['personas'],
-      body: generatePersonaSchema,
-      response: {
-        201: personaResponseSchema,
-      },
-    },
-  }, async (request, reply) => {
+  fastify.post('/', async (request, reply) => {
     const { name, attributes } = generatePersonaSchema.parse(request.body);
     
     let builder = PersonaBuilder.create();
     
-    if (name) builder = builder.withName(name);
-    if (attributes?.age) builder = builder.withAge(attributes.age);
-    if (attributes?.occupation) builder = builder.withOccupation(attributes.occupation);
-    if (attributes?.sex) builder = builder.withSex(attributes.sex);
+    // Set name with default if not provided
+    builder = builder.withName(name || 'Generated Persona');
+    
+    // Set required attributes with defaults
+    builder = builder.withAge(attributes?.age || 30);
+    builder = builder.withOccupation(attributes?.occupation || 'Professional');
+    builder = builder.withSex(attributes?.sex || 'other');
     
     // Add any additional attributes
     if (attributes) {
@@ -116,16 +110,7 @@ export const personaRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   // Generate a persona group
-  fastify.post('/groups', {
-    schema: {
-      description: 'Generate a group of personas',
-      tags: ['personas'],
-      body: generatePersonaGroupSchema,
-      response: {
-        201: personaGroupResponseSchema,
-      },
-    },
-  }, async (request, reply) => {
+  fastify.post('/groups', async (request, reply) => {
     const { size, name, attributes, distributions, segments } = 
       generatePersonaGroupSchema.parse(request.body);
     
@@ -133,13 +118,22 @@ export const personaRoutes: FastifyPluginAsync = async (fastify) => {
     
     if (segments && segments.length > 0) {
       // Generate segmented personas
-      await PersonaGroup.generate({
+      const generatedGroup = await PersonaGroup.generate({
         size,
         segments: segments.map(segment => ({
           ...segment,
-          attributes: segment.attributes as any,
+          attributes: {
+            // Ensure required fields have defaults
+            age: new NormalDistribution(30, 5),
+            occupation: 'Professional',
+            sex: 'other',
+            // Add segment-specific attributes
+            ...segment.attributes,
+          } as any,
         })),
       });
+      // Add all personas from generated group to our group
+      generatedGroup.personas.forEach(p => group.add(p));
     } else if (distributions) {
       // Generate with distributions
       const distConfig: any = {};
@@ -149,6 +143,17 @@ export const personaRoutes: FastifyPluginAsync = async (fastify) => {
       }
       if (distributions.income) {
         distConfig.income = createDistribution(distributions.income);
+      }
+      
+      // Ensure required fields have defaults if not provided
+      if (!distConfig.age && !attributes?.age) {
+        distConfig.age = new NormalDistribution(30, 5);
+      }
+      if (!distConfig.occupation && !attributes?.occupation) {
+        distConfig.occupation = 'Professional';
+      }
+      if (!distConfig.sex && !attributes?.sex) {
+        distConfig.sex = 'other';
       }
       
       // Add any static attributes
@@ -161,6 +166,10 @@ export const personaRoutes: FastifyPluginAsync = async (fastify) => {
       // Generate with static attributes
       for (let i = 0; i < size; i++) {
         const persona = PersonaBuilder.create()
+          .withName(`Person ${i + 1}`)
+          .withAge(30)
+          .withOccupation('Professional')
+          .withSex('other')
           .withAttribute('index', i)
           .build();
         group.add(persona);
@@ -198,38 +207,21 @@ export const personaRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   // Batch generate personas
-  fastify.post('/batch', {
-    schema: {
-      description: 'Generate multiple personas in batch',
-      tags: ['personas'],
-      body: z.object({
-        count: z.number().int().min(1).max(1000).default(10),
-        template: generatePersonaSchema.optional(),
-      }),
-      response: {
-        201: z.object({
-          personas: z.array(personaResponseSchema),
-          count: z.number(),
-        }),
-      },
-    },
-  }, async (request, reply) => {
+  fastify.post('/batch', async (request, reply) => {
     const { count, template } = request.body as any;
     const personas = [];
     
     for (let i = 0; i < count; i++) {
       let builder = PersonaBuilder.create();
       
-      if (template?.name) {
-        builder = builder.withName(`${template.name} ${i + 1}`);
-      }
+      // Set name with default
+      builder = builder.withName(template?.name ? `${template.name} ${i + 1}` : `Person ${i + 1}`);
       
-      if (template?.attributes) {
-        const attrs = template.attributes;
-        if (attrs.age) builder = builder.withAge(attrs.age);
-        if (attrs.occupation) builder = builder.withOccupation(attrs.occupation);
-        if (attrs.sex) builder = builder.withSex(attrs.sex);
-      }
+      // Set required attributes with defaults
+      const attrs = template?.attributes || {};
+      builder = builder.withAge(attrs.age || 30);
+      builder = builder.withOccupation(attrs.occupation || 'Professional');
+      builder = builder.withSex(attrs.sex || 'other');
       
       const persona = builder.build();
       personas.push({
@@ -247,19 +239,13 @@ export const personaRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   // Generate random persona
-  fastify.get('/random', {
-    schema: {
-      description: 'Generate a random persona',
-      tags: ['personas'],
-      response: {
-        200: personaResponseSchema,
-      },
-    },
-  }, async (request, reply) => {
-    const ages = new NormalDistribution(35, 12);
+  fastify.get('/random', async (request, reply) => {
+    // Create a seeded distribution for consistency
+    const ages = new NormalDistribution(35, 12, Math.floor(Math.random() * 10000));
     const occupations = ['Engineer', 'Designer', 'Manager', 'Analyst', 'Consultant'];
     
     const persona = PersonaBuilder.create()
+      .withName('Random Persona')
       .withAge(Math.max(18, Math.min(80, Math.round(ages.sample()))))
       .withOccupation(occupations[Math.floor(Math.random() * occupations.length)])
       .withSex(['male', 'female', 'other'][Math.floor(Math.random() * 3)] as any)

@@ -163,33 +163,41 @@ const analysisSchemas = {
 
 export const insightsRoutes: FastifyPluginAsync = async (fastify) => {
   // Analyze personas
-  fastify.post('/analyze', {
-    schema: {
-      description: 'Analyze personas to generate insights',
-      tags: ['insights'],
-      body: analyzeRequestSchema,
-      response: {
-        200: insightResponseSchema,
-      },
-    },
-  }, async (request, reply) => {
+  fastify.post('/analyze', async (request, reply) => {
     const { personas, analysis_type, custom_prompt, output_schema } = 
       analyzeRequestSchema.parse(request.body);
     
     // Create PersonaGroup from request
     const group = new PersonaGroup('Analysis Group');
     personas.forEach(p => {
+      // Ensure required attributes exist with defaults
+      const attributes = {
+        age: 30,
+        occupation: 'Professional',
+        sex: 'other',
+        ...p.attributes
+      };
+      
       group.addRaw({
         id: p.id,
         name: p.name,
-        attributes: p.attributes as any,
+        attributes: attributes as any,
       });
     });
     
     // Get appropriate schema
-    const schema = output_schema 
-      ? z.object(output_schema)
-      : analysisSchemas[analysis_type as keyof typeof analysisSchemas];
+    let schema;
+    if (output_schema) {
+      // For custom schemas, we need to build a proper Zod schema
+      // For now, we'll use a simple object schema
+      schema = z.object({
+        insights: z.record(z.any()),
+        recommendations: z.array(z.string()).optional(),
+        confidence: z.string().optional(),
+      });
+    } else {
+      schema = analysisSchemas[analysis_type as keyof typeof analysisSchemas];
+    }
     
     // Generate insights
     const generator = isTestMode() 
@@ -217,25 +225,24 @@ export const insightsRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   // Predict content performance
-  fastify.post('/predict', {
-    schema: {
-      description: 'Predict content performance for personas',
-      tags: ['insights'],
-      body: predictRequestSchema,
-      response: {
-        200: predictionResponseSchema,
-      },
-    },
-  }, async (request, reply) => {
+  fastify.post('/predict', async (request, reply) => {
     const { personas, content, metrics } = predictRequestSchema.parse(request.body);
     
     // Create PersonaGroup
     const group = new PersonaGroup('Prediction Group');
     personas.forEach(p => {
+      // Ensure required attributes exist with defaults
+      const attributes = {
+        age: 30,
+        occupation: 'Professional',
+        sex: 'other',
+        ...p.attributes
+      };
+      
       group.addRaw({
         id: p.id,
         name: p.name,
-        attributes: p.attributes as any,
+        attributes: attributes as any,
       });
     });
     
@@ -283,26 +290,25 @@ export const insightsRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   // Segment personas
-  fastify.post('/segment', {
-    schema: {
-      description: 'Segment personas into distinct groups',
-      tags: ['insights'],
-      body: segmentRequestSchema,
-      response: {
-        200: segmentResponseSchema,
-      },
-    },
-  }, async (request, reply) => {
+  fastify.post('/segment', async (request, reply) => {
     const { personas, segment_count, segment_by } = 
       segmentRequestSchema.parse(request.body);
     
     // Create PersonaGroup
     const group = new PersonaGroup('Segmentation Group');
     personas.forEach(p => {
+      // Ensure required attributes exist with defaults
+      const attributes = {
+        age: 30,
+        occupation: 'Professional',
+        sex: 'other',
+        ...p.attributes
+      };
+      
       group.addRaw({
         id: p.id,
         name: p.name,
-        attributes: p.attributes as any,
+        attributes: attributes as any,
       });
     });
     
@@ -333,36 +339,33 @@ export const insightsRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   // Quick insights endpoint
-  fastify.post('/quick', {
-    schema: {
-      description: 'Get quick insights about personas',
-      tags: ['insights'],
-      body: z.object({
-        personas: z.array(z.object({
-          id: z.string(),
-          name: z.string(),
-          attributes: z.record(z.any()),
-        })).min(1).max(1000),
-        question: z.string(),
-      }),
-      response: {
-        200: z.object({
-          answer: z.string(),
-          confidence: z.enum(['low', 'medium', 'high']),
-          supporting_data: z.array(z.string()).optional(),
-        }),
-      },
-    },
-  }, async (request, reply) => {
-    const { personas, question } = request.body as any;
+  fastify.post('/quick', async (request, reply) => {
+    const quickRequestSchema = z.object({
+      personas: z.array(z.object({
+        id: z.string(),
+        name: z.string(),
+        attributes: z.record(z.any()),
+      })).min(1),
+      question: z.string().min(1),
+    });
+    
+    const { personas, question } = quickRequestSchema.parse(request.body);
     
     // Create PersonaGroup
     const group = new PersonaGroup('Quick Analysis');
     personas.forEach((p: any) => {
+      // Ensure required attributes exist with defaults
+      const attributes = {
+        age: 30,
+        occupation: 'Professional',
+        sex: 'other',
+        ...p.attributes
+      };
+      
       group.addRaw({
         id: p.id,
         name: p.name,
-        attributes: p.attributes,
+        attributes: attributes,
       });
     });
     

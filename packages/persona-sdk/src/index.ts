@@ -188,5 +188,16 @@ export { PgDatabaseClient } from './adapters/postgres/clients/pg.js';
 export { SupabaseDatabaseClient } from './adapters/postgres/clients/supabase.js';
 export { PrismaDatabaseClient } from './adapters/postgres/clients/prisma.js';
 
+// Seeding Utilities
+export { SeedManager, testWithSeed, DeterministicRandom } from './utils/seed-manager';
+export {
+  SeededNormalDistribution,
+  SeededUniformDistribution,
+  SeededExponentialDistribution,
+  SeededBetaDistribution,
+  SeededCategoricalDistribution,
+  SeededDistributionFactory
+} from './distributions/seeded';
+
 // Version
 export const VERSION = '0.2.0';
