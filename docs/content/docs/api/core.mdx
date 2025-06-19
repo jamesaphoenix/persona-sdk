@@ -187,7 +187,7 @@ Generates a new persona group with the specified configuration.
 
 ### Instance Methods
 
-#### add(persona: Persona<T>)
+#### add()
 
 ```typescript
 add(persona: Persona<T>): void
@@ -195,7 +195,7 @@ add(persona: Persona<T>): void
 
 Adds a persona to the group.
 
-#### remove(persona: Persona<T>)
+#### remove()
 
 ```typescript
 remove(persona: Persona<T>): boolean
@@ -251,7 +251,7 @@ getAttributeDistribution(attribute: string): Map<any, number>
 
 Gets the distribution of values for an attribute.
 
-#### filter(predicate: (persona: Persona<T>) => boolean)
+#### filter()
 
 ```typescript
 filter(predicate: (persona: Persona<T>) => boolean): Persona<T>[]
@@ -259,7 +259,7 @@ filter(predicate: (persona: Persona<T>) => boolean): Persona<T>[]
 
 Filters personas based on a predicate.
 
-#### map<U>(fn: (persona: Persona<T>) => U)
+#### map()
 
 ```typescript
 map<U>(fn: (persona: Persona<T>) => U): U[]
@@ -267,7 +267,7 @@ map<U>(fn: (persona: Persona<T>) => U): U[]
 
 Maps personas to a new array.
 
-#### reduce<U>(fn: (acc: U, persona: Persona<T>) => U, initial: U)
+#### reduce()
 
 ```typescript
 reduce<U>(
