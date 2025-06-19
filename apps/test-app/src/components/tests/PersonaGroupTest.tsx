@@ -1,12 +1,11 @@
 'use client'
 
-import {
-  PersonaGroup,
-  PersonaBuilder,
-  NormalDistribution,
-  UniformDistribution,
-  CategoricalDistribution,
-} from '@jamesaphoenix/persona-sdk'
+// Import only browser-compatible parts
+import { PersonaGroup } from '@jamesaphoenix/persona-sdk/dist/persona-group'
+import { PersonaBuilder } from '@jamesaphoenix/persona-sdk/dist/persona-builder'
+import { NormalDistribution } from '@jamesaphoenix/persona-sdk/dist/distributions/normal'
+import { UniformDistribution } from '@jamesaphoenix/persona-sdk/dist/distributions/uniform'
+import { CategoricalDistribution } from '@jamesaphoenix/persona-sdk/dist/distributions/categorical'
 import { TestWrapper } from '../TestWrapper'
 import { useState } from 'react'
 

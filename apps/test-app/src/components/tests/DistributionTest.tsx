@@ -1,13 +1,12 @@
 'use client'
 
-import {
-  NormalDistribution,
-  UniformDistribution,
-  ExponentialDistribution,
-  BetaDistribution,
-  CategoricalDistribution,
-  SeedManager,
-} from '@jamesaphoenix/persona-sdk'
+// Import only browser-compatible distribution classes
+import { NormalDistribution } from '@jamesaphoenix/persona-sdk/dist/distributions/normal'
+import { UniformDistribution } from '@jamesaphoenix/persona-sdk/dist/distributions/uniform'
+import { ExponentialDistribution } from '@jamesaphoenix/persona-sdk/dist/distributions/exponential'
+import { BetaDistribution } from '@jamesaphoenix/persona-sdk/dist/distributions/beta'
+import { CategoricalDistribution } from '@jamesaphoenix/persona-sdk/dist/distributions/categorical'
+import { SeedManager } from '@jamesaphoenix/persona-sdk/dist/utils/seed-manager'
 import { TestWrapper } from '../TestWrapper'
 import { useState } from 'react'
 

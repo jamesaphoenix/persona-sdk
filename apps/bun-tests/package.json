@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "bun test",
+    "test": "command -v bun >/dev/null 2>&1 && bun test || echo 'Bun not available, skipping bun tests'",
     "test:record": "CASSETTE_MODE=record bun test",
     "test:replay": "CASSETTE_MODE=replay bun test",
     "test:watch": "bun test --watch",

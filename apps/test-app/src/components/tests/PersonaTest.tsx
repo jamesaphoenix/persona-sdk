@@ -1,6 +1,8 @@
 'use client'
 
-import { PersonaBuilder, Persona } from '@jamesaphoenix/persona-sdk'
+// Import only browser-compatible parts to avoid Node.js modules in browser
+import { PersonaBuilder } from '@jamesaphoenix/persona-sdk/dist/persona-builder'
+import { Persona } from '@jamesaphoenix/persona-sdk/dist/persona'
 import { TestWrapper } from '../TestWrapper'
 import { useState } from 'react'
 
