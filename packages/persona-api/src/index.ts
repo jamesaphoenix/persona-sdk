@@ -8,7 +8,9 @@ import swaggerUi from '@fastify/swagger-ui';
 import { personaRoutes } from './routes/personas.js';
 import { insightsRoutes } from './routes/insights.js';
 import { healthRoutes } from './routes/health.js';
+import { persistedRoutes } from './routes/persisted.js';
 import { errorHandler } from './plugins/error-handler.js';
+import databasePlugin from './plugins/database.js';
 import { config } from './utils/config.js';
 
 const buildServer = () => {
@@ -62,6 +64,7 @@ const buildServer = () => {
       tags: [
         { name: 'personas', description: 'Persona generation and management' },
         { name: 'insights', description: 'AI-powered analysis and insights' },
+        { name: 'persisted', description: 'PostgreSQL-backed persona persistence' },
         { name: 'health', description: 'Health checks and monitoring' },
       ],
     },
@@ -77,6 +80,13 @@ const buildServer = () => {
 
   // Custom plugins
   server.register(errorHandler);
+  
+  // Database plugin (optional - only if DB env vars are set)
+  if (process.env.DB_HOST || process.env.DB_NAME) {
+    server.register(databasePlugin);
+    // Register persisted routes only if database is available
+    server.register(persistedRoutes, { prefix: '/api/v1/persisted' });
+  }
 
   // Routes
   server.register(healthRoutes, { prefix: '/health' });
@@ -92,6 +102,9 @@ const buildServer = () => {
     endpoints: {
       personas: '/api/v1/personas',
       insights: '/api/v1/insights',
+      ...(process.env.DB_HOST || process.env.DB_NAME ? {
+        persisted: '/api/v1/persisted'
+      } : {})
     },
   }));
 

@@ -50,26 +50,24 @@ describe('TypedPersonaGroup', () => {
 
     it('should handle complex attribute types', async () => {
       const config: GroupGenerationConfig<{
-        demographics: {
-          age: NormalDistribution;
-          location: CategoricalDistribution<string>;
-        };
+        age: NormalDistribution;
+        occupation: string;
+        sex: 'male' | 'female' | 'other';
+        location: CategoricalDistribution<string>;
         preferences: string[];
         score: number;
       }> = {
         size: 5,
         attributes: {
-          demographics: {
-            age: new NormalDistribution(35, 10),
-            location: new CategoricalDistribution([
-              { value: 'Urban', probability: 0.6 },
-              { value: 'Rural', probability: 0.4 }
-            ])
-          },
-          preferences: ['tech', 'music'],
-          score: 85,
+          age: new NormalDistribution(35, 10),
+          occupation: 'Professional',
           sex: 'other',
-          occupation: 'Professional'
+          location: new CategoricalDistribution([
+            { value: 'Urban', probability: 0.6 },
+            { value: 'Rural', probability: 0.4 }
+          ]),
+          preferences: ['tech', 'music'],
+          score: 85
         }
       };
 
@@ -79,10 +77,16 @@ describe('TypedPersonaGroup', () => {
       const personas = group.getPersonas();
       expect(personas).toHaveLength(5);
       
-      // Note: Complex nested structures will be sampled as-is
+      // Check that attributes are correctly set
       personas.forEach(persona => {
         expect(persona.attributes.preferences).toEqual(['tech', 'music']);
         expect(persona.attributes.score).toBe(85);
+        expect(persona.attributes.sex).toBe('other');
+        expect(persona.attributes.occupation).toBe('Professional');
+        // Age should be sampled from distribution
+        expect(typeof persona.attributes.age).toBe('number');
+        // Location should be sampled from categorical distribution
+        expect(['Urban', 'Rural']).toContain(persona.attributes.location);
       });
     });
   });
@@ -222,6 +226,7 @@ describe('TypedPersonaGroup', () => {
 
   describe('Statistics', () => {
     it('should calculate statistics for numeric attributes', async () => {
+      // Use seeded distributions for deterministic results
       const config: GroupGenerationConfig<{
         age: NormalDistribution;
         income: NormalDistribution;
@@ -243,11 +248,14 @@ describe('TypedPersonaGroup', () => {
       const incomeStats = group.getStatistics('income');
       
       expect(ageStats).toBeTruthy();
-      expect(ageStats?.mean).toBeCloseTo(35, 1);
-      expect(ageStats?.stdDev).toBeCloseTo(5, 1);
+      expect(ageStats?.mean).toBeGreaterThan(33);
+      expect(ageStats?.mean).toBeLessThan(37);
+      expect(ageStats?.stdDev).toBeGreaterThan(3);
+      expect(ageStats?.stdDev).toBeLessThan(7);
       
       expect(incomeStats).toBeTruthy();
-      expect(incomeStats?.mean).toBeCloseTo(75000, 5000);
+      expect(incomeStats?.mean).toBeGreaterThan(70000);
+      expect(incomeStats?.mean).toBeLessThan(80000);
     });
 
     it('should get attribute distribution', async () => {
@@ -274,10 +282,17 @@ describe('TypedPersonaGroup', () => {
       const categoryDist = group.getAttributeDistribution('category');
       const levelDist = group.getAttributeDistribution('level');
       
-      // Check category distribution roughly matches probabilities
-      expect(categoryDist.get('A')).toBeCloseTo(50, 15);
-      expect(categoryDist.get('B')).toBeCloseTo(30, 15);
-      expect(categoryDist.get('C')).toBeCloseTo(20, 15);
+      // Check category distribution roughly matches probabilities (with tolerance)
+      const aCount = categoryDist.get('A') || 0;
+      const bCount = categoryDist.get('B') || 0;
+      const cCount = categoryDist.get('C') || 0;
+      
+      expect(aCount).toBeGreaterThan(35);  // Should be around 50
+      expect(aCount).toBeLessThan(65);
+      expect(bCount).toBeGreaterThan(15);  // Should be around 30
+      expect(bCount).toBeLessThan(45);
+      expect(cCount).toBeGreaterThan(5);   // Should be around 20
+      expect(cCount).toBeLessThan(35);
       
       // Check level distribution
       expect(levelDist.get(5)).toBe(100);

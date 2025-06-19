@@ -61,9 +61,24 @@ export class TypedPersonaGroup<T extends DistributionMap = DistributionMap> {
       const builder = PersonaBuilder.create()
         .withName(`${segment.name} ${i + 1}`);
       
-      // Add all attributes
+      // Add all attributes, handling distributions
       for (const [key, value] of Object.entries(segment.attributes)) {
-        builder.withAttribute(key, value);
+        // Check if value is a distribution (has a sample method)
+        const sampledValue = (value && typeof value === 'object' && 'sample' in value) 
+          ? value.sample() 
+          : value;
+        
+        // Handle special builder methods for required attributes
+        if (key === 'age') {
+          const age = typeof sampledValue === 'number' ? Math.round(sampledValue) : sampledValue;
+          builder.withAge(age);
+        } else if (key === 'occupation' && typeof sampledValue === 'string') {
+          builder.withOccupation(sampledValue);
+        } else if (key === 'sex' && (sampledValue === 'male' || sampledValue === 'female' || sampledValue === 'other')) {
+          builder.withSex(sampledValue);
+        } else {
+          builder.withAttribute(key, sampledValue);
+        }
       }
       
       // Build with correlations if provided
@@ -97,9 +112,24 @@ export class TypedPersonaGroup<T extends DistributionMap = DistributionMap> {
       const builder = PersonaBuilder.create()
         .withName(`Persona ${i + 1}`);
       
-      // Add all attributes
+      // Add all attributes, handling distributions
       for (const [key, value] of Object.entries(attributes)) {
-        builder.withAttribute(key, value);
+        // Check if value is a distribution (has a sample method)
+        const sampledValue = (value && typeof value === 'object' && 'sample' in value) 
+          ? value.sample() 
+          : value;
+        
+        // Handle special builder methods for required attributes
+        if (key === 'age') {
+          const age = typeof sampledValue === 'number' ? Math.round(sampledValue) : sampledValue;
+          builder.withAge(age);
+        } else if (key === 'occupation' && typeof sampledValue === 'string') {
+          builder.withOccupation(sampledValue);
+        } else if (key === 'sex' && (sampledValue === 'male' || sampledValue === 'female' || sampledValue === 'other')) {
+          builder.withSex(sampledValue);
+        } else {
+          builder.withAttribute(key, sampledValue);
+        }
       }
       
       // Build with correlations if provided
