@@ -2,10 +2,10 @@
   "pages": [
     "getting-started",
     "personas",
-    "distributions", 
-    "database-setup",
+    "distributions",
+    "ai-features", 
     "prompt-optimization",
-    "ai-features",
+    "database-setup",
     "api"
   ]
 }
