@@ -1,0 +1,470 @@
+---
+title: REST API
+description: HTTP API for persona generation and management
+---
+
+# REST API
+
+HTTP API for generating and managing personas with optional PostgreSQL persistence.
+
+## Getting Started
+
+Start the API server:
+
+```bash
+# Development
+pnpm --filter @jamesaphoenix/persona-api dev
+
+# Production
+pnpm --filter @jamesaphoenix/persona-api start
+```
+
+## Base URL
+
+```
+http://localhost:3000/api
+```
+
+## Endpoints
+
+### Generate Single Persona
+
+Generate a single persona with specified attributes.
+
+```http
+POST /api/generate
+```
+
+#### Request Body
+
+```typescript
+{
+  name?: string;              // Optional persona name
+  age?: number | Distribution;
+  occupation?: string | Distribution;
+  sex?: 'male' | 'female' | 'other' | Distribution;
+  attributes?: Record<string, any>;
+}
+```
+
+#### Response
+
+```typescript
+{
+  persona: {
+    id: string;
+    name: string;
+    attributes: {
+      age: number;
+      occupation: string;
+      sex: string;
+      [key: string]: any;
+    }
+  }
+}
+```
+
+#### Example
+
+```bash
+curl -X POST http://localhost:3000/api/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "age": { "type": "normal", "mean": 35, "stdDev": 5 },
+    "occupation": "Developer",
+    "sex": "other"
+  }'
+```
+
+### Generate Persona Group
+
+Generate multiple personas as a group.
+
+```http
+POST /api/generate-group
+```
+
+#### Request Body
+
+```typescript
+{
+  name: string;               // Group name
+  size: number;               // Number of personas
+  distributions?: {
+    age?: Distribution;
+    occupation?: Distribution;
+    sex?: Distribution;
+    [key: string]: Distribution;
+  };
+  segments?: Array<{
+    name: string;
+    weight: number;           // 0-1, must sum to 1
+    size?: number;           // Override segment size
+    attributes: DistributionMap;
+  }>;
+}
+```
+
+#### Response
+
+```typescript
+{
+  group: {
+    id: string;
+    name: string;
+    size: number;
+    personas: Persona[];
+    createdAt: string;
+  }
+}
+```
+
+#### Example
+
+```bash
+curl -X POST http://localhost:3000/api/generate-group \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Beta Users",
+    "size": 100,
+    "distributions": {
+      "age": { "type": "normal", "mean": 28, "stdDev": 5 },
+      "occupation": { 
+        "type": "categorical",
+        "options": [
+          { "value": "Developer", "probability": 0.6 },
+          { "value": "Designer", "probability": 0.4 }
+        ]
+      }
+    }
+  }'
+```
+
+### Group Statistics
+
+Get statistical analysis of a persona group.
+
+```http
+POST /api/group-statistics
+```
+
+#### Request Body
+
+```typescript
+{
+  personas: Persona[];        // Array of personas
+  attribute: string;          // Attribute to analyze
+}
+```
+
+#### Response
+
+```typescript
+{
+  statistics: {
+    mean?: number;
+    median?: number;
+    min?: number;
+    max?: number;
+    stdDev?: number;
+    count: number;
+    distribution?: Record<string, number>;
+  }
+}
+```
+
+### AI-Powered Generation
+
+Generate personas using AI to select appropriate distributions.
+
+```http
+POST /api/ai/select-distributions
+```
+
+#### Request Body
+
+```typescript
+{
+  description: string;        // Natural language description
+  requirements?: string[];    // Specific requirements
+  constraints?: Record<string, any>;
+  attributes?: string[];      // Attributes to generate
+}
+```
+
+#### Response
+
+```typescript
+{
+  distributions: DistributionMap;
+  reasoning: string;
+  usage?: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
+}
+```
+
+#### Example
+
+```bash
+curl -X POST http://localhost:3000/api/ai/select-distributions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_OPENAI_API_KEY" \
+  -d '{
+    "description": "Young tech professionals in San Francisco",
+    "requirements": ["High income", "Diverse backgrounds"],
+    "attributes": ["age", "income", "education"]
+  }'
+```
+
+### Structured Output Generation
+
+Generate structured insights from persona groups.
+
+```http
+POST /api/ai/structured-output
+```
+
+#### Request Body
+
+```typescript
+{
+  personas: Persona[];        // Single persona or array
+  schemaType: string;         // Predefined schema type
+  customPrompt?: string;      // Optional custom prompt
+}
+```
+
+Available schema types:
+- `marketing-insights`
+- `user-segments` 
+- `behavior-predictions`
+- `product-recommendations`
+
+#### Example
+
+```bash
+curl -X POST http://localhost:3000/api/ai/structured-output \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_OPENAI_API_KEY" \
+  -d '{
+    "personas": [...],
+    "schemaType": "marketing-insights"
+  }'
+```
+
+## Distribution Types
+
+Distributions define how attributes vary across personas.
+
+### Normal Distribution
+
+Bell curve distribution for natural variation.
+
+```typescript
+{
+  "type": "normal",
+  "mean": 35,
+  "stdDev": 5,
+  "min": 18,      // Optional
+  "max": 65       // Optional
+}
+```
+
+### Uniform Distribution
+
+Equal probability between min and max.
+
+```typescript
+{
+  "type": "uniform",
+  "min": 20000,
+  "max": 100000
+}
+```
+
+### Categorical Distribution
+
+Discrete values with probabilities.
+
+```typescript
+{
+  "type": "categorical",
+  "options": [
+    { "value": "Basic", "probability": 0.6 },
+    { "value": "Premium", "probability": 0.3 },
+    { "value": "Enterprise", "probability": 0.1 }
+  ]
+}
+```
+
+### Beta Distribution
+
+For percentages and probabilities.
+
+```typescript
+{
+  "type": "beta",
+  "alpha": 2,
+  "beta": 5
+}
+```
+
+### Exponential Distribution
+
+For time intervals and decay.
+
+```typescript
+{
+  "type": "exponential",
+  "lambda": 0.1    // Rate parameter
+}
+```
+
+## Persisted API
+
+Store personas in PostgreSQL for persistence.
+
+### Setup Database
+
+```bash
+# Using Docker
+docker run -d \
+  --name persona-postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=personas \
+  -p 5432:5432 \
+  postgres:15
+
+# Run migrations
+pnpm --filter @jamesaphoenix/persona-api db:migrate
+```
+
+### Environment Variables
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/personas
+DATABASE_POOL_SIZE=10
+DATABASE_SSL=false
+```
+
+### Persisted Endpoints
+
+#### Generate and Save
+
+```http
+POST /api/persisted/generate
+```
+
+Same as `/api/generate` but saves to database.
+
+#### List Personas
+
+```http
+GET /api/persisted/personas?page=1&limit=20
+```
+
+#### Get Persona
+
+```http
+GET /api/persisted/personas/:id
+```
+
+#### Update Persona
+
+```http
+PUT /api/persisted/personas/:id
+```
+
+#### Delete Persona
+
+```http
+DELETE /api/persisted/personas/:id
+```
+
+#### Generate and Save Group
+
+```http
+POST /api/persisted/generate-group
+```
+
+#### List Groups
+
+```http
+GET /api/persisted/groups?page=1&limit=10
+```
+
+#### Get Group with Personas
+
+```http
+GET /api/persisted/groups/:id
+```
+
+## Authentication
+
+API key authentication for AI features.
+
+```http
+Authorization: Bearer YOUR_OPENAI_API_KEY
+```
+
+Or set environment variable:
+
+```env
+OPENAI_API_KEY=your-api-key
+```
+
+## Error Handling
+
+Standard HTTP error responses.
+
+```typescript
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid distribution parameters",
+    "details": {
+      "field": "age.stdDev",
+      "issue": "Must be positive number"
+    }
+  }
+}
+```
+
+Common error codes:
+- `VALIDATION_ERROR` - Invalid request data
+- `NOT_FOUND` - Resource not found
+- `DATABASE_ERROR` - Database operation failed
+- `AI_ERROR` - AI generation failed
+- `RATE_LIMIT` - Too many requests
+
+## Rate Limiting
+
+Default limits per IP:
+- 100 requests per minute
+- 1000 requests per hour
+
+## SDK Integration
+
+Use the TypeScript SDK for type-safe API access.
+
+```typescript
+import { PersonaAPIClient } from '@jamesaphoenix/persona-sdk';
+
+const client = new PersonaAPIClient({
+  baseURL: 'http://localhost:3000',
+  apiKey: 'your-openai-key'
+});
+
+// Type-safe methods
+const { persona } = await client.generate({
+  age: { type: 'normal', mean: 30, stdDev: 5 }
+});
+
+const { group } = await client.generateGroup({
+  name: 'Users',
+  size: 100
+});
+```

@@ -6,18 +6,18 @@ A TypeScript SDK for generating personas from statistical distributions with AI-
 
 - 🎲 **Statistical Distributions**: Generate personas using Normal, Uniform, Exponential, Beta, and Categorical distributions
 - 👥 **PersonaGroup Management**: Organize and analyze collections of personas
-- 🤖 **AI-Powered Tools**: Automatic distribution selection, correlation generation, and structured output generation using LangChain
-- 🪄 **Auto-Correlation Generation**: AI automatically generates realistic relationships between persona attributes
+- 🤖 **AI-Powered Tools**: Automatic distribution selection, correlation generation, and structured output generation
 - 🔗 **Realistic Correlations**: Built-in correlation system ensures personas have believable attribute relationships
 - 📊 **Statistical Analysis**: Built-in statistics for persona attributes
 - 🔧 **Clean API**: Simple, modular, and type-safe interface
 - 🌱 **Reproducible**: Seedable random generation for consistent results
 - 📸 **Media-to-Persona**: Generate personas from text posts, images, and other media content
-- 🎬 **Media Diet**: Apply media consumption influences to persona groups
-- 📊 **Token Usage Tracking**: Built-in token counting and cost estimation for all AI operations
 - 🔄 **LangChain Integration**: Full LangChain support for structured outputs and tool use
 - 🎯 **Practical Examples**: CTR prediction, engagement analysis, voting systems, and survey simulation
 - 🌱 **Deterministic Testing**: Comprehensive seeding system for reproducible tests and simulations
+- 🚀 **REST API**: Full HTTP API with PostgreSQL persistence
+- ⚛️ **React Hooks**: React integration with hooks for frontend applications
+- 🎯 **Prompt Optimization**: Automated prompt optimization for better AI performance
 
 ## Installation
 
@@ -33,51 +33,41 @@ yarn add @jamesaphoenix/persona-sdk
 
 ```typescript
 import { 
-  Persona, 
+  PersonaBuilder,
   PersonaGroup, 
   NormalDistribution, 
   UniformDistribution,
-  CategoricalDistribution,
-  generateWithAutoCorrelations  // NEW: Auto-correlation generation
+  CategoricalDistribution
 } from '@jamesaphoenix/persona-sdk';
 
 // Create a single persona
-const john = new Persona('John Doe', {
-  age: 35,
-  occupation: 'Software Engineer',
-  sex: 'male',
-  income: 75000,
-  interests: ['technology', 'fitness']
+const john = PersonaBuilder.create()
+  .withName('John Doe')
+  .withAge(35)
+  .withOccupation('Software Engineer')
+  .withSex('male')
+  .withAttribute('income', 75000)
+  .withAttribute('interests', ['technology', 'fitness'])
+  .build();
+
+// Generate persona groups
+const group = await PersonaGroup.generate({
+  name: 'Target Audience',
+  size: 100,
+  attributes: {
+    age: new NormalDistribution(35, 10),
+    occupation: new CategoricalDistribution([
+      { value: 'Engineer', probability: 0.4 },
+      { value: 'Designer', probability: 0.3 },
+      { value: 'Manager', probability: 0.3 }
+    ]),
+    sex: new CategoricalDistribution([
+      { value: 'male', probability: 0.45 },
+      { value: 'female', probability: 0.45 },
+      { value: 'other', probability: 0.1 }
+    ])
+  }
 });
-
-// Generate personas from distributions
-// Note: You can mix distributions with literal values for flexibility
-const distributions = {
-  age: new NormalDistribution(35, 10),
-  occupation: new CategoricalDistribution([
-    { value: 'Engineer', probability: 0.4 },
-    { value: 'Designer', probability: 0.3 },
-    { value: 'Manager', probability: 0.3 }
-  ]),
-  sex: new CategoricalDistribution([
-    { value: 'male', probability: 0.45 },
-    { value: 'female', probability: 0.45 },
-    { value: 'other', probability: 0.1 }
-  ]),
-  income: new NormalDistribution(60000, 20000),
-  satisfaction: new UniformDistribution(1, 10),
-  category: new CategoricalDistribution([
-    { value: 'premium', probability: 0.2 },
-    { value: 'standard', probability: 0.5 },
-    { value: 'basic', probability: 0.3 }
-  ])
-};
-
-const generatedPersona = Persona.fromDistributions('Alice Smith', distributions);
-
-// Create and manage persona groups
-const group = new PersonaGroup('Target Audience');
-group.generateFromDistributions(100, distributions);
 
 // Get statistics
 const ageStats = group.getStatistics('age');
@@ -189,225 +179,32 @@ group.generateWithCorrelations(100, {
 
 ## AI-Powered Features
 
-### 🧠 Intelligent Persona Generation (NEW!)
+### 🧠 AI-Powered Distribution Selection
 
-Generate personas with ANY traits while ensuring they're completely realistic:
+Let AI select appropriate distributions based on natural language:
 
 ```typescript
-import { createRealisticPersonas, IntelligentPersonaFactory } from '@jamesaphoenix/persona-sdk';
+import { DistributionSelectorLangChain } from '@jamesaphoenix/persona-sdk';
 
-// Just list any traits - AI handles all correlations!
-const personas = await createRealisticPersonas(
-  [
-    'age', 'income', 'fitnessLevel', 'screenTimeHours',
-    'favoriteFood', 'sleepQuality', 'hasKids', 'commuteTime',
-    'musicTaste', 'workFromHome', 'stressLevel'
+const selector = new DistributionSelectorLangChain();
+
+const result = await selector.selectDistributions({
+  description: "Tech startup employees in Silicon Valley",
+  requirements: [
+    "Age should skew younger (25-40)",
+    "Income should be high but varied by role",
+    "Most should have 2-8 years experience"
   ],
-  'Urban millennials',
-  100  // Generate 100 personas
-);
-
-// AI automatically ensures:
-// - Parents have less sleep quality
-// - Fitness level inversely correlates with screen time  
-// - Income affects food preferences
-// - Age influences music taste
-// - Work from home affects commute time (obviously!)
-// - ALL traits interact realistically
-```
-
-#### Advanced: Custom Trait Definitions
-
-```typescript
-const factory = new IntelligentPersonaFactory();
-
-const gamingCommunity = await factory.generatePersonas({
-  traits: [
-    { name: 'age', dataType: 'numeric' },
-    { name: 'hoursPlayedPerWeek', dataType: 'numeric' },
-    { name: 'favoriteGenre', dataType: 'categorical' },
-    { name: 'toxicityScore', dataType: 'numeric', constraints: { min: 0, max: 10 } },
-    { name: 'teamPlayer', dataType: 'boolean' },
-    { name: 'spentOnGames', dataType: 'numeric' },
-    { name: 'streamViewers', dataType: 'numeric' },
-    { name: 'energyDrinkBrand', dataType: 'categorical' }
-  ],
-  context: 'Online gaming community members',
-  count: 500,
-  customRules: [
-    'Toxicity decreases with age',
-    'Team players have lower toxicity',
-    'Streaming correlates with hours played',
-    'Energy drink consumption correlates with hours played'
-  ]
+  attributes: ['age', 'income', 'yearsExperience']
 });
 
-// Result: 500 realistic gamers with proper correlations
-```
+// Use the AI-selected distributions
+const group = new PersonaGroup('Startup Employees');
+group.generateFromDistributions(100, result.distributions);
 
-### 🪄 Automatic Correlation Generation (NEW!)
+### 🎯 Structured Output Generation
 
-Generate correlations and conditional relationships automatically using AI! Perfect for users who want realistic personas without manually configuring complex relationships:
-
-```typescript
-import { generateWithAutoCorrelations } from '@jamesaphoenix/persona-sdk';
-
-// Just define your attributes - AI handles all the correlations!
-const realisticTeam = await generateWithAutoCorrelations({
-  attributes: {
-    age: new UniformDistribution(25, 55),
-    yearsExperience: new NormalDistribution(8, 6),
-    salary: new NormalDistribution(85000, 30000),
-    height: new NormalDistribution(170, 10),  // cm
-    weight: new NormalDistribution(75, 15),   // kg
-    fitnessLevel: new UniformDistribution(1, 10),
-    commuteMins: new ExponentialDistribution(0.03),
-    hasKids: new CategoricalDistribution([
-      { value: true, probability: 0.4 },
-      { value: false, probability: 0.6 }
-    ]),
-    occupation: 'Software Engineer',
-    sex: 'other'
-  },
-  count: 100,
-  context: 'Tech professionals in Seattle',
-  domain: 'workplace',  // Helps AI understand the context
-  groupName: 'Seattle Tech Team'
-});
-
-// AI automatically generates:
-// ✅ Age-Income correlation (older = higher salary)
-// ✅ Age-Experience conditional (experience ≤ age - 22)
-// ✅ Height-Weight correlation (BMI-based)
-// ✅ Fitness-Commute relationship (fit people bike to work)
-// ✅ HasKids-CommuteMins (parents drive, others walk/bike)
-// ✅ All relationships are realistic and domain-aware!
-
-console.log(realisticTeam.size); // 100 realistic personas
-```
-
-#### Manual Control with Auto-Generation
-
-For more control, use the `AutoCorrelationGenerator` directly:
-
-```typescript
-import { AutoCorrelationGenerator, PersonaBuilder } from '@jamesaphoenix/persona-sdk';
-
-const generator = new AutoCorrelationGenerator(); // Uses OPENAI_API_KEY
-
-// Generate correlation config for your attributes
-const correlationConfig = await generator.generate({
-  attributes: {
-    age: new UniformDistribution(30, 60),
-    income: new NormalDistribution(75000, 25000),
-    stressLevel: new UniformDistribution(1, 10),
-    exerciseHours: new NormalDistribution(3, 2),
-    sleepQuality: new UniformDistribution(1, 10),
-    occupation: 'Manager',
-    sex: 'other'
-  },
-  context: 'Corporate middle management',
-  domain: 'workplace'
-});
-
-// Review and modify the AI suggestions
-console.log('AI-generated correlations:', correlationConfig.correlations);
-console.log('AI-generated conditionals:', correlationConfig.conditionals);
-
-// Use with PersonaBuilder
-const buildConfig = generator.toBuildConfig(correlationConfig);
-const persona = PersonaBuilder.create()
-  .withAttributes(attributes)
-  .buildWithCorrelations(buildConfig);
-```
-
-#### Supported Transform Types
-
-The AI can generate these common correlation patterns:
-
-- **`age_income`**: Income increases with age until retirement
-- **`age_experience`**: Experience bounded by working years (age - 22)
-- **`height_weight`**: BMI-based weight correlation 
-- **`education_income`**: Higher education correlates with income
-- **`custom`**: AI can write custom formulas for unique relationships
-
-#### Context-Aware Generation
-
-Different domains produce different correlation patterns:
-
-```typescript
-// Health domain - focuses on physical relationships
-const healthCorrelations = await generator.generate({
-  attributes: { age: new NormalDistribution(40, 15), weight: new NormalDistribution(75, 15), exerciseHours: new NormalDistribution(3, 2) },
-  domain: 'health',
-  context: 'Fitness app users'
-});
-
-// Workplace domain - focuses on career relationships  
-const workCorrelations = await generator.generate({
-  attributes: { age: new UniformDistribution(25, 65), salary: new NormalDistribution(80000, 30000), yearsExperience: new UniformDistribution(0, 40) },
-  domain: 'workplace', 
-  context: 'Corporate employees'
-});
-
-// Academic domain - focuses on education relationships
-const academicCorrelations = await generator.generate({
-  attributes: { age: new UniformDistribution(18, 80), income: new NormalDistribution(50000, 20000), educationYears: new UniformDistribution(12, 20) },
-  domain: 'academic',
-  context: 'University professors'  
-});
-```
-
-### Automatic Distribution Selection
-
-```typescript
-import { DistributionSelector } from '@jamesaphoenix/persona-sdk';
-
-const selector = new DistributionSelector(); // Uses OPENAI_API_KEY env var
-
-// Get AI recommendation for a single attribute
-const distribution = await selector.selectDistribution({
-  attribute: 'annual_income',
-  context: 'Software engineers in Silicon Valley',
-  constraints: { min: 50000, max: 300000 }
-});
-
-// Get recommendations for multiple attributes
-const recommendations = await selector.recommendDistributions(
-  ['age', 'experience_years', 'job_satisfaction'],
-  'Tech industry professionals'
-);
-```
-
-### Correlation-Aware Distribution Selection
-
-Generate complete persona configurations with realistic correlations:
-
-```typescript
-import { CorrelationAwareSelector } from '@jamesaphoenix/persona-sdk';
-
-const selector = new CorrelationAwareSelector();
-
-// AI generates distributions AND correlations
-const config = await selector.selectCorrelatedDistributions({
-  attributes: ['age', 'income', 'experience', 'satisfaction'],
-  context: 'Remote software developers',
-  existingAttributes: { location: 'Global', workStyle: 'Remote' }
-});
-
-// Use the configuration
-const group = new PersonaGroup('Remote Team');
-group.generateWithCorrelations(50, config);
-
-// Result includes:
-// - Appropriate distributions for each attribute
-// - Correlations (e.g., age-income: 0.6)
-// - Conditionals (e.g., experience limited by age)
-```
-
-### Structured Output Generation (LangChain)
-
-The SDK uses LangChain's `withStructuredOutput` method for reliable structured output generation:
+Generate type-safe insights from your persona groups:
 
 ```typescript
 import { StructuredOutputGenerator } from '@jamesaphoenix/persona-sdk';
@@ -415,55 +212,175 @@ import { z } from 'zod';
 
 const generator = new StructuredOutputGenerator();
 
-// Define output schema with Zod
 const MarketingInsightsSchema = z.object({
   segments: z.array(z.object({
     name: z.string(),
     size: z.number(),
     characteristics: z.array(z.string())
   })),
-  recommendations: z.array(z.string()),
-  keyInsight: z.string()
+  recommendations: z.array(z.string())
 });
 
-// Generate insights from persona group
 const insights = await generator.generate(
   group,
   MarketingInsightsSchema,
-  'Identify key market segments and provide marketing recommendations'
+  "Identify key market segments and recommendations"
 );
 
-console.log(insights.data);
-```
+console.log(insights.data.segments);
 
-You can also use the built-in methods:
+### 📸 Media-to-Persona Generation
+
+Generate personas from text posts, images, and media content:
 
 ```typescript
-// Generate distribution insights
-const distInsights = await generator.generateDistributionInsights(
-  group, 
-  ['age', 'income', 'satisfaction']
-);
+import { MediaToPersonaGenerator } from '@jamesaphoenix/persona-sdk';
 
-// Generate market segments
-const segments = await generator.generateSegments(group, 4); // 4 segments
+const generator = new MediaToPersonaGenerator();
 
-// Or use directly from PersonaGroup
-const output = await group.generateStructuredOutput(
-  YourSchema,
-  'Your analysis prompt'
-);
+// Generate personas from social media post
+const result = await generator.fromTextPost(`
+  Just finished my morning 5K run! 🏃‍♀️ Feeling energized for the day ahead. 
+  Time to grab my usual oat milk latte and head to the co-working space. 
+  Working on some exciting sustainability projects today.
+`);
+
+console.log(result.group.personas[0].attributes);
+// {
+//   age: 28,
+//   occupation: 'Tech Professional',
+//   interests: ['fitness', 'sustainability', 'technology']
+// }
+
+// Generate from images
+const imageResult = await generator.fromImage('./lifestyle-photo.jpg');
+
+// Generate from multiple sources
+const collectionResult = await generator.fromMediaCollection([
+  './post1.txt',
+  './photo1.jpg',
+  './blog-post.txt'
+]);
+
+### 🚀 REST API Server
+
+Full HTTP API with PostgreSQL persistence:
+
+```bash
+# Start the API server
+pnpm --filter @jamesaphoenix/persona-api dev
+
+# Generate personas via HTTP
+curl -X POST http://localhost:3000/api/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "age": { "type": "normal", "mean": 35, "stdDev": 5 },
+    "occupation": "Developer",
+    "sex": "other"
+  }'
+
+# Generate groups
+curl -X POST http://localhost:3000/api/generate-group \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Beta Users",
+    "size": 100,
+    "distributions": {
+      "age": { "type": "normal", "mean": 28, "stdDev": 5 }
+    }
+  }'
 ```
+
+### ⚛️ React Integration
+
+React hooks for seamless frontend integration:
+
+```tsx
+import { usePersonaGroup, useAIInsights } from '@jamesaphoenix/persona-sdk/react';
+
+function AudienceAnalytics() {
+  const { group, generate } = usePersonaGroup('Users');
+  const { insights, generate: generateInsights } = useAIInsights();
+
+  const handleGenerate = async () => {
+    await generate({
+      size: 1000,
+      distributions: {
+        age: new NormalDistribution(32, 8),
+        occupation: 'Developer'
+      }
+    });
+
+    if (group) {
+      await generateInsights(group, "Marketing segments analysis");
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={handleGenerate}>Generate Audience</button>
+      {insights && (
+        <div>
+          <h3>Market Segments</h3>
+          {insights.segments.map(segment => (
+            <div key={segment.name}>{segment.name}: {segment.size}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### 🎯 Prompt Optimization
+
+Automatically optimize prompts for better AI performance:
+
+```typescript
+import { BootstrapOptimizer, ExactMatch } from '@jamesaphoenix/persona-sdk';
+
+// Create a module to optimize
+const sentimentModule = new Module(
+  `Classify sentiment as positive, negative, or neutral.
+  
+  Examples:
+  {examples}
+  
+  Text: {input}
+  Sentiment:`
+);
+
+// Training data
+const trainData = [
+  { input: "This product is amazing!", output: "positive" },
+  { input: "Terrible experience", output: "negative" },
+  { input: "It's okay", output: "neutral" }
+];
+
+// Optimize
+const optimizer = new BootstrapOptimizer({
+  maxLabeled: 5,
+  metric: ExactMatch
+});
+
+const result = await optimizer.optimize(sentimentModule, trainData);
+console.log(`Final accuracy: ${result.finalScore}`);
+
+
 
 ## Advanced Usage
 
 ### Reproducible Generation
 
 ```typescript
-// Use seeds for reproducible results
-const seededDist = new NormalDistribution(100, 15, 12345);
-const value1 = seededDist.sample(); // Always generates the same sequence
-const value2 = seededDist.sample();
+import { SeedManager } from '@jamesaphoenix/persona-sdk';
+
+// Set global test seed
+SeedManager.setTestSeed(12345);
+
+// Context-specific seeds
+SeedManager.setSeed('age-distribution', 100);
+const ageWithSeed = new NormalDistribution(30, 5, 'age-distribution');
 ```
 
 ### Filtering and Analysis
@@ -475,184 +392,18 @@ const millennials = group.filter(p => {
   return age >= 25 && age <= 40;
 });
 
-// Get group summary
-const summary = group.getSummary();
-console.log(`Common attributes: ${JSON.stringify(summary.commonAttributes)}`);
+// Get statistics
+const ageStats = group.getStatistics('age');
+console.log(`Average age: ${ageStats.mean}`);
 ```
 
-### Batch Generation
 
-```typescript
-// Generate multiple personas at once
-const personas = Persona.generateMany(
-  'Customer',      // base name
-  1000,           // count
-  distributions   // distribution map
-);
-```
 
-### 📸 Media-to-Persona Generation (NEW!)
 
-Generate personas from text posts, images, and other media content:
-
-```typescript
-import { MediaToPersonaGenerator } from '@jamesaphoenix/persona-sdk';
-
-const generator = new MediaToPersonaGenerator('your-api-key');
-
-// Generate persona from a social media post
-const textResult = await generator.fromTextPost(`
-  Just finished my morning 5K run! 🏃‍♀️ Feeling energized for the day ahead. 
-  Time to grab my usual oat milk latte and head to the co-working space. 
-  Working on some exciting sustainability projects today. 
-  Who else is passionate about green tech? #StartupLife #Sustainability
-`);
-
-console.log(textResult.personas[0].attributes);
-// {
-//   age: 28,
-//   occupation: 'Tech Professional',
-//   sex: 'female',
-//   interests: ['fitness', 'sustainability', 'technology'],
-//   values: ['environmental consciousness', 'health', 'innovation'],
-//   personality: { openness: 0.8, conscientiousness: 0.7, ... }
-// }
-
-// Generate multiple varied personas
-const multiplePersonas = await generator.fromTextPost(postText, {
-  generateMultiple: true,
-  count: 10,
-  includeDistributions: true
-});
-
-// Generate from images
-const imageResult = await generator.fromImage('./lifestyle-photo.jpg');
-
-// Generate from media collection
-const mediaCollection = await generator.fromMediaCollection([
-  './article1.txt',
-  './photo1.jpg',
-  './blog-post.txt'
-]);
-
-// Track token usage
-console.log(`Tokens used: ${textResult.usage.total_tokens}`);
-console.log(`Estimated cost: $${generator.estimateProcessingCost(1, ['text'], 'gpt-4-turbo-preview').estimatedCost}`);
-```
-
-### 🎬 Media Diet & Persona Influence (NEW!)
-
-Model how media consumption influences personas over time:
-
-```typescript
-import { MediaDietManager, MediaProcessor } from '@jamesaphoenix/persona-sdk';
-
-const dietManager = new MediaDietManager('your-api-key');
-
-// Create a media diet from files
-const mediaDiet = await dietManager.createMediaDiet([
-  './tech-articles/ai-news.txt',
-  './videos/documentary.mp4',
-  './podcasts/startup-interview.mp3'
-]);
-
-// Apply media influence to a persona
-const influencedPersona = await dietManager.applyMediaInfluence(
-  originalPersona,
-  mediaDiet
-);
-
-console.log(influencedPersona.influences);
-// {
-//   interests: ['technology', 'innovation', 'AI'],
-//   values: ['progress', 'efficiency'],
-//   vocabulary: ['algorithm', 'optimization'],
-//   opinions: [{ topic: 'AI', stance: 'positive', confidence: 0.8 }]
-// }
-
-// Apply to entire persona group with variation
-const { influencedGroup, results, totalUsage } = await dietManager.applyToPersonaGroup(
-  personaGroup,
-  mediaDiet,
-  {
-    variationFactor: 0.3,  // 30% variation in diet per persona
-    sampleSize: 100        // Apply to subset of group
-  }
-);
-
-// Get media recommendations for a persona
-const recommendations = await dietManager.recommendMedia(
-  persona,
-  availableMediaContent,
-  {
-    desiredInfluences: ['creativity', 'technical skills'],
-    avoidTopics: ['politics', 'controversy']
-  }
-);
-```
-
-### 📊 Token Usage & Cost Tracking (NEW!)
-
-All AI operations now include comprehensive token usage tracking:
-
-```typescript
-// Every AI operation returns usage metadata
-const result = await generator.fromTextPost(text);
-console.log(result.usage);
-// {
-//   input_tokens: 245,
-//   output_tokens: 156,
-//   total_tokens: 401
-// }
-
-// Estimate costs before processing
-const estimate = generator.estimateProcessingCost(
-  5,  // number of media items
-  ['text', 'image', 'text', 'video', 'document'],
-  'gpt-4-turbo-preview'
-);
-console.log(`Estimated cost: $${estimate.estimatedCost}`);
-
-// Cost calculation utilities
-const processor = new MediaProcessor('your-api-key');
-const cost = processor.estimateCost(
-  { input_tokens: 1000, output_tokens: 500, total_tokens: 1500 },
-  'gpt-4'
-);
-// { inputCost: 0.03, outputCost: 0.03, totalCost: 0.06 }
-```
-
-### 🔄 LangChain Integration (NEW!)
-
-The SDK now uses LangChain for all AI operations, providing better structure and tool use:
-
-```typescript
-import { DistributionSelectorLangChain } from '@jamesaphoenix/persona-sdk';
-
-const selector = new DistributionSelectorLangChain('your-api-key');
-
-// Select distribution with structured output
-const { distribution, usage, reasoning } = await selector.selectDistribution({
-  attribute: 'customer_lifetime_value',
-  context: 'E-commerce platform users',
-  constraints: { min: 0, max: 10000 }
-});
-
-// Get multiple recommendations
-const { distributions, recommendations } = await selector.recommendDistributions(
-  ['age', 'purchase_frequency', 'average_order_value'],
-  'Online shoppers demographic'
-);
-
-// Natural language to distribution
-const { distribution: nlDist } = await selector.fromDescription(
-  'mostly young adults in their 20s and 30s, centered around 27'
-);
-```
 
 ## Real-World Examples
 
-### 🎯 CTR Prediction for Marketing Campaigns
+### CTR Prediction for Marketing Campaigns
 
 Predict click-through rates before launching:
 
@@ -669,8 +420,7 @@ const audience = await PersonaGroup.generate({
       weight: 0.4,
       attributes: {
         age: new NormalDistribution(28, 5),
-        tech_savviness: new BetaDistribution(8, 2),
-        ad_responsiveness: new BetaDistribution(3, 7)
+        tech_savviness: new BetaDistribution(8, 2)
       }
     },
     {
@@ -678,29 +428,30 @@ const audience = await PersonaGroup.generate({
       weight: 0.6,
       attributes: {
         age: new NormalDistribution(38, 8),
-        decision_power: new BetaDistribution(7, 3),
-        budget_conscious: new BetaDistribution(6, 4)
+        decision_power: new BetaDistribution(7, 3)
       }
     }
   ]
 });
 
-// Predict CTR for your campaign
+// Predict CTR with AI
 const CTRSchema = z.object({
   predicted_ctr: z.number(),
-  confidence_interval: z.object({ lower: z.number(), upper: z.number() }),
   best_segment: z.string(),
   optimization_tips: z.array(z.string())
 });
 
-const prediction = await generator.generateCustom(
+const generator = new StructuredOutputGenerator();
+const prediction = await generator.generate(
   audience,
   CTRSchema,
-  "Predict CTR for B2B SaaS product launch campaign"
+  "Predict CTR for B2B SaaS campaign"
 );
-```
 
-### 💬 Comment Engagement Prediction
+console.log(`Predicted CTR: ${prediction.data.predicted_ctr}%`);
+console.log(`Best segment: ${prediction.data.best_segment}`);
+
+### Comment Engagement Prediction
 
 Maximize social media engagement:
 
@@ -725,12 +476,17 @@ const EngagementSchema = z.object({
 // Find the winner
 const results = await Promise.all(
   hooks.map(hook => 
-    generator.generateCustom(audience, EngagementSchema, `Analyze: ${hook}`)
+    generator.generate(audience, EngagementSchema, `Analyze: ${hook}`)
   )
 );
-```
 
-### 🗳️ Voting & Polling Systems
+const bestHook = results.reduce((best, current) => 
+  current.data.predicted_comments > best.data.predicted_comments ? current : best
+);
+
+console.log(`Best hook: ${bestHook.data.predicted_comments} comments`);
+
+### Voting & Polling Systems
 
 Accurate preference modeling:
 
@@ -741,9 +497,7 @@ const votingPopulation = await PersonaGroup.generate({
   attributes: {
     age: new NormalDistribution(45, 15),
     political_leaning: new BetaDistribution(5, 5), // Centered
-    voting_likelihood: new CorrelatedDistribution({
-      age: (age) => age < 30 ? 0.3 : age > 60 ? 0.8 : 0.5
-    })
+    voting_likelihood: new BetaDistribution(6, 4)  // Skewed high
   }
 });
 
@@ -754,9 +508,17 @@ const VotingSchema = z.object({
   turnout: z.number(),
   demographic_breakdown: z.record(z.string(), z.number())
 });
-```
 
-### 📊 Market Research Surveys
+const prediction = await generator.generate(
+  votingPopulation,
+  VotingSchema,
+  "Predict election outcome based on demographics"
+);
+
+console.log(`Predicted winner: ${prediction.data.winner}`);
+console.log(`Expected turnout: ${prediction.data.turnout}%`);
+
+### Market Research Surveys
 
 Generate statistically valid responses:
 
@@ -770,8 +532,7 @@ const market = await PersonaGroup.generate({
       weight: 0.2,
       attributes: {
         company_size: new NormalDistribution(500, 200),
-        budget: new NormalDistribution(50000, 15000),
-        pain_points: ['scalability', 'integration', 'cost']
+        budget: new NormalDistribution(50000, 15000)
       }
     },
     {
@@ -779,8 +540,7 @@ const market = await PersonaGroup.generate({
       weight: 0.8,
       attributes: {
         company_size: new NormalDistribution(50, 30),
-        budget: new NormalDistribution(5000, 2000),
-        pain_points: ['cost', 'ease-of-use', 'support']
+        budget: new NormalDistribution(5000, 2000)
       }
     }
   ]
@@ -797,13 +557,17 @@ const SurveySchema = z.object({
   pricing_sensitivity: z.object({
     optimal_price: z.number(),
     price_elasticity: z.number()
-  }),
-  feature_priorities: z.array(z.object({
-    feature: z.string(),
-    importance: z.number()
-  }))
+  })
 });
-```
+
+const surveyResults = await generator.generate(
+  market,
+  SurveySchema,
+  "Generate market research survey responses"
+);
+
+console.log(`Optimal price: $${surveyResults.data.pricing_sensitivity.optimal_price}`);
+console.log(`Interest breakdown:`, surveyResults.data.product_interest);
 
 ## Configuration
 
@@ -819,16 +583,7 @@ Or pass it directly:
 const selector = new DistributionSelector('your-api-key');
 ```
 
-The SDK uses `gpt-4.1-mini` as the default model for all AI features, but you can customize it:
-
-```typescript
-// For structured output generation
-const insights = await group.generateStructuredOutput(
-  YourSchema,
-  'Your analysis prompt',
-  { modelName: 'gpt-4-turbo-preview' } // Optional: use a different model
-);
-```
+The SDK uses `gpt-4o-mini` as the default model for all AI features.
 
 
 
@@ -847,21 +602,19 @@ import type {
 
 ## Documentation
 
-Full documentation with interactive examples: [https://jamesaphoenix.github.io/persona-sdk/](https://jamesaphoenix.github.io/persona-sdk/)
+Full documentation: [https://persona-sdk-docs.vercel.app](https://persona-sdk-docs.vercel.app)
 
 ## API Reference
 
-See the [API documentation](https://jamesaphoenix.github.io/persona-sdk/api) for detailed type definitions and method signatures.
+See the [API documentation](https://persona-sdk-docs.vercel.app/docs/api) for detailed type definitions and method signatures.
 
 ## Contributing
 
-This project was created entirely by [Claude Code](https://claude.ai/code). If you find a bug or want to add a feature:
+Contributions welcome! Please open an issue or submit a pull request.
 
-1. **Submit a PR** - Create a pull request with your changes
-2. **Claude Code reviews** - The AI will review your contribution
-3. **Automatic merge** - Valid PRs will be reviewed and merged
+## License
 
-We welcome all contributions!
+MIT
 
 ## License
 

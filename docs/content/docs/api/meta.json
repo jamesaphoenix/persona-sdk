@@ -1,0 +1,13 @@
+{
+  "title": "API Reference",
+  "pages": [
+    "core",
+    "distributions", 
+    "ai-tools",
+    "prompt-optimization",
+    "rest",
+    "react",
+    "types",
+    "utilities"
+  ]
+}

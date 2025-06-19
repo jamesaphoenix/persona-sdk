@@ -1,7 +1,7 @@
 {
   "name": "@jamesaphoenix/persona-sdk",
-  "version": "0.3.0",
-  "description": "TypeScript SDK for generating personas from statistical distributions",
+  "version": "0.3.1",
+  "description": "TypeScript SDK for generating personas from statistical distributions with AI-powered insights, REST API, and React hooks",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -108,7 +108,14 @@
     "distributions",
     "ai",
     "typescript",
-    "sdk"
+    "sdk",
+    "react",
+    "rest-api",
+    "langchain",
+    "postgresql",
+    "structured-output",
+    "prompt-optimization",
+    "media-analysis"
   ],
   "author": "",
   "license": "MIT",
@@ -119,7 +126,7 @@
   "bugs": {
     "url": "https://github.com/jamesaphoenix/persona-sdk/issues"
   },
-  "homepage": "https://github.com/jamesaphoenix/persona-sdk#readme",
+  "homepage": "https://persona-sdk-docs.vercel.app",
   "publishConfig": {
     "access": "public"
   }

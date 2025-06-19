@@ -1,0 +1,475 @@
+---
+title: Types
+description: TypeScript types and interfaces
+---
+
+# Types
+
+Complete TypeScript type reference for Persona SDK.
+
+## Core Types
+
+### PersonaAttributes
+
+Base attributes every persona must have.
+
+```typescript
+interface BasePersonaAttributes {
+  age: number;
+  occupation: string;
+  sex: Sex;
+}
+
+interface PersonaAttributes extends BasePersonaAttributes {
+  [key: string]: AttributeValue;
+}
+
+type Sex = 'male' | 'female' | 'other';
+
+type AttributeValue = 
+  | string 
+  | number 
+  | boolean 
+  | Date 
+  | string[] 
+  | number[] 
+  | Record<string, any>;
+```
+
+### Persona
+
+Core persona type with generic support.
+
+```typescript
+interface Persona<T extends PersonaAttributes = PersonaAttributes> {
+  readonly id: string;
+  readonly name: string;
+  readonly attributes: T;
+}
+```
+
+### PersonaGroup
+
+Group of personas with statistics.
+
+```typescript
+interface PersonaGroup<T extends PersonaAttributes = PersonaAttributes> {
+  readonly id: string;
+  readonly name: string;
+  readonly personas: Persona<T>[];
+  readonly size: number;
+  readonly createdAt: Date;
+}
+```
+
+## Distribution Types
+
+### Distribution Interface
+
+Base interface for all distributions.
+
+```typescript
+interface Distribution<T> {
+  sample(): T;
+  sampleMany(n: number): T[];
+}
+```
+
+### Distribution Specifications
+
+Type-safe distribution configurations.
+
+```typescript
+type DistributionSpec = 
+  | Distribution<any>
+  | AttributeValue;
+
+type DistributionMap = {
+  age: DistributionSpec;
+  occupation: DistributionSpec;
+  sex: DistributionSpec;
+  [key: string]: DistributionSpec;
+};
+```
+
+### Distribution Configs
+
+JSON-serializable distribution configurations.
+
+```typescript
+type NormalDistConfig = {
+  type: 'normal';
+  mean: number;
+  stdDev: number;
+  min?: number;
+  max?: number;
+};
+
+type UniformDistConfig = {
+  type: 'uniform';
+  min: number;
+  max: number;
+};
+
+type CategoricalDistConfig<T = any> = {
+  type: 'categorical';
+  options: Array<{
+    value: T;
+    probability: number;
+  }>;
+};
+
+type BetaDistConfig = {
+  type: 'beta';
+  alpha: number;
+  beta: number;
+};
+
+type ExponentialDistConfig = {
+  type: 'exponential';
+  lambda: number;
+};
+
+type DistributionConfig = 
+  | NormalDistConfig
+  | UniformDistConfig
+  | CategoricalDistConfig
+  | BetaDistConfig
+  | ExponentialDistConfig;
+```
+
+## Generation Types
+
+### PersonaConfig
+
+Configuration for generating a single persona.
+
+```typescript
+interface PersonaConfig {
+  name?: string;
+  age?: number | Distribution<number>;
+  occupation?: string | Distribution<string>;
+  sex?: Sex | Distribution<Sex>;
+  attributes?: Record<string, any>;
+}
+```
+
+### GroupGenerationConfig
+
+Configuration for generating persona groups.
+
+```typescript
+interface GroupGenerationConfig<T extends PersonaAttributes = PersonaAttributes> {
+  size: number;
+  name?: string;
+  attributes?: Partial<DistributionMap>;
+  segments?: SegmentConfig<T>[];
+}
+
+interface SegmentConfig<T extends PersonaAttributes> {
+  name: string;
+  weight: number;         // 0-1, must sum to 1
+  size?: number;         // Override calculated size
+  attributes: Partial<DistributionMap>;
+}
+```
+
+## AI Tool Types
+
+### DistributionSelectionParams
+
+Parameters for AI distribution selection.
+
+```typescript
+interface DistributionSelectionParams {
+  description: string;
+  requirements?: string[];
+  constraints?: Record<string, any>;
+  examples?: string[];
+  attributes?: string[];
+  existingData?: Record<string, any[]>;
+}
+```
+
+### MediaToPersonaOptions
+
+Options for media-based persona generation.
+
+```typescript
+interface MediaToPersonaOptions {
+  targetSize?: number;
+  focusAttributes?: string[];
+  context?: string;
+  includeDistributions?: boolean;
+}
+
+interface MediaToPersonaResult {
+  group: PersonaGroup;
+  analysis: {
+    summary: string;
+    assumptions: string[];
+    dataPoints: string[];
+    confidence: number;
+  };
+  distributions?: DistributionMap;
+  usage?: UsageMetadata;
+}
+```
+
+### StructuredOutputOptions
+
+Options for structured output generation.
+
+```typescript
+interface StructuredOutputOptions {
+  temperature?: number;
+  maxTokens?: number;
+  systemPrompt?: string;
+}
+```
+
+### UsageMetadata
+
+Token usage information from AI calls.
+
+```typescript
+interface UsageMetadata {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+}
+```
+
+## Optimization Types
+
+### Module
+
+Base interface for optimizable modules.
+
+```typescript
+interface Module {
+  predict(input: any): Promise<Prediction>;
+  getPrompt(): string;
+  setPrompt(prompt: string): void;
+  clone(): Module;
+}
+```
+
+### Example
+
+Training example for optimization.
+
+```typescript
+interface Example {
+  input: any;
+  output: any;
+  metadata?: Record<string, any>;
+}
+```
+
+### Prediction
+
+Module prediction result.
+
+```typescript
+interface Prediction {
+  output: any;
+  confidence?: number;
+  metadata?: Record<string, any>;
+}
+```
+
+### OptimizationResult
+
+Result from prompt optimization.
+
+```typescript
+interface OptimizationResult {
+  optimizedModule: Module;
+  finalScore: number;
+  history: OptimizationHistory[];
+  optimizationTimeMs: number;
+  roundsCompleted: number;
+}
+
+interface OptimizationHistory {
+  round: number;
+  score: number;
+  prompt: string;
+  examplesUsed?: number;
+}
+```
+
+### Metric
+
+Evaluation metric interface.
+
+```typescript
+interface Metric {
+  name: string;
+  evaluate(example: Example, prediction: Prediction): number;
+}
+```
+
+## API Types
+
+### API Request Types
+
+```typescript
+interface GeneratePersonaRequest {
+  name?: string;
+  age?: number | DistributionConfig;
+  occupation?: string | DistributionConfig;
+  sex?: Sex | DistributionConfig;
+  attributes?: Record<string, any>;
+}
+
+interface GenerateGroupRequest {
+  name: string;
+  size: number;
+  distributions?: Record<string, DistributionConfig>;
+  segments?: SegmentConfig[];
+}
+
+interface GroupStatisticsRequest {
+  personas: Persona[];
+  attribute: string;
+}
+```
+
+### API Response Types
+
+```typescript
+interface GeneratePersonaResponse {
+  persona: Persona;
+}
+
+interface GenerateGroupResponse {
+  group: PersonaGroup;
+}
+
+interface StatisticsResponse {
+  statistics: {
+    mean?: number;
+    median?: number;
+    min?: number;
+    max?: number;
+    stdDev?: number;
+    count: number;
+    distribution?: Record<string, number>;
+  };
+}
+
+interface ErrorResponse {
+  error: {
+    code: string;
+    message: string;
+    details?: any;
+  };
+}
+```
+
+## Utility Types
+
+### DeepPartial
+
+Make all properties optional recursively.
+
+```typescript
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+```
+
+### Branded Types
+
+Type-safe branded types for IDs.
+
+```typescript
+declare const brand: unique symbol;
+
+type Brand<T, B> = T & { [brand]: B };
+
+type PersonaId = Brand<string, 'PersonaId'>;
+type GroupId = Brand<string, 'GroupId'>;
+```
+
+### Inference Helpers
+
+Extract types from runtime values.
+
+```typescript
+type InferAttributes<T> = T extends Persona<infer A> ? A : never;
+
+type InferDistribution<T> = T extends Distribution<infer V> ? V : never;
+```
+
+## React Types
+
+### Hook Return Types
+
+```typescript
+interface UsePersonaReturn<T extends PersonaAttributes = PersonaAttributes> {
+  persona: Persona<T> | null;
+  loading: boolean;
+  error: Error | null;
+  generate: (config?: PersonaConfig) => Promise<void>;
+  update: (attributes: Partial<T>) => void;
+  reset: () => void;
+}
+
+interface UsePersonaGroupReturn<T extends PersonaAttributes = PersonaAttributes> {
+  group: PersonaGroup<T> | null;
+  loading: boolean;
+  error: Error | null;
+  generate: (config: GroupGenerationConfig<T>) => Promise<void>;
+  addPersona: (persona: Persona<T>) => void;
+  removePersona: (id: string) => void;
+  getStatistics: (attribute: keyof T) => Statistics;
+  filter: (predicate: (p: Persona<T>) => boolean) => Persona<T>[];
+}
+```
+
+### Provider Props
+
+```typescript
+interface PersonaProviderProps {
+  apiUrl?: string;
+  apiKey?: string;
+  children: React.ReactNode;
+}
+```
+
+## Type Guards
+
+Runtime type checking utilities.
+
+```typescript
+function isPersona(value: any): value is Persona {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof value.id === 'string' &&
+    typeof value.name === 'string' &&
+    typeof value.attributes === 'object'
+  );
+}
+
+function isDistribution<T>(value: any): value is Distribution<T> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof value.sample === 'function' &&
+    typeof value.sampleMany === 'function'
+  );
+}
+
+function isDistributionConfig(value: any): value is DistributionConfig {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'type' in value &&
+    ['normal', 'uniform', 'categorical', 'beta', 'exponential'].includes(value.type)
+  );
+}
+```

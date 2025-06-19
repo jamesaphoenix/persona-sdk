@@ -1,0 +1,513 @@
+---
+title: Prompt Optimization
+description: Optimize prompts for better AI performance
+---
+
+# Prompt Optimization
+
+Tools for automatically optimizing prompts to improve AI model performance.
+
+## Overview
+
+Prompt optimization helps you:
+- Improve accuracy on specific tasks
+- Reduce token usage while maintaining quality
+- Find optimal few-shot examples
+- Create robust prompt templates
+
+## BootstrapOptimizer
+
+Few-shot optimization using bootstrapping to find the best examples.
+
+```typescript
+class BootstrapOptimizer
+```
+
+### Constructor
+
+```typescript
+constructor(options?: BootstrapOptimizerOptions)
+```
+
+### Options
+
+```typescript
+interface BootstrapOptimizerOptions {
+  maxLabeled?: number;        // Max labeled examples (default: 8)
+  maxBootstrapped?: number;   // Max bootstrapped examples (default: 8)
+  maxRounds?: number;         // Max optimization rounds (default: 3)
+  metric?: Metric;            // Evaluation metric
+  teacherModel?: LanguageModel; // Model for bootstrapping
+  bootstrapThreshold?: number;  // Min score to include (default: 0.8)
+  verbose?: boolean;          // Enable logging (default: false)
+}
+```
+
+### Methods
+
+#### optimize()
+
+```typescript
+async optimize(
+  module: Module,
+  trainset: Example[],
+  valset?: Example[]
+): Promise<OptimizationResult>
+```
+
+Optimizes the module using the training set.
+
+### Example
+
+```typescript
+import { BootstrapOptimizer, ExactMatch } from '@jamesaphoenix/persona-sdk';
+
+// Create a module to optimize
+const sentimentModule = new Module(
+  `Classify sentiment as positive, negative, or neutral.
+
+Examples:
+{examples}
+
+Text: {input}
+Sentiment:`
+);
+
+// Training data
+const trainData = [
+  { input: "This product is amazing!", output: "positive" },
+  { input: "Terrible experience, would not recommend.", output: "negative" },
+  { input: "It's okay, nothing special.", output: "neutral" }
+];
+
+// Optimize
+const optimizer = new BootstrapOptimizer({
+  maxLabeled: 5,
+  metric: ExactMatch,
+  verbose: true
+});
+
+const result = await optimizer.optimize(sentimentModule, trainData);
+console.log(`Final accuracy: ${result.finalScore}`);
+console.log(`Optimized prompt: ${result.optimizedModule.getPrompt()}`);
+```
+
+## COPROOptimizer
+
+Compositional Prompt Optimization - iteratively improves prompts through paraphrasing.
+
+```typescript
+class COPROOptimizer
+```
+
+### Constructor
+
+```typescript
+constructor(
+  model: LanguageModel,
+  options?: COPROOptimizerOptions
+)
+```
+
+### Options
+
+```typescript
+interface COPROOptimizerOptions {
+  breadth?: number;       // Candidates per iteration (default: 5)
+  depth?: number;        // Optimization iterations (default: 3)
+  temperature?: number;   // Generation temperature (default: 0.7)
+  numVariations?: number; // Variations to generate (default: 3)
+  metric?: Metric;       // Evaluation metric
+  verbose?: boolean;     // Enable logging (default: false)
+}
+```
+
+### Example
+
+```typescript
+import { COPROOptimizer, F1Score } from '@jamesaphoenix/persona-sdk';
+import { ChatOpenAI } from '@langchain/openai';
+
+const model = new ChatOpenAI({ temperature: 0.7 });
+
+const optimizer = new COPROOptimizer(model, {
+  breadth: 10,
+  depth: 5,
+  metric: F1Score
+});
+
+// Module for persona attribute extraction
+const extractionModule = new Module(
+  `Extract key attributes from the description.
+  
+Instructions: {instructions}
+
+Description: {input}
+Attributes:`
+);
+
+const result = await optimizer.optimize(
+  extractionModule,
+  trainingExamples
+);
+```
+
+## RandomSearchOptimizer
+
+Explores the prompt space through intelligent random search.
+
+```typescript
+class RandomSearchOptimizer
+```
+
+### Constructor
+
+```typescript
+constructor(
+  options?: RandomSearchOptimizerOptions,
+  model?: LanguageModel
+)
+```
+
+### Options
+
+```typescript
+interface RandomSearchOptimizerOptions {
+  numCandidates?: number;     // Total candidates (default: 20)
+  budget?: number;            // Evaluation budget (default: 100)
+  strategy?: SearchStrategy;  // Search strategy
+  metric?: Metric;           // Evaluation metric
+  temperature?: number;      // Generation temperature
+  earlyStopThreshold?: number; // Stop if score reached
+  patience?: number;         // Rounds without improvement
+  verbose?: boolean;         // Enable logging
+}
+
+type SearchStrategy = 
+  | 'random'           // Pure random search
+  | 'gaussian_walk'    // Random walk with Gaussian steps
+  | 'mutation'         // Evolutionary mutations
+  | 'combination';     // Combine successful prompts
+```
+
+### Example
+
+```typescript
+import { RandomSearchOptimizer, RougeScore } from '@jamesaphoenix/persona-sdk';
+
+const optimizer = new RandomSearchOptimizer({
+  numCandidates: 50,
+  strategy: 'mutation',
+  metric: RougeScore,
+  earlyStopThreshold: 0.95
+});
+
+// Summarization module
+const summaryModule = new Module(
+  `Summarize the following text in {style} style:
+
+{guidelines}
+
+Text: {input}
+Summary:`
+);
+
+const result = await optimizer.optimize(
+  summaryModule,
+  trainingSummaries,
+  validationSummaries
+);
+```
+
+## EnsembleOptimizer
+
+Combines multiple optimized modules for better performance.
+
+```typescript
+class EnsembleOptimizer
+```
+
+### Static Methods
+
+#### fromOptimizationResults()
+
+```typescript
+static fromOptimizationResults(
+  results: OptimizationResult[],
+  options?: EnsembleOptimizerOptions
+): EnsembleOptimizer
+```
+
+Creates an ensemble from multiple optimization results.
+
+### Options
+
+```typescript
+interface EnsembleOptimizerOptions {
+  size?: number;              // Ensemble size (default: 5)
+  votingStrategy?: 'hard' | 'soft'; // Voting type
+  aggregation?: 'majority' | 'mean' | 'weighted';
+  reducer?: (outputs: any[]) => any; // Custom aggregation
+}
+```
+
+### Example
+
+```typescript
+import { 
+  EnsembleOptimizer, 
+  BootstrapOptimizer, 
+  COPROOptimizer 
+} from '@jamesaphoenix/persona-sdk';
+
+// Run multiple optimizers
+const results = await Promise.all([
+  bootstrapOpt.optimize(module, trainData),
+  coproOpt.optimize(module, trainData),
+  randomOpt.optimize(module, trainData)
+]);
+
+// Create ensemble
+const ensemble = EnsembleOptimizer.fromOptimizationResults(results, {
+  votingStrategy: 'soft',
+  aggregation: 'weighted'
+});
+
+// Use ensemble for predictions
+const prediction = await ensemble.predict(input);
+
+// Evaluate ensemble
+const ensembleScore = await ensemble.evaluate(testData, metric);
+console.log(`Ensemble accuracy: ${ensembleScore}`);
+```
+
+## Metrics
+
+Built-in metrics for evaluating prompt performance.
+
+### ExactMatch
+
+```typescript
+const ExactMatch: Metric
+```
+
+Exact string matching (case-insensitive).
+
+### F1Score
+
+```typescript
+const F1Score: Metric
+```
+
+F1 score for classification tasks.
+
+### RougeScore
+
+```typescript
+const RougeScore: Metric
+```
+
+ROUGE score for text generation quality.
+
+### CompositeMetric
+
+```typescript
+class CompositeMetric implements Metric
+```
+
+Combines multiple metrics with weights.
+
+```typescript
+const composite = new CompositeMetric([
+  { metric: ExactMatch, weight: 0.7 },
+  { metric: RougeScore, weight: 0.3 }
+]);
+```
+
+### Custom Metrics
+
+```typescript
+const customMetric: Metric = {
+  name: 'CustomAccuracy',
+  evaluate: (example, prediction) => {
+    // Custom evaluation logic
+    return score; // 0-1
+  }
+};
+```
+
+## Module System
+
+### Module
+
+Base class for optimizable prompt templates.
+
+```typescript
+class Module {
+  constructor(template: string);
+  
+  predict(input: any): Promise<Prediction>;
+  getPrompt(): string;
+  setPrompt(prompt: string): void;
+  clone(): Module;
+}
+```
+
+### ChainOfThought
+
+Module with chain-of-thought reasoning.
+
+```typescript
+class ChainOfThought extends Module {
+  constructor(
+    template: string,
+    reasoningSteps?: string[]
+  );
+}
+```
+
+### MockModule
+
+For testing optimization without API calls.
+
+```typescript
+const mockModule = new MockModule(
+  'Classify as A or B: {input}',
+  {
+    'example1': 'A',
+    'example2': 'B'
+  }
+);
+```
+
+## Complete Example
+
+```typescript
+import { 
+  PersonaGroup,
+  BootstrapOptimizer,
+  Module,
+  ExactMatch 
+} from '@jamesaphoenix/persona-sdk';
+
+// Create a module for persona classification
+const classifierModule = new Module(`
+Given a persona, classify their likely subscription tier.
+
+Examples:
+{examples}
+
+Persona: {input}
+Tier (basic/premium/enterprise):`);
+
+// Generate training data from personas
+const group = await PersonaGroup.generate({
+  size: 100,
+  attributes: {
+    age: new NormalDistribution(35, 10),
+    income: new NormalDistribution(75000, 30000),
+    occupation: 'Professional',
+    sex: 'other'
+  }
+});
+
+// Create training examples
+const trainingData = group.personas.map(persona => ({
+  input: JSON.stringify(persona.attributes),
+  output: persona.attributes.income > 100000 ? 'enterprise' : 
+          persona.attributes.income > 60000 ? 'premium' : 'basic'
+}));
+
+// Optimize the classifier
+const optimizer = new BootstrapOptimizer({
+  maxLabeled: 10,
+  metric: ExactMatch,
+  verbose: true
+});
+
+const result = await optimizer.optimize(
+  classifierModule,
+  trainingData.slice(0, 50),  // Train
+  trainingData.slice(50)       // Validate
+);
+
+console.log(`Optimized accuracy: ${result.finalScore}`);
+
+// Use optimized module
+const newPersona = PersonaBuilder.create()
+  .withName('Test User')
+  .withAge(40)
+  .withOccupation('Executive')
+  .withSex('other')
+  .withAttribute('income', 150000)
+  .build();
+
+const prediction = await result.optimizedModule.predict(
+  JSON.stringify(newPersona.attributes)
+);
+
+console.log(`Predicted tier: ${prediction.output}`); // 'enterprise'
+```
+
+## Best Practices
+
+### 1. Start Simple
+
+Begin with basic templates and let optimization improve them:
+
+```typescript
+// Start with:
+"Classify sentiment: {input}"
+
+// Optimization might produce:
+"Analyze the emotional tone of the following text and classify it as 
+positive (expressing satisfaction, joy, or approval), negative 
+(expressing dissatisfaction, anger, or disapproval), or neutral 
+(factual or balanced without clear emotion).
+
+Examples:
+- 'Great product!' → positive
+- 'Waste of money' → negative
+- 'It arrived on Tuesday' → neutral
+
+Text: {input}
+Sentiment:"
+```
+
+### 2. Use Appropriate Metrics
+
+Choose metrics that match your task:
+- Classification → ExactMatch, F1Score
+- Generation → RougeScore
+- Mixed → CompositeMetric
+
+### 3. Provide Quality Examples
+
+Better training examples lead to better optimization:
+
+```typescript
+// Good examples - diverse and clear
+const examples = [
+  { input: "Young professional", output: "early-career" },
+  { input: "Senior executive", output: "leadership" },
+  { input: "Recent graduate", output: "entry-level" }
+];
+
+// Poor examples - ambiguous
+const examples = [
+  { input: "Person", output: "category" },
+  { input: "Worker", output: "type" }
+];
+```
+
+### 4. Monitor Optimization
+
+Use verbose mode during development:
+
+```typescript
+const optimizer = new BootstrapOptimizer({
+  verbose: true,
+  // Watch for overfitting
+  maxRounds: 5
+});
+```

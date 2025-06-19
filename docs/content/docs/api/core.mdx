@@ -1,0 +1,385 @@
+---
+title: Core Classes
+description: Core classes for persona generation and management
+---
+
+# Core Classes
+
+The core classes provide the foundation for creating and managing personas.
+
+## Persona
+
+Represents an individual with attributes.
+
+```typescript
+class Persona<T extends PersonaAttributes = PersonaAttributes>
+```
+
+### Constructor
+
+```typescript
+constructor(name: string, attributes: T)
+```
+
+Creates a new persona with the given name and attributes.
+
+**Parameters:**
+- `name` - The persona's name
+- `attributes` - Object containing persona attributes (must include age, occupation, sex)
+
+### Properties
+
+```typescript
+readonly id: string        // Unique identifier
+readonly name: string      // Persona name
+readonly attributes: T     // Persona attributes
+```
+
+### Example
+
+```typescript
+const persona = new Persona('Alice Johnson', {
+  age: 28,
+  occupation: 'Software Engineer',
+  sex: 'female',
+  yearsExperience: 5,
+  skills: ['TypeScript', 'React', 'Node.js']
+});
+```
+
+## PersonaBuilder
+
+Fluent API for building personas step by step.
+
+```typescript
+class PersonaBuilder
+```
+
+### Static Methods
+
+#### create()
+
+```typescript
+static create(): PersonaBuilder
+```
+
+Creates a new PersonaBuilder instance.
+
+### Instance Methods
+
+#### withName(name: string)
+
+```typescript
+withName(name: string): this
+```
+
+Sets the persona's name.
+
+#### withAge(age: number)
+
+```typescript
+withAge(age: number): this
+```
+
+Sets the persona's age (0-150).
+
+#### withOccupation(occupation: string)
+
+```typescript
+withOccupation(occupation: string): this
+```
+
+Sets the persona's occupation.
+
+#### withSex(sex: Sex)
+
+```typescript
+withSex(sex: 'male' | 'female' | 'other'): this
+```
+
+Sets the persona's sex.
+
+#### withAttribute(key: string, value: any)
+
+```typescript
+withAttribute(key: string, value: any): this
+```
+
+Adds a custom attribute to the persona.
+
+#### randomPersona()
+
+```typescript
+randomPersona(): Persona
+```
+
+Generates a random persona with realistic attributes.
+
+#### build()
+
+```typescript
+build(): Persona
+```
+
+Builds the persona with the configured attributes.
+
+**Throws:** Error if required fields (name, age, occupation, sex) are missing.
+
+### Example
+
+```typescript
+const persona = PersonaBuilder.create()
+  .withName('Bob Smith')
+  .withAge(35)
+  .withOccupation('Product Manager')
+  .withSex('male')
+  .withAttribute('department', 'Engineering')
+  .withAttribute('remote', true)
+  .build();
+
+// Random persona
+const randomPersona = PersonaBuilder.create().randomPersona();
+```
+
+## PersonaGroup
+
+Manages collections of personas with statistical analysis.
+
+```typescript
+class PersonaGroup<T extends PersonaAttributes = PersonaAttributes>
+```
+
+### Constructor
+
+```typescript
+constructor(name: string, options?: PersonaGroupOptions)
+```
+
+Creates a new persona group.
+
+**Parameters:**
+- `name` - Group name
+- `options` - Optional configuration
+
+### Properties
+
+```typescript
+readonly id: string                    // Unique identifier
+readonly name: string                  // Group name
+readonly personas: Persona<T>[]        // Array of personas
+readonly size: number                  // Number of personas
+```
+
+### Static Methods
+
+#### generate()
+
+```typescript
+static async generate<T extends PersonaAttributes>(
+  config: GroupGenerationConfig<T>
+): Promise<PersonaGroup<T>>
+```
+
+Generates a new persona group with the specified configuration.
+
+**Parameters:**
+- `config` - Generation configuration including size, attributes, and segments
+
+### Instance Methods
+
+#### add(persona: Persona<T>)
+
+```typescript
+add(persona: Persona<T>): void
+```
+
+Adds a persona to the group.
+
+#### remove(persona: Persona<T>)
+
+```typescript
+remove(persona: Persona<T>): boolean
+```
+
+Removes a persona from the group.
+
+**Returns:** true if removed, false if not found
+
+#### clear()
+
+```typescript
+clear(): void
+```
+
+Removes all personas from the group.
+
+#### generateFromDistributions()
+
+```typescript
+generateFromDistributions(
+  count: number,
+  distributions: DistributionMap
+): void
+```
+
+Generates personas using statistical distributions.
+
+**Parameters:**
+- `count` - Number of personas to generate
+- `distributions` - Map of attribute names to distributions
+
+#### getStatistics(attribute: string)
+
+```typescript
+getStatistics(attribute: string): {
+  mean?: number;
+  median?: number;
+  min?: number;
+  max?: number;
+  stdDev?: number;
+  count: number;
+}
+```
+
+Calculates statistics for a numeric attribute.
+
+#### getAttributeDistribution(attribute: string)
+
+```typescript
+getAttributeDistribution(attribute: string): Map<any, number>
+```
+
+Gets the distribution of values for an attribute.
+
+#### filter(predicate: (persona: Persona<T>) => boolean)
+
+```typescript
+filter(predicate: (persona: Persona<T>) => boolean): Persona<T>[]
+```
+
+Filters personas based on a predicate.
+
+#### map<U>(fn: (persona: Persona<T>) => U)
+
+```typescript
+map<U>(fn: (persona: Persona<T>) => U): U[]
+```
+
+Maps personas to a new array.
+
+#### reduce<U>(fn: (acc: U, persona: Persona<T>) => U, initial: U)
+
+```typescript
+reduce<U>(
+  fn: (acc: U, persona: Persona<T>) => U,
+  initial: U
+): U
+```
+
+Reduces personas to a single value.
+
+#### toJSON()
+
+```typescript
+toJSON(): {
+  id: string;
+  name: string;
+  personas: Array<{
+    id: string;
+    name: string;
+    attributes: T;
+  }>;
+  size: number;
+  createdAt: string;
+}
+```
+
+Serializes the group to JSON.
+
+### Example
+
+```typescript
+import { PersonaGroup, NormalDistribution } from '@jamesaphoenix/persona-sdk';
+
+// Create with distributions
+const group = new PersonaGroup('Tech Workers');
+group.generateFromDistributions(100, {
+  age: new NormalDistribution(32, 5),
+  occupation: 'Developer',
+  sex: 'other',
+  yearsExperience: new UniformDistribution(1, 10)
+});
+
+// Get statistics
+const ageStats = group.getStatistics('age');
+console.log(`Average age: ${ageStats.mean?.toFixed(1)}`);
+
+// Filter personas
+const seniors = group.filter(p => p.attributes.age > 40);
+
+// Generate with segments
+const segmentedGroup = await PersonaGroup.generate({
+  size: 1000,
+  segments: [
+    {
+      name: 'Junior Developers',
+      weight: 0.4,
+      attributes: {
+        age: new NormalDistribution(25, 3),
+        occupation: 'Junior Developer',
+        sex: 'other'
+      }
+    },
+    {
+      name: 'Senior Developers',
+      weight: 0.6,
+      attributes: {
+        age: new NormalDistribution(35, 5),
+        occupation: 'Senior Developer',
+        sex: 'other'
+      }
+    }
+  ]
+});
+```
+
+## TypedPersonaGroup
+
+Type-safe version of PersonaGroup with enhanced TypeScript support.
+
+```typescript
+class TypedPersonaGroup<T extends PersonaAttributes>
+```
+
+Provides the same functionality as PersonaGroup but with better type inference for custom attributes.
+
+### Example
+
+```typescript
+interface DeveloperAttributes extends PersonaAttributes {
+  language: string;
+  framework: string;
+  yearsExperience: number;
+}
+
+const devGroup = await TypedPersonaGroup.create<DeveloperAttributes>(
+  'Developers',
+  {
+    size: 50,
+    attributes: {
+      age: new NormalDistribution(30, 5),
+      occupation: 'Developer',
+      sex: 'other',
+      language: 'TypeScript',
+      framework: 'React',
+      yearsExperience: new UniformDistribution(1, 10)
+    }
+  }
+);
+
+// TypeScript knows about custom attributes
+const avgExperience = devGroup.reduce(
+  (sum, p) => sum + p.attributes.yearsExperience,
+  0
+) / devGroup.size;
+```

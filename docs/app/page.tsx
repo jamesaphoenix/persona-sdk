@@ -8,7 +8,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-24">
           <div className="mx-auto max-w-5xl space-y-8 text-center">
             <div className="inline-flex items-center rounded-full bg-blue-100 px-4 py-1.5 text-sm font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-              🚀 Used by 50+ LLM Engineers to ship faster
+              🚀 Open Source • TypeScript • Production Ready
             </div>
             
             <h1 className="text-5xl font-bold tracking-tight sm:text-7xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -34,25 +34,25 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Social Proof */}
+      {/* Key Features */}
       <div className="border-y bg-gray-50 dark:bg-gray-900/50">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">⭐</span>
-              <span>500+ GitHub Stars</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">📈</span>
-              <span>73% Faster Content Testing</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">💰</span>
-              <span>$2.3M ARR Generated</span>
+              <span className="text-2xl">🧠</span>
+              <span>AI-Powered Distribution Selection</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-2xl">🎯</span>
-              <span>10x Better Targeting</span>
+              <span>Type-Safe Structured Output</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">⚛️</span>
+              <span>React Hooks Integration</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">🚀</span>
+              <span>Full REST API Server</span>
             </div>
           </div>
         </div>

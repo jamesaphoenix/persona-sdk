@@ -1,0 +1,458 @@
+---
+title: AI Tools
+description: AI-powered tools for intelligent persona generation and analysis
+---
+
+# AI Tools
+
+AI-powered tools for intelligent persona generation, distribution selection, and structured output generation.
+
+## StructuredOutputGenerator
+
+Generate type-safe structured data from persona groups using AI.
+
+```typescript
+class StructuredOutputGenerator
+```
+
+### Constructor
+
+```typescript
+constructor(apiKey?: string)
+```
+
+**Parameters:**
+- `apiKey` - OpenAI API key (defaults to OPENAI_API_KEY env var)
+
+### Methods
+
+#### generate()
+
+```typescript
+async generate<T>(
+  personaOrGroup: Persona | PersonaGroup,
+  schema: z.ZodType<T>,
+  prompt?: string
+): Promise<{ data: T; usage?: UsageMetadata }>
+```
+
+Generates structured output matching the provided Zod schema.
+
+**Parameters:**
+- `personaOrGroup` - Single persona or group to analyze
+- `schema` - Zod schema defining the output structure
+- `prompt` - Optional custom prompt (defaults to schema-based generation)
+
+#### generateCustom()
+
+```typescript
+async generateCustom<T>(
+  input: any,
+  schema: z.ZodType<T>,
+  prompt: string
+): Promise<{ data: T; usage?: UsageMetadata }>
+```
+
+Generates structured output from custom input.
+
+### Example
+
+```typescript
+import { StructuredOutputGenerator } from '@jamesaphoenix/persona-sdk';
+import { z } from 'zod';
+
+const generator = new StructuredOutputGenerator();
+
+// Define output schema
+const MarketingInsightsSchema = z.object({
+  targetAudience: z.object({
+    primarySegment: z.string(),
+    characteristics: z.array(z.string()),
+    painPoints: z.array(z.string())
+  }),
+  campaignIdeas: z.array(z.object({
+    title: z.string(),
+    description: z.string(),
+    estimatedCTR: z.number(),
+    targetPlatforms: z.array(z.string())
+  })),
+  contentStrategy: z.object({
+    tone: z.string(),
+    topics: z.array(z.string()),
+    postingFrequency: z.string()
+  })
+});
+
+// Generate insights from persona group
+const insights = await generator.generate(
+  personaGroup,
+  MarketingInsightsSchema
+);
+
+console.log(insights.data.campaignIdeas[0].title);
+console.log(`Estimated CTR: ${insights.data.campaignIdeas[0].estimatedCTR}%`);
+```
+
+## DistributionSelectorLangChain
+
+AI-powered selection of appropriate statistical distributions based on requirements.
+
+```typescript
+class DistributionSelectorLangChain
+```
+
+### Constructor
+
+```typescript
+constructor(apiKeyOrModel?: string | BaseLanguageModel)
+```
+
+**Parameters:**
+- `apiKeyOrModel` - OpenAI API key or LangChain model instance
+
+### Methods
+
+#### selectDistributions()
+
+```typescript
+async selectDistributions(
+  params: DistributionSelectionParams
+): Promise<{
+  distributions: DistributionMap;
+  reasoning: string;
+  usage?: UsageMetadata;
+}>
+```
+
+Selects appropriate distributions based on the provided parameters.
+
+### Types
+
+```typescript
+interface DistributionSelectionParams {
+  description: string;
+  requirements?: string[];
+  constraints?: Record<string, any>;
+  examples?: string[];
+  attributes?: string[];
+  existingData?: Record<string, any[]>;
+}
+```
+
+### Example
+
+```typescript
+import { DistributionSelectorLangChain } from '@jamesaphoenix/persona-sdk';
+
+const selector = new DistributionSelectorLangChain();
+
+const result = await selector.selectDistributions({
+  description: "Tech startup employees in Silicon Valley",
+  requirements: [
+    "Age should skew younger (25-40)",
+    "Income should be high but varied by role",
+    "Most should have 2-8 years experience"
+  ],
+  attributes: ['age', 'income', 'yearsExperience', 'department'],
+  constraints: {
+    age: { min: 22, max: 65 },
+    income: { min: 60000 }
+  }
+});
+
+// Use the selected distributions
+const group = new PersonaGroup('Startup Employees');
+group.generateFromDistributions(100, result.distributions);
+
+console.log(result.reasoning);
+// "Age: Normal distribution with mean 32 and stdDev 5 to capture 
+//  the younger demographic while allowing some variation..."
+```
+
+## MediaToPersonaGenerator
+
+Convert media content (text, images) into persona groups.
+
+```typescript
+class MediaToPersonaGenerator
+```
+
+### Constructor
+
+```typescript
+constructor(apiKey?: string)
+```
+
+**Parameters:**
+- `apiKey` - OpenAI API key (defaults to OPENAI_API_KEY env var)
+
+### Methods
+
+#### fromTextPost()
+
+```typescript
+async fromTextPost(
+  text: string,
+  options?: MediaToPersonaOptions
+): Promise<MediaToPersonaResult>
+```
+
+Generates personas from text content (social media posts, articles, etc).
+
+#### fromImage()
+
+```typescript
+async fromImage(
+  imagePath: string,
+  options?: MediaToPersonaOptions
+): Promise<MediaToPersonaResult>
+```
+
+Generates personas from image content.
+
+#### fromMediaCollection()
+
+```typescript
+async fromMediaCollection(
+  paths: string[],
+  options?: MediaToPersonaOptions
+): Promise<MediaToPersonaResult>
+```
+
+Generates personas from multiple media files.
+
+### Types
+
+```typescript
+interface MediaToPersonaOptions {
+  targetSize?: number;        // Number of personas to generate
+  focusAttributes?: string[]; // Attributes to prioritize
+  context?: string;          // Additional context
+  includeDistributions?: boolean; // Generate distributions
+}
+
+interface MediaToPersonaResult {
+  group: PersonaGroup;
+  analysis: {
+    summary: string;
+    assumptions: string[];
+    dataPoints: string[];
+    confidence: number;
+  };
+  distributions?: DistributionMap;
+  usage?: UsageMetadata;
+}
+```
+
+### Example
+
+```typescript
+import { MediaToPersonaGenerator } from '@jamesaphoenix/persona-sdk';
+
+const generator = new MediaToPersonaGenerator();
+
+// From Reddit post
+const redditResult = await generator.fromTextPost(
+  `Just shipped our new AI coding assistant! 
+   It's been a crazy 6 months of development...`,
+  {
+    targetSize: 100,
+    focusAttributes: ['age', 'occupation', 'interests'],
+    context: 'Reddit post on r/programming'
+  }
+);
+
+console.log(redditResult.analysis.summary);
+// "Tech-savvy developers interested in AI tools..."
+
+// From image
+const imageResult = await generator.fromImage(
+  './conference-photo.jpg',
+  {
+    targetSize: 50,
+    includeDistributions: true
+  }
+);
+
+// From multiple sources
+const collectionResult = await generator.fromMediaCollection(
+  ['post1.txt', 'post2.txt', 'audience.jpg'],
+  {
+    targetSize: 200,
+    focusAttributes: ['demographics', 'interests', 'behaviors']
+  }
+);
+```
+
+## IntelligentPersonaFactory
+
+Factory for creating personas with AI-guided attribute generation.
+
+```typescript
+class IntelligentPersonaFactory
+```
+
+### Constructor
+
+```typescript
+constructor(apiKey?: string)
+```
+
+### Methods
+
+#### createPersona()
+
+```typescript
+async createPersona(
+  description: string,
+  constraints?: Record<string, any>
+): Promise<Persona>
+```
+
+Creates a single persona based on a description.
+
+#### createPersonaGroup()
+
+```typescript
+async createPersonaGroup(
+  description: string,
+  size: number,
+  options?: IntelligentPersonaOptions
+): Promise<PersonaGroup>
+```
+
+Creates a persona group with AI-selected distributions.
+
+### Example
+
+```typescript
+import { IntelligentPersonaFactory } from '@jamesaphoenix/persona-sdk';
+
+const factory = new IntelligentPersonaFactory();
+
+// Create a single persona
+const cto = await factory.createPersona(
+  "CTO at a Series B startup, technical background, MBA",
+  { age: { min: 35, max: 50 } }
+);
+
+// Create a group
+const employees = await factory.createPersonaGroup(
+  "Employees at a sustainable fashion e-commerce company",
+  150,
+  {
+    segments: ['design', 'engineering', 'marketing', 'operations'],
+    includeDistributions: true
+  }
+);
+```
+
+## AutoCorrelationGenerator
+
+Automatically generates realistic correlations between persona attributes.
+
+```typescript
+class AutoCorrelationGenerator
+```
+
+### Constructor
+
+```typescript
+constructor(apiKey?: string)
+```
+
+### Methods
+
+#### generateCorrelations()
+
+```typescript
+async generateCorrelations(
+  context: string,
+  attributes: string[]
+): Promise<CorrelationConfig[]>
+```
+
+Generates correlation configurations based on context.
+
+#### applyToGroup()
+
+```typescript
+async applyToGroup(
+  group: PersonaGroup,
+  context: string
+): Promise<PersonaGroup>
+```
+
+Applies intelligent correlations to an existing group.
+
+### Example
+
+```typescript
+import { AutoCorrelationGenerator } from '@jamesaphoenix/persona-sdk';
+
+const correlationGen = new AutoCorrelationGenerator();
+
+// Generate correlations
+const correlations = await correlationGen.generateCorrelations(
+  "Tech professionals in expensive cities",
+  ['age', 'income', 'yearsExperience', 'rentBudget']
+);
+
+// Apply to group
+const enhancedGroup = await correlationGen.applyToGroup(
+  basicGroup,
+  "Silicon Valley software engineers"
+);
+// Now income correlates with experience, rent with income, etc.
+```
+
+## Usage Best Practices
+
+### API Key Management
+
+```typescript
+// Option 1: Environment variable (recommended)
+process.env.OPENAI_API_KEY = 'your-api-key';
+const generator = new StructuredOutputGenerator();
+
+// Option 2: Direct instantiation
+const generator = new StructuredOutputGenerator('your-api-key');
+
+// Option 3: Using LangChain models
+import { ChatOpenAI } from '@langchain/openai';
+const model = new ChatOpenAI({ temperature: 0.7 });
+const selector = new DistributionSelectorLangChain(model);
+```
+
+### Error Handling
+
+```typescript
+try {
+  const result = await generator.generate(group, schema);
+} catch (error) {
+  if (error.code === 'insufficient_quota') {
+    // Handle API quota errors
+  } else if (error.code === 'invalid_request_error') {
+    // Handle invalid schema or input
+  }
+}
+```
+
+### Performance Optimization
+
+```typescript
+// Batch operations when possible
+const promises = groups.map(group => 
+  generator.generate(group, schema)
+);
+const results = await Promise.all(promises);
+
+// Cache results for expensive operations
+const cache = new Map();
+const getCachedOrGenerate = async (key, generator) => {
+  if (cache.has(key)) return cache.get(key);
+  const result = await generator();
+  cache.set(key, result);
+  return result;
+};
+```
