@@ -110,6 +110,29 @@ gh run view <run-id> --log-failed --repo jamesaphoenix/persona-sdk | head -50
 
 Always ensure all tests pass on all platforms (Ubuntu, macOS, Windows) before considering a task complete.
 
+### Monitoring Vercel Deployments
+
+When working on documentation changes, monitor Vercel deployments:
+
+1. **Install Vercel CLI**: `npm i -g vercel`
+2. **Link to project**: `vercel link` (if not already linked)
+3. **Monitor deployments**: 
+   ```bash
+   # List recent deployments
+   vercel ls --limit 5
+   
+   # Check deployment status
+   vercel inspect <deployment-url>
+   
+   # Poll for deployment completion
+   while vercel ls --limit 1 | grep -q "Building"; do
+     echo "Deployment in progress..."
+     sleep 10
+   done
+   echo "Deployment complete!"
+   ```
+4. **Verify changes**: Always check the live site after deployment
+
 ## Documentation Best Practices
 
 ### Writing Style
