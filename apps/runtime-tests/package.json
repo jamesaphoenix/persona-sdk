@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node -e \"if (process.env.CI === 'true') { console.log('Skipping runtime tests in CI environment (no API access)'); process.exit(0); }\" && node --loader ./loader.js src/index.js",
+    "test": "node -e \"if (process.env.CI === 'true') { console.log('Skipping runtime tests in CI environment (no API access)'); process.exit(0); } else { require('child_process').execSync('node --loader ./loader.js src/index.js', {stdio: 'inherit'}); }\"",
     "test:record": "CASSETTE_MODE=record node --loader ./loader.js src/index.js",
     "test:replay": "CASSETTE_MODE=replay node --loader ./loader.js src/index.js",
     "test:watch": "nodemon --watch src --watch ../../packages/persona-sdk/src -e js,ts src/index.js",
