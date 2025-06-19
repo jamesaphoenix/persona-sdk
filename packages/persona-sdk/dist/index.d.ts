@@ -98,5 +98,6 @@ export type { ExtractAttributes, ExtractPersona } from './builders/typed-persona
 export { TypedPersonaGroup } from './groups/typed-persona-group';
 export type { ExtractGroupAttributes, ExtractGroupPersonas } from './groups/typed-persona-group';
 export * from './schemas/validation';
-export declare const VERSION = "0.3.0";
+export * from './survey';
+export declare const VERSION = "0.4.0";
 //# sourceMappingURL=index.d.ts.map

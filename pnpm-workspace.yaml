@@ -3,5 +3,8 @@ packages:
   - packages/persona-api
   - docs
   - apps/test-app
+  - apps/web
+  - apps/runtime-tests
+  - apps/bun-tests
 ignoredBuiltDependencies:
   - esbuild

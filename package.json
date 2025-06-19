@@ -19,7 +19,15 @@
     "api:docker": "cd packages/persona-api && docker-compose up api-dev",
     "test-app:dev": "pnpm --filter @persona-sdk/test-app dev",
     "test-app:build": "pnpm --filter @persona-sdk/test-app build",
-    "test-app:start": "pnpm --filter @persona-sdk/test-app start"
+    "test-app:start": "pnpm --filter @persona-sdk/test-app start",
+    "web:dev": "pnpm --filter @persona-sdk/web dev",
+    "web:build": "pnpm --filter @persona-sdk/web build",
+    "web:test": "pnpm --filter @persona-sdk/web test",
+    "web:test:e2e": "pnpm --filter @persona-sdk/web test:e2e",
+    "web:test:coverage": "pnpm --filter @persona-sdk/web test:coverage",
+    "runtime:test": "pnpm --filter @persona-sdk/runtime-tests test",
+    "runtime:test:record": "pnpm --filter @persona-sdk/runtime-tests test:record",
+    "runtime:test:replay": "pnpm --filter @persona-sdk/runtime-tests test:replay"
   },
   "devDependencies": {
     "@esbuild/darwin-arm64": "^0.25.5",

@@ -102,6 +102,8 @@ export { TypedPersonaBuilder } from './builders/typed-persona-builder';
 export { TypedPersonaGroup } from './groups/typed-persona-group';
 // Validation Schemas
 export * from './schemas/validation';
+// Survey Data Pipeline
+export * from './survey';
 // Version
-export const VERSION = '0.3.0';
+export const VERSION = '0.4.0';
 //# sourceMappingURL=index.js.map

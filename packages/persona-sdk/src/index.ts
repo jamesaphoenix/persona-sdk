@@ -214,5 +214,8 @@ export type { ExtractGroupAttributes, ExtractGroupPersonas } from './groups/type
 // Validation Schemas
 export * from './schemas/validation';
 
+// Survey Data Pipeline
+export * from './survey';
+
 // Version
-export const VERSION = '0.3.0';
+export const VERSION = '0.4.0';

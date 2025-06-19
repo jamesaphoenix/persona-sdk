@@ -1,0 +1,21 @@
+{
+  "name": "@persona-sdk/bun-tests",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "bun test",
+    "test:record": "CASSETTE_MODE=record bun test",
+    "test:replay": "CASSETTE_MODE=replay bun test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage",
+    "bench": "bun run src/benchmark.ts",
+    "clean": "rm -rf cassettes/*.json signatures/*.json"
+  },
+  "dependencies": {
+    "@jamesaphoenix/persona-sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
