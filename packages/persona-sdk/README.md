@@ -16,6 +16,8 @@ A TypeScript SDK for generating personas from statistical distributions with AI-
 - 🎬 **Media Diet**: Apply media consumption influences to persona groups
 - 📊 **Token Usage Tracking**: Built-in token counting and cost estimation for all AI operations
 - 🔄 **LangChain Integration**: Full LangChain support for structured outputs and tool use
+- 🎯 **Practical Examples**: CTR prediction, engagement analysis, voting systems, and survey simulation
+- 🌱 **Deterministic Testing**: Comprehensive seeding system for reproducible tests and simulations
 
 ## Installation
 
@@ -648,6 +650,161 @@ const { distribution: nlDist } = await selector.fromDescription(
 );
 ```
 
+## Real-World Examples
+
+### 🎯 CTR Prediction for Marketing Campaigns
+
+Predict click-through rates before launching:
+
+```typescript
+import { PersonaGroup, StructuredOutputGenerator } from '@jamesaphoenix/persona-sdk';
+import { z } from 'zod';
+
+// Model your target audience
+const audience = await PersonaGroup.generate({
+  size: 1000,
+  segments: [
+    {
+      name: "Tech Enthusiasts",
+      weight: 0.4,
+      attributes: {
+        age: new NormalDistribution(28, 5),
+        tech_savviness: new BetaDistribution(8, 2),
+        ad_responsiveness: new BetaDistribution(3, 7)
+      }
+    },
+    {
+      name: "Business Users",
+      weight: 0.6,
+      attributes: {
+        age: new NormalDistribution(38, 8),
+        decision_power: new BetaDistribution(7, 3),
+        budget_conscious: new BetaDistribution(6, 4)
+      }
+    }
+  ]
+});
+
+// Predict CTR for your campaign
+const CTRSchema = z.object({
+  predicted_ctr: z.number(),
+  confidence_interval: z.object({ lower: z.number(), upper: z.number() }),
+  best_segment: z.string(),
+  optimization_tips: z.array(z.string())
+});
+
+const prediction = await generator.generateCustom(
+  audience,
+  CTRSchema,
+  "Predict CTR for B2B SaaS product launch campaign"
+);
+```
+
+### 💬 Comment Engagement Prediction
+
+Maximize social media engagement:
+
+```typescript
+// Test different content hooks
+const hooks = [
+  "AI will replace 50% of jobs by 2030...",
+  "After analyzing 10,000 AI implementations...",
+  "Unpopular opinion: Most companies aren't ready for AI..."
+];
+
+const EngagementSchema = z.object({
+  predicted_comments: z.number(),
+  sentiment_breakdown: z.object({
+    positive: z.number(),
+    neutral: z.number(),
+    negative: z.number()
+  }),
+  viral_probability: z.number()
+});
+
+// Find the winner
+const results = await Promise.all(
+  hooks.map(hook => 
+    generator.generateCustom(audience, EngagementSchema, `Analyze: ${hook}`)
+  )
+);
+```
+
+### 🗳️ Voting & Polling Systems
+
+Accurate preference modeling:
+
+```typescript
+// Model voting behavior
+const votingPopulation = await PersonaGroup.generate({
+  size: 5000,
+  attributes: {
+    age: new NormalDistribution(45, 15),
+    political_leaning: new BetaDistribution(5, 5), // Centered
+    voting_likelihood: new CorrelatedDistribution({
+      age: (age) => age < 30 ? 0.3 : age > 60 ? 0.8 : 0.5
+    })
+  }
+});
+
+// Predict outcomes
+const VotingSchema = z.object({
+  winner: z.string(),
+  margin: z.number(),
+  turnout: z.number(),
+  demographic_breakdown: z.record(z.string(), z.number())
+});
+```
+
+### 📊 Market Research Surveys
+
+Generate statistically valid responses:
+
+```typescript
+// Define target market segments
+const market = await PersonaGroup.generate({
+  size: 1000,
+  segments: [
+    {
+      name: "Enterprise Buyers",
+      weight: 0.2,
+      attributes: {
+        company_size: new NormalDistribution(500, 200),
+        budget: new NormalDistribution(50000, 15000),
+        pain_points: ['scalability', 'integration', 'cost']
+      }
+    },
+    {
+      name: "SMB Owners",
+      weight: 0.8,
+      attributes: {
+        company_size: new NormalDistribution(50, 30),
+        budget: new NormalDistribution(5000, 2000),
+        pain_points: ['cost', 'ease-of-use', 'support']
+      }
+    }
+  ]
+});
+
+// Generate survey responses
+const SurveySchema = z.object({
+  product_interest: z.object({
+    very_interested: z.number(),
+    interested: z.number(),
+    neutral: z.number(),
+    not_interested: z.number()
+  }),
+  pricing_sensitivity: z.object({
+    optimal_price: z.number(),
+    price_elasticity: z.number()
+  }),
+  feature_priorities: z.array(z.object({
+    feature: z.string(),
+    importance: z.number()
+  }))
+});
+```
+
 ## Configuration
 
 Set your OpenAI API key for AI features:
@@ -687,6 +844,14 @@ import type {
   StructuredOutput 
 } from '@jamesaphoenix/persona-sdk';
 ```
+
+## Documentation
+
+Full documentation with interactive examples: [https://jamesaphoenix.github.io/persona-sdk/](https://jamesaphoenix.github.io/persona-sdk/)
+
+## API Reference
+
+See the [API documentation](https://jamesaphoenix.github.io/persona-sdk/api) for detailed type definitions and method signatures.
 
 ## Contributing
 

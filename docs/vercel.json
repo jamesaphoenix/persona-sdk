@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd .. && pnpm --filter @persona-sdk/docs build",
+  "outputDirectory": ".docusaurus",
+  "framework": "docusaurus-2",
+  "installCommand": "cd .. && pnpm install",
+  "devCommand": "pnpm dev"
+}
