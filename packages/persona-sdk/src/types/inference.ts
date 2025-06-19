@@ -3,7 +3,7 @@
  */
 
 import type { Distribution } from './distribution';
-import type { PersonaAttributes } from './persona';
+// PersonaAttributes is not needed here
 
 /**
  * Distribution map type

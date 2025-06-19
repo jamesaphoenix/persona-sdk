@@ -42,9 +42,12 @@ export interface SeededDistribution<T> extends Distribution<T> {
 /**
  * Conditional distribution that depends on other values
  */
-export interface ConditionalDistribution<T, D = any> extends Distribution<T> {
-  sample(dependencies: D): T;
+export interface ConditionalDistribution<T, D = any> {
+  sample(dependencies?: D): T;
   getDependencies(): string[];
+  getMean?(): T extends number ? number : never;
+  getVariance?(): T extends number ? number : never;
+  getStandardDeviation?(): T extends number ? number : never;
 }
 
 /**
