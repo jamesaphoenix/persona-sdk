@@ -118,3 +118,17 @@ Always ensure all tests pass on all platforms (Ubuntu, macOS, Windows) before co
 - Break up content with headers, lists, and code blocks
 - Keep explanations concise and actionable
 - Follow the Zod documentation style - highly scannable with short sections
+
+### Fumadocs MDX Rules
+- **NEVER add H1 headings (`# Title`) in MDX content** - Fumadocs automatically renders the frontmatter `title` as H1
+- Only use H2 (`##`) and below in MDX content to avoid duplicate headings
+- Example:
+  ```mdx
+  ---
+  title: My Page Title  # This becomes the H1
+  ---
+  
+  Content starts here, no `# My Page Title` needed.
+  
+  ## First Section  # This is correct
+  ```
