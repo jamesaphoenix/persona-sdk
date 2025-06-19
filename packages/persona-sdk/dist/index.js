@@ -62,7 +62,7 @@ export { PersonaBuilder } from './persona-builder';
 // AI functionality
 export { PersonaAI } from './ai/persona-ai';
 // Distributions
-export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution, CorrelatedDistribution, CommonCorrelations, PersonaCorrelationPresets } from './distributions';
+export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, BinomialDistribution, CategoricalDistribution, CorrelatedDistribution, CommonCorrelations, PersonaCorrelationPresets } from './distributions';
 export { BasePersonaAttributesSchema, PersonaAttributesSchema, SexSchema } from './types';
 // Tools
 export { DistributionSelector } from './tools/distribution-selector';

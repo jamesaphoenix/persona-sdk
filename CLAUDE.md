@@ -12,6 +12,7 @@ This is a TypeScript SDK for generating personas from statistical distributions.
 
 ### Code Style
 - Use TypeScript with strict type checking
+- NEVER use `any` types - always use proper TypeScript types
 - Write comprehensive JSDoc comments for all public APIs
 - Follow functional programming patterns where appropriate
 - Keep the API minimal and intuitive

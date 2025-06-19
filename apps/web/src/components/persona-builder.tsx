@@ -20,7 +20,8 @@ export function PersonaBuilderComponent() {
       const newPersona = PersonaBuilder.create()
         .withName(name || 'Anonymous')
         .withAge(age)
-        .withLocation(location || 'Unknown')
+        .withOccupation(location || 'Unknown')
+        .withSex('other')
         .build()
       
       setPersona(newPersona)

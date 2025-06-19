@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Trash2 } from 'lucide-react'
 
 export function PersonaGroupComponent() {
-  const [group] = useState(() => new PersonaGroup())
+  const [group] = useState(() => new PersonaGroup('Test Group'))
   const [personas, setPersonas] = useState<any[]>([])
   const [stats, setStats] = useState<any>(null)
 
@@ -18,21 +18,22 @@ export function PersonaGroupComponent() {
     const persona = PersonaBuilder.create()
       .withName(names[Math.floor(Math.random() * names.length)])
       .withAge(20 + Math.floor(Math.random() * 40))
-      .withLocation(locations[Math.floor(Math.random() * locations.length)])
+      .withOccupation(locations[Math.floor(Math.random() * locations.length)])
+      .withSex('other')
       .build()
     
     group.add(persona)
-    setPersonas([...group.getAll()])
+    setPersonas([...group.personas])
   }
 
   const removePersona = (index: number) => {
     const personaToRemove = personas[index]
     group.remove(personaToRemove.id)
-    setPersonas([...group.getAll()])
+    setPersonas([...group.personas])
   }
 
   const generateStats = () => {
-    const statistics = group.generateStatistics()
+    const statistics = group.getStatistics('age')
     setStats(statistics)
   }
 
@@ -79,7 +80,7 @@ export function PersonaGroupComponent() {
                   <div>
                     <span className="font-medium">{persona.name}</span>
                     <span className="text-gray-600 ml-2">
-                      Age: {persona.age}, Location: {persona.location}
+                      Age: {persona.age}, Occupation: {persona.attributes.occupation}
                     </span>
                   </div>
                   <Button

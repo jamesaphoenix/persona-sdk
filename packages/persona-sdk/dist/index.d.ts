@@ -60,7 +60,7 @@ export { PersonaGroup } from './persona-group';
 export { PersonaBuilder } from './persona-builder';
 export { PersonaAI } from './ai/persona-ai';
 export type { AIOptions } from './ai/persona-ai';
-export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution, CorrelatedDistribution, CommonCorrelations, PersonaCorrelationPresets } from './distributions';
+export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, BinomialDistribution, CategoricalDistribution, CorrelatedDistribution, CommonCorrelations, PersonaCorrelationPresets } from './distributions';
 export type { AttributeValue, BasePersonaAttributes, PersonaAttributes, Sex, Distribution, DistributionSpec, DistributionMap, PersonaGroupOptions, StructuredOutput, AttributeCorrelation } from './types';
 export type { ConditionalDistribution } from './distributions/correlated-distribution';
 export { BasePersonaAttributesSchema, PersonaAttributesSchema, SexSchema } from './types';

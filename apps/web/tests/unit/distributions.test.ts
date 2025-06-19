@@ -1,10 +1,23 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { 
   NormalDistribution,
   UniformDistribution,
   ExponentialDistribution,
   BinomialDistribution
 } from '@jamesaphoenix/persona-sdk'
+
+// Override the global mock for this specific test file
+vi.mock('@jamesaphoenix/persona-sdk', async () => {
+  const actual = await vi.importActual('@jamesaphoenix/persona-sdk')
+  return {
+    ...actual,
+    // Keep all distributions as actual implementations
+    NormalDistribution: actual.NormalDistribution,
+    UniformDistribution: actual.UniformDistribution,
+    ExponentialDistribution: actual.ExponentialDistribution,
+    BinomialDistribution: actual.BinomialDistribution
+  }
+})
 
 describe('Statistical Distributions', () => {
   describe('NormalDistribution', () => {

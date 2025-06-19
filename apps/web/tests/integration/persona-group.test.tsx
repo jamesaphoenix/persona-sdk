@@ -1,12 +1,22 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
 import { PersonaGroup, PersonaBuilder } from '@jamesaphoenix/persona-sdk'
 
+// Use actual SDK classes for integration tests
+vi.mock('@jamesaphoenix/persona-sdk', async () => {
+  const actual = await vi.importActual('@jamesaphoenix/persona-sdk')
+  return {
+    ...actual,
+    PersonaGroup: actual.PersonaGroup,
+    PersonaBuilder: actual.PersonaBuilder
+  }
+})
+
 // Component to test PersonaGroup functionality
 function TestPersonaGroup() {
-  const [group] = useState(() => new PersonaGroup())
+  const [group] = useState(() => new PersonaGroup('Test Group'))
   const [personas, setPersonas] = useState<any[]>([])
   const [stats, setStats] = useState<any>(null)
 
@@ -14,14 +24,16 @@ function TestPersonaGroup() {
     const persona = PersonaBuilder.create()
       .withName(`Person ${personas.length + 1}`)
       .withAge(20 + Math.floor(Math.random() * 40))
+      .withOccupation('Test Occupation')
+      .withSex('other')
       .build()
     
     group.add(persona)
-    setPersonas([...group.getAll()])
+    setPersonas([...group.personas])
   }
 
   const generateStats = () => {
-    const statistics = group.generateStatistics()
+    const statistics = group.getStatistics('age')
     setStats(statistics)
   }
 

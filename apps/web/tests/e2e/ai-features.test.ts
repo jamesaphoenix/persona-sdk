@@ -5,14 +5,14 @@ describe('AI Features E2E (Mocked)', () => {
   it('generates a single persona with mocked AI', async () => {
     // Using mocked fromPrompt from setup.ts
     const prompt = 'Create a persona for a tech-savvy millennial'
-    const persona = await PersonaBuilder.create().fromPrompt(prompt, {
+    const persona = await PersonaBuilder.fromPrompt(prompt, {
       apiKey: 'mock-key'
     })
     
     expect(persona).toBeDefined()
     expect(persona.name).toBe('AI Generated Person')
     expect(persona.age).toBe(28)
-    expect(persona.location).toBe('San Francisco')
+    expect(persona.attributes).toHaveProperty('location', 'San Francisco')
     expect(persona.attributes).toMatchObject({
       interests: 'technology, sustainability',
       personality: 'innovative, eco-conscious'

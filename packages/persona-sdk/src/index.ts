@@ -71,6 +71,7 @@ export {
   UniformDistribution,
   ExponentialDistribution,
   BetaDistribution,
+  BinomialDistribution,
   CategoricalDistribution,
   CorrelatedDistribution,
   CommonCorrelations,

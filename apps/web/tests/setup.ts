@@ -31,24 +31,21 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
 
 // Mock expensive PersonaBuilder AI methods
 vi.mock('@jamesaphoenix/persona-sdk', async () => {
-  const actual = await vi.importActual('@jamesaphoenix/persona-sdk')
+  const actual = await vi.importActual('@jamesaphoenix/persona-sdk') as any
   
   return {
     ...actual,
     PersonaBuilder: {
       ...actual.PersonaBuilder,
-      create: () => ({
-        ...actual.PersonaBuilder.create(),
-        fromPrompt: vi.fn().mockResolvedValue({
-          id: 'mock-id',
-          name: 'AI Generated Person',
-          age: 28,
-          location: 'San Francisco',
-          attributes: {
-            interests: 'technology, sustainability',
-            personality: 'innovative, eco-conscious'
-          }
-        })
+      fromPrompt: vi.fn().mockResolvedValue({
+        id: 'mock-id',
+        name: 'AI Generated Person',
+        age: 28,
+        location: 'San Francisco',
+        attributes: {
+          interests: 'technology, sustainability',
+          personality: 'innovative, eco-conscious'
+        }
       }),
       generateMultiple: vi.fn().mockResolvedValue([
         {

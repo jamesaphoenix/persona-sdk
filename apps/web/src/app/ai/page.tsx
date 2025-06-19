@@ -35,7 +35,7 @@ export default function AIPage() {
 
       switch (mode) {
         case 'single':
-          data = await PersonaBuilder.create().fromPrompt(prompt, options)
+          data = await PersonaBuilder.fromPrompt(prompt, options)
           break
         case 'multiple':
           data = await PersonaBuilder.generateMultiple(prompt, count, options)
