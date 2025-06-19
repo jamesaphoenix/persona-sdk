@@ -19,9 +19,6 @@ abstract class SeededDistribution<T> implements Distribution<T> {
   abstract mean(): T;
   abstract toString(): string;
   
-  variance?(): number {
-    return undefined;
-  }
 
   /**
    * Generate multiple samples
@@ -43,35 +40,35 @@ abstract class SeededDistribution<T> implements Distribution<T> {
  */
 export class SeededNormalDistribution extends SeededDistribution<number> {
   constructor(
-    private mean: number,
-    private stdDev: number,
+    private _mean: number,
+    private _stdDev: number,
     context: string = 'test'
   ) {
     super(context);
   }
 
   sample(): number {
-    return DeterministicRandom.normal(this.mean, this.stdDev, this.context);
+    return DeterministicRandom.normal(this._mean, this._stdDev, this.context);
   }
 
   mean(): number {
-    return this.mean;
+    return this._mean;
   }
 
   variance(): number {
-    return this.stdDev * this.stdDev;
+    return this._stdDev * this._stdDev;
   }
 
   toString(): string {
-    return `SeededNormal(μ=${this.mean}, σ=${this.stdDev}, context=${this.context})`;
+    return `SeededNormal(μ=${this._mean}, σ=${this._stdDev}, context=${this.context})`;
   }
 
   getMean(): number {
-    return this.mean;
+    return this._mean;
   }
 
   getStdDev(): number {
-    return this.stdDev;
+    return this._stdDev;
   }
 }
 
@@ -80,35 +77,35 @@ export class SeededNormalDistribution extends SeededDistribution<number> {
  */
 export class SeededUniformDistribution extends SeededDistribution<number> {
   constructor(
-    private min: number,
-    private max: number,
+    private _min: number,
+    private _max: number,
     context: string = 'test'
   ) {
     super(context);
   }
 
   sample(): number {
-    return DeterministicRandom.uniform(this.min, this.max, this.context);
+    return DeterministicRandom.uniform(this._min, this._max, this.context);
   }
 
   mean(): number {
-    return (this.min + this.max) / 2;
+    return (this._min + this._max) / 2;
   }
 
   variance(): number {
-    return Math.pow(this.max - this.min, 2) / 12;
+    return Math.pow(this._max - this._min, 2) / 12;
   }
 
   toString(): string {
-    return `SeededUniform(min=${this.min}, max=${this.max}, context=${this.context})`;
+    return `SeededUniform(min=${this._min}, max=${this._max}, context=${this.context})`;
   }
 
   getMin(): number {
-    return this.min;
+    return this._min;
   }
 
   getMax(): number {
-    return this.max;
+    return this._max;
   }
 }
 
@@ -117,30 +114,30 @@ export class SeededUniformDistribution extends SeededDistribution<number> {
  */
 export class SeededExponentialDistribution extends SeededDistribution<number> {
   constructor(
-    private lambda: number,
+    private _lambda: number,
     context: string = 'test'
   ) {
     super(context);
   }
 
   sample(): number {
-    return DeterministicRandom.exponential(this.lambda, this.context);
+    return DeterministicRandom.exponential(this._lambda, this.context);
   }
 
   mean(): number {
-    return 1 / this.lambda;
+    return 1 / this._lambda;
   }
 
   variance(): number {
-    return 1 / (this.lambda * this.lambda);
+    return 1 / (this._lambda * this._lambda);
   }
 
   toString(): string {
-    return `SeededExponential(λ=${this.lambda}, context=${this.context})`;
+    return `SeededExponential(λ=${this._lambda}, context=${this.context})`;
   }
 
   getLambda(): number {
-    return this.lambda;
+    return this._lambda;
   }
 }
 
@@ -149,36 +146,36 @@ export class SeededExponentialDistribution extends SeededDistribution<number> {
  */
 export class SeededBetaDistribution extends SeededDistribution<number> {
   constructor(
-    private alpha: number,
-    private beta: number,
+    private _alpha: number,
+    private _beta: number,
     context: string = 'test'
   ) {
     super(context);
   }
 
   sample(): number {
-    return DeterministicRandom.beta(this.alpha, this.beta, this.context);
+    return DeterministicRandom.beta(this._alpha, this._beta, this.context);
   }
 
   mean(): number {
-    return this.alpha / (this.alpha + this.beta);
+    return this._alpha / (this._alpha + this._beta);
   }
 
   variance(): number {
-    const sum = this.alpha + this.beta;
-    return (this.alpha * this.beta) / (sum * sum * (sum + 1));
+    const sum = this._alpha + this._beta;
+    return (this._alpha * this._beta) / (sum * sum * (sum + 1));
   }
 
   toString(): string {
-    return `SeededBeta(α=${this.alpha}, β=${this.beta}, context=${this.context})`;
+    return `SeededBeta(α=${this._alpha}, β=${this._beta}, context=${this.context})`;
   }
 
   getAlpha(): number {
-    return this.alpha;
+    return this._alpha;
   }
 
   getBeta(): number {
-    return this.beta;
+    return this._beta;
   }
 }
 
@@ -186,36 +183,36 @@ export class SeededBetaDistribution extends SeededDistribution<number> {
  * Seeded categorical distribution
  */
 export class SeededCategoricalDistribution<T> extends SeededDistribution<T> {
-  private items: T[];
-  private weights: number[];
+  private _items: T[];
+  private _weights: number[];
 
   constructor(
     categories: Array<{ value: T; probability: number }>,
     context: string = 'test'
   ) {
     super(context);
-    this.items = categories.map(c => c.value);
-    this.weights = categories.map(c => c.probability);
+    this._items = categories.map(c => c.value);
+    this._weights = categories.map(c => c.probability);
   }
 
   sample(): T {
-    return DeterministicRandom.categorical(this.items, this.weights, this.context);
+    return DeterministicRandom.categorical(this._items, this._weights, this.context);
   }
 
   mean(): T {
     // For categorical distributions, return the most likely item
-    const maxIndex = this.weights.indexOf(Math.max(...this.weights));
-    return this.items[maxIndex];
+    const maxIndex = this._weights.indexOf(Math.max(...this._weights));
+    return this._items[maxIndex];
   }
 
   toString(): string {
-    return `SeededCategorical(items=${this.items.length}, context=${this.context})`;
+    return `SeededCategorical(items=${this._items.length}, context=${this.context})`;
   }
 
   getCategories(): Array<{ value: T; probability: number }> {
-    return this.items.map((item, i) => ({
+    return this._items.map((item, i) => ({
       value: item,
-      probability: this.weights[i]
+      probability: this._weights[i]
     }));
   }
 }
