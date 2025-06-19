@@ -5,466 +5,515 @@ description: HTTP API for persona generation and management
 
 # REST API
 
-HTTP API for generating and managing personas with optional PostgreSQL persistence.
+HTTP API for generating and managing personas with PostgreSQL persistence.
 
 ## Getting Started
 
-Start the API server:
+Start the API server using the SDK:
 
-```bash
-# Development
-pnpm --filter @jamesaphoenix/persona-api dev
+```typescript
+import { createServer, PgDatabaseClient } from '@jamesaphoenix/persona-sdk';
 
-# Production
-pnpm --filter @jamesaphoenix/persona-api start
+const dbClient = new PgDatabaseClient({
+  connectionString: process.env.DATABASE_URL,
+});
+
+const server = await createServer({
+  databaseClient: dbClient,
+  port: 3000,
+  cors: true,
+  swagger: true,
+});
+
+await server.listen({ port: 3000, host: '0.0.0.0' });
 ```
 
 ## Base URL
 
 ```
-http://localhost:3000/api
+http://localhost:3000
 ```
 
-## Endpoints
+## API Documentation
 
-### Generate Single Persona
+Interactive Swagger documentation available at:
+```
+http://localhost:3000/docs
+```
 
-Generate a single persona with specified attributes.
+## Core Endpoints
+
+### Health Check
+
+Check server status.
 
 ```http
-POST /api/generate
+GET /health
 ```
 
-#### Request Body
+**Response:**
+```json
+{ "status": "ok" }
+```
 
-```typescript
+### Statistics
+
+Get database statistics.
+
+```http
+GET /stats
+```
+
+**Response:**
+```json
 {
-  name?: string;              // Optional persona name
-  age?: number | Distribution;
-  occupation?: string | Distribution;
-  sex?: 'male' | 'female' | 'other' | Distribution;
-  attributes?: Record<string, any>;
+  "personas": 1250,
+  "groups": 45,
+  "avgPersonasPerGroup": 27.8
 }
 ```
 
-#### Response
+## Persona Management
 
-```typescript
+### Create Persona
+
+Create a new persona.
+
+```http
+POST /personas
+```
+
+**Request Body:**
+```json
 {
-  persona: {
-    id: string;
-    name: string;
-    attributes: {
-      age: number;
-      occupation: string;
-      sex: string;
-      [key: string]: any;
+  "name": "Alice Johnson",
+  "age": 28,
+  "occupation": "Software Engineer",
+  "sex": "female",
+  "attributes": {
+    "department": "Engineering",
+    "skills": ["TypeScript", "React"]
+  },
+  "metadata": {
+    "source": "manual_creation"
+  }
+}
+```
+
+**Response (201):**
+```json
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "name": "Alice Johnson",
+  "age": 28,
+  "occupation": "Software Engineer",
+  "sex": "female",
+  "attributes": {
+    "department": "Engineering",
+    "skills": ["TypeScript", "React"]
+  },
+  "metadata": {
+    "source": "manual_creation"
+  },
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T10:30:00Z"
+}
+```
+
+### List Personas
+
+Get paginated list of personas.
+
+```http
+GET /personas?page=1&limit=20&name=Alice&age_min=25&age_max=35
+```
+
+**Query Parameters:**
+- `page` - Page number (default: 1)
+- `limit` - Items per page (default: 20, max: 100)
+- `name` - Filter by name (partial match)
+- `age_min` - Minimum age
+- `age_max` - Maximum age
+- `occupation` - Filter by occupation
+- `order_by` - Sort field (name, age, created_at)
+- `order_direction` - Sort direction (asc, desc)
+
+**Response (200):**
+```json
+{
+  "data": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "name": "Alice Johnson",
+      "age": 28,
+      "occupation": "Software Engineer",
+      "sex": "female",
+      "attributes": {},
+      "metadata": {},
+      "created_at": "2024-01-15T10:30:00Z",
+      "updated_at": "2024-01-15T10:30:00Z"
     }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 1,
+    "pages": 1
   }
 }
 ```
 
-#### Example
+### Get Persona
 
-```bash
-curl -X POST http://localhost:3000/api/generate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "age": { "type": "normal", "mean": 35, "stdDev": 5 },
-    "occupation": "Developer",
-    "sex": "other"
-  }'
-```
-
-### Generate Persona Group
-
-Generate multiple personas as a group.
+Get specific persona by ID.
 
 ```http
-POST /api/generate-group
+GET /personas/{id}
 ```
 
-#### Request Body
+**Response (200):** Same as create persona response
 
-```typescript
+**Response (404):**
+```json
+{ "error": "Persona not found" }
+```
+
+### Update Persona
+
+Update persona attributes.
+
+```http
+PATCH /personas/{id}
+```
+
+**Request Body:** Same fields as create, all optional
+
+**Response (200):** Updated persona object
+
+### Delete Persona
+
+Delete a persona.
+
+```http
+DELETE /personas/{id}
+```
+
+**Response (204):** No content
+
+### Bulk Create Personas
+
+Create multiple personas at once.
+
+```http
+POST /personas/bulk
+```
+
+**Request Body:**
+```json
 {
-  name: string;               // Group name
-  size: number;               // Number of personas
-  distributions?: {
-    age?: Distribution;
-    occupation?: Distribution;
-    sex?: Distribution;
-    [key: string]: Distribution;
-  };
-  segments?: Array<{
-    name: string;
-    weight: number;           // 0-1, must sum to 1
-    size?: number;           // Override segment size
-    attributes: DistributionMap;
-  }>;
-}
-```
-
-#### Response
-
-```typescript
-{
-  group: {
-    id: string;
-    name: string;
-    size: number;
-    personas: Persona[];
-    createdAt: string;
-  }
-}
-```
-
-#### Example
-
-```bash
-curl -X POST http://localhost:3000/api/generate-group \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Beta Users",
-    "size": 100,
-    "distributions": {
-      "age": { "type": "normal", "mean": 28, "stdDev": 5 },
-      "occupation": { 
-        "type": "categorical",
-        "options": [
-          { "value": "Developer", "probability": 0.6 },
-          { "value": "Designer", "probability": 0.4 }
-        ]
-      }
+  "personas": [
+    {
+      "name": "Person 1",
+      "age": 25,
+      "occupation": "Developer"
+    },
+    {
+      "name": "Person 2", 
+      "age": 30,
+      "occupation": "Designer"
     }
-  }'
-```
-
-### Group Statistics
-
-Get statistical analysis of a persona group.
-
-```http
-POST /api/group-statistics
-```
-
-#### Request Body
-
-```typescript
-{
-  personas: Persona[];        // Array of personas
-  attribute: string;          // Attribute to analyze
+  ],
+  "group_id": "123e4567-e89b-12d3-a456-426614174001"
 }
 ```
 
-#### Response
+**Response (201):** Array of created persona objects
 
-```typescript
+### Get Persona's Groups
+
+Get all groups a persona belongs to.
+
+```http
+GET /personas/{id}/groups
+```
+
+**Response (200):** Array of group objects
+
+## Group Management
+
+### Create Group
+
+Create a new persona group.
+
+```http
+POST /groups
+```
+
+**Request Body:**
+```json
 {
-  statistics: {
-    mean?: number;
-    median?: number;
-    min?: number;
-    max?: number;
-    stdDev?: number;
-    count: number;
-    distribution?: Record<string, number>;
+  "name": "Engineering Team",
+  "description": "Software developers and engineers",
+  "metadata": {
+    "department": "Engineering",
+    "budget": 50000
   }
 }
 ```
 
-### AI-Powered Generation
+**Response (201):**
+```json
+{
+  "id": "123e4567-e89b-12d3-a456-426614174001",
+  "name": "Engineering Team",
+  "description": "Software developers and engineers",
+  "metadata": {
+    "department": "Engineering",
+    "budget": 50000
+  },
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T10:30:00Z"
+}
+```
 
-Generate personas using AI to select appropriate distributions.
+### List Groups
+
+Get paginated list of groups.
 
 ```http
-POST /api/ai/select-distributions
+GET /groups?page=1&limit=10&name=Engineering
 ```
 
-#### Request Body
+**Query Parameters:** Similar to personas list
 
-```typescript
-{
-  description: string;        // Natural language description
-  requirements?: string[];    // Specific requirements
-  constraints?: Record<string, any>;
-  attributes?: string[];      // Attributes to generate
-}
-```
+**Response (200):** Paginated group objects
 
-#### Response
+### Get Group
 
-```typescript
-{
-  distributions: DistributionMap;
-  reasoning: string;
-  usage?: {
-    promptTokens: number;
-    completionTokens: number;
-    totalTokens: number;
-  };
-}
-```
-
-#### Example
-
-```bash
-curl -X POST http://localhost:3000/api/ai/select-distributions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_OPENAI_API_KEY" \
-  -d '{
-    "description": "Young tech professionals in San Francisco",
-    "requirements": ["High income", "Diverse backgrounds"],
-    "attributes": ["age", "income", "education"]
-  }'
-```
-
-### Structured Output Generation
-
-Generate structured insights from persona groups.
+Get specific group by ID.
 
 ```http
-POST /api/ai/structured-output
+GET /groups/{id}
 ```
 
-#### Request Body
+**Response (200):** Group object
 
-```typescript
+### Get Group with Members
+
+Get group with all member personas.
+
+```http
+GET /groups/{id}/members
+```
+
+**Response (200):**
+```json
 {
-  personas: Persona[];        // Single persona or array
-  schemaType: string;         // Predefined schema type
-  customPrompt?: string;      // Optional custom prompt
-}
-```
-
-Available schema types:
-- `marketing-insights`
-- `user-segments` 
-- `behavior-predictions`
-- `product-recommendations`
-
-#### Example
-
-```bash
-curl -X POST http://localhost:3000/api/ai/structured-output \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_OPENAI_API_KEY" \
-  -d '{
-    "personas": [...],
-    "schemaType": "marketing-insights"
-  }'
-```
-
-## Distribution Types
-
-Distributions define how attributes vary across personas.
-
-### Normal Distribution
-
-Bell curve distribution for natural variation.
-
-```typescript
-{
-  "type": "normal",
-  "mean": 35,
-  "stdDev": 5,
-  "min": 18,      // Optional
-  "max": 65       // Optional
-}
-```
-
-### Uniform Distribution
-
-Equal probability between min and max.
-
-```typescript
-{
-  "type": "uniform",
-  "min": 20000,
-  "max": 100000
-}
-```
-
-### Categorical Distribution
-
-Discrete values with probabilities.
-
-```typescript
-{
-  "type": "categorical",
-  "options": [
-    { "value": "Basic", "probability": 0.6 },
-    { "value": "Premium", "probability": 0.3 },
-    { "value": "Enterprise", "probability": 0.1 }
+  "group_id": "123e4567-e89b-12d3-a456-426614174001",
+  "group_name": "Engineering Team",
+  "group_description": "Software developers and engineers",
+  "personas": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "name": "Alice Johnson",
+      "age": 28,
+      "occupation": "Software Engineer",
+      "sex": "female",
+      "attributes": {},
+      "metadata": {},
+      "created_at": "2024-01-15T10:30:00Z",
+      "updated_at": "2024-01-15T10:30:00Z"
+    }
   ]
 }
 ```
 
-### Beta Distribution
+### Update Group
 
-For percentages and probabilities.
+Update group information.
 
-```typescript
+```http
+PATCH /groups/{id}
+```
+
+**Request Body:** Same fields as create, all optional
+
+**Response (200):** Updated group object
+
+### Delete Group
+
+Delete a group (removes all memberships).
+
+```http
+DELETE /groups/{id}
+```
+
+**Response (204):** No content
+
+## Group Membership
+
+### Add Persona to Group
+
+Add an existing persona to a group.
+
+```http
+POST /memberships
+```
+
+**Request Body:**
+```json
 {
-  "type": "beta",
-  "alpha": 2,
-  "beta": 5
+  "persona_id": "123e4567-e89b-12d3-a456-426614174000",
+  "group_id": "123e4567-e89b-12d3-a456-426614174001"
 }
 ```
 
-### Exponential Distribution
-
-For time intervals and decay.
-
-```typescript
-{
-  "type": "exponential",
-  "lambda": 0.1    // Rate parameter
-}
+**Response (201):**
+```json
+{ "success": true }
 ```
 
-## Persisted API
+### Remove Persona from Group
 
-Store personas in PostgreSQL for persistence.
-
-### Setup Database
-
-```bash
-# Using Docker
-docker run -d \
-  --name persona-postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=personas \
-  -p 5432:5432 \
-  postgres:15
-
-# Run migrations
-pnpm --filter @jamesaphoenix/persona-api db:migrate
-```
-
-### Environment Variables
-
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/personas
-DATABASE_POOL_SIZE=10
-DATABASE_SSL=false
-```
-
-### Persisted Endpoints
-
-#### Generate and Save
+Remove persona from a group.
 
 ```http
-POST /api/persisted/generate
+DELETE /memberships
 ```
 
-Same as `/api/generate` but saves to database.
+**Request Body:** Same as add membership
 
-#### List Personas
-
-```http
-GET /api/persisted/personas?page=1&limit=20
-```
-
-#### Get Persona
-
-```http
-GET /api/persisted/personas/:id
-```
-
-#### Update Persona
-
-```http
-PUT /api/persisted/personas/:id
-```
-
-#### Delete Persona
-
-```http
-DELETE /api/persisted/personas/:id
-```
-
-#### Generate and Save Group
-
-```http
-POST /api/persisted/generate-group
-```
-
-#### List Groups
-
-```http
-GET /api/persisted/groups?page=1&limit=10
-```
-
-#### Get Group with Personas
-
-```http
-GET /api/persisted/groups/:id
-```
-
-## Authentication
-
-API key authentication for AI features.
-
-```http
-Authorization: Bearer YOUR_OPENAI_API_KEY
-```
-
-Or set environment variable:
-
-```env
-OPENAI_API_KEY=your-api-key
+**Response (200):**
+```json
+{ "success": true }
 ```
 
 ## Error Handling
 
-Standard HTTP error responses.
+All endpoints return standardized error responses:
 
-```typescript
+```json
 {
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Invalid distribution parameters",
-    "details": {
-      "field": "age.stdDev",
-      "issue": "Must be positive number"
-    }
+  "error": "Validation error",
+  "details": {
+    "field": "age",
+    "message": "Must be a positive integer"
   }
 }
 ```
 
-Common error codes:
-- `VALIDATION_ERROR` - Invalid request data
-- `NOT_FOUND` - Resource not found
-- `DATABASE_ERROR` - Database operation failed
-- `AI_ERROR` - AI generation failed
-- `RATE_LIMIT` - Too many requests
+**HTTP Status Codes:**
+- `400` - Bad Request (validation errors)
+- `404` - Not Found
+- `409` - Conflict (duplicate entries)
+- `500` - Internal Server Error
 
-## Rate Limiting
+## Authentication
 
-Default limits per IP:
-- 100 requests per minute
-- 1000 requests per hour
+Currently no authentication required. For production:
+
+```typescript
+const server = await createServer({
+  databaseClient: dbClient,
+  // Add authentication middleware
+});
+
+server.addHook('preHandler', async (request, reply) => {
+  const token = request.headers.authorization;
+  if (!token) {
+    reply.code(401).send({ error: 'Authentication required' });
+    return;
+  }
+  // Validate token
+});
+```
 
 ## SDK Integration
 
-Use the TypeScript SDK for type-safe API access.
+Use the TypeScript SDK for type-safe API access:
 
 ```typescript
-import { PersonaAPIClient } from '@jamesaphoenix/persona-sdk';
+import { PersonaApiProvider, usePersonas, useCreatePersona } from '@jamesaphoenix/persona-sdk';
 
-const client = new PersonaAPIClient({
-  baseURL: 'http://localhost:3000',
-  apiKey: 'your-openai-key'
-});
+// React integration
+function App() {
+  return (
+    <PersonaApiProvider config={{ baseUrl: 'http://localhost:3000' }}>
+      <PersonaList />
+    </PersonaApiProvider>
+  );
+}
 
-// Type-safe methods
-const { persona } = await client.generate({
-  age: { type: 'normal', mean: 30, stdDev: 5 }
-});
+function PersonaList() {
+  const { data, loading, error } = usePersonas({ limit: 10 });
+  const createPersona = useCreatePersona();
 
-const { group } = await client.generateGroup({
-  name: 'Users',
-  size: 100
-});
+  const handleCreate = async () => {
+    await createPersona.mutate({
+      name: 'New Person',
+      age: 30,
+      occupation: 'Developer'
+    });
+  };
+
+  return (
+    <div>
+      {data?.data.map(persona => (
+        <div key={persona.id}>{persona.name}</div>
+      ))}
+      <button onClick={handleCreate}>Create Persona</button>
+    </div>
+  );
+}
 ```
+
+## Examples
+
+### Complete Workflow
+
+```bash
+# 1. Create a group
+curl -X POST http://localhost:3000/groups \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Beta Users", "description": "Early adopters"}'
+
+# 2. Create personas
+curl -X POST http://localhost:3000/personas/bulk \
+  -H "Content-Type: application/json" \
+  -d '{
+    "personas": [
+      {"name": "Alice", "age": 28, "occupation": "Developer"},
+      {"name": "Bob", "age": 32, "occupation": "Designer"}
+    ],
+    "group_id": "your-group-id"
+  }'
+
+# 3. Query personas
+curl "http://localhost:3000/personas?age_min=25&age_max=35&limit=10"
+
+# 4. Get group with members
+curl "http://localhost:3000/groups/your-group-id/members"
+```
+
+### Database Setup
+
+Before using the API, set up your PostgreSQL database:
+
+```sql
+-- See database-setup.mdx for complete schema
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS personas (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    age INTEGER,
+    occupation VARCHAR(255),
+    sex VARCHAR(50),
+    attributes JSONB DEFAULT '{}',
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+For complete database setup instructions, see the [Database Setup guide](/docs/database-setup).

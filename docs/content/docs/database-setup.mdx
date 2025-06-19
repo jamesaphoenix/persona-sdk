@@ -25,16 +25,86 @@ npm install @prisma/client prisma @jamesaphoenix/persona-sdk
 Run this SQL to create the required tables:
 
 ```sql
--- Enable UUID extension
+-- Enable UUID extension if not already enabled
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Create tables
--- Copy the schema from src/adapters/postgres/schema.sql
+-- Personas table
+CREATE TABLE IF NOT EXISTS personas (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    age INTEGER,
+    occupation VARCHAR(255),
+    sex VARCHAR(50),
+    attributes JSONB DEFAULT '{}',
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Persona groups table
+CREATE TABLE IF NOT EXISTS persona_groups (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Junction table for many-to-many relationship
+CREATE TABLE IF NOT EXISTS persona_group_members (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    persona_id UUID NOT NULL REFERENCES personas(id) ON DELETE CASCADE,
+    group_id UUID NOT NULL REFERENCES persona_groups(id) ON DELETE CASCADE,
+    joined_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(persona_id, group_id)
+);
+
+-- Distributions table for storing generation parameters
+CREATE TABLE IF NOT EXISTS distributions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(50) NOT NULL, -- 'normal', 'uniform', 'exponential', etc.
+    parameters JSONB NOT NULL, -- Distribution-specific parameters
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Generation history table for tracking bulk generations
+CREATE TABLE IF NOT EXISTS generation_history (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    group_id UUID REFERENCES persona_groups(id) ON DELETE SET NULL,
+    distribution_id UUID REFERENCES distributions(id) ON DELETE SET NULL,
+    count INTEGER NOT NULL,
+    parameters JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_personas_name ON personas(name);
+CREATE INDEX IF NOT EXISTS idx_personas_age ON personas(age);
+CREATE INDEX IF NOT EXISTS idx_personas_occupation ON personas(occupation);
+CREATE INDEX IF NOT EXISTS idx_personas_attributes ON personas USING GIN(attributes);
+CREATE INDEX IF NOT EXISTS idx_persona_groups_name ON persona_groups(name);
+CREATE INDEX IF NOT EXISTS idx_persona_group_members_persona ON persona_group_members(persona_id);
+CREATE INDEX IF NOT EXISTS idx_persona_group_members_group ON persona_group_members(group_id);
+
+-- Trigger to update updated_at timestamp
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_personas_updated_at BEFORE UPDATE ON personas
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_persona_groups_updated_at BEFORE UPDATE ON persona_groups
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 ```
 
-<Note>
-The full schema is available at `src/adapters/postgres/schema.sql`
-</Note>
+> **Note:** The complete schema with all constraints and indexes is available in the [GitHub repository](https://github.com/jamesaphoenix/persona-sdk/blob/main/packages/persona-sdk/src/adapters/postgres/schema.sql).
 
 ## Basic Usage
 
@@ -85,9 +155,7 @@ const dbClient = new SupabaseDatabaseClient(supabase);
 const adapter = new PostgresAdapter(dbClient);
 ```
 
-<Warning>
-Supabase requires a special RPC function for raw SQL queries. See the setup instructions below.
-</Warning>
+> **Warning:** Supabase requires a special RPC function for raw SQL queries. See the [Supabase Setup section](#supabase-setup) below for details.
 
 ### Using with Prisma
 
@@ -189,20 +257,34 @@ console.log('API server running at http://localhost:3000');
 
 ### API Endpoints
 
+The server provides these endpoints:
+
 - `GET /health` - Health check
 - `GET /docs` - Swagger documentation
+- `GET /stats` - Database statistics
+
+**Persona endpoints:**
 - `POST /personas` - Create persona
-- `GET /personas/:id` - Get persona
+- `GET /personas` - List personas with pagination
+- `GET /personas/:id` - Get specific persona
 - `PATCH /personas/:id` - Update persona
 - `DELETE /personas/:id` - Delete persona
-- `GET /personas` - Query personas
-- `POST /personas/bulk` - Bulk create
+- `POST /personas/bulk` - Bulk create personas
+- `GET /personas/:id/groups` - Get persona's groups
+
+**Group endpoints:**
 - `POST /groups` - Create group
-- `GET /groups/:id` - Get group
-- `GET /groups/:id/members` - Get group with members
-- `POST /memberships` - Add to group
-- `DELETE /memberships` - Remove from group
-- `GET /stats` - Database statistics
+- `GET /groups` - List groups with pagination
+- `GET /groups/:id` - Get specific group
+- `PATCH /groups/:id` - Update group
+- `DELETE /groups/:id` - Delete group
+- `GET /groups/:id/members` - Get group with all members
+
+**Membership endpoints:**
+- `POST /memberships` - Add persona to group
+- `DELETE /memberships` - Remove persona from group
+
+For complete API documentation, see the [REST API reference](/docs/api/rest).
 
 ## React Integration
 
@@ -269,7 +351,7 @@ class MyCustomClient implements DatabaseClient {
 
 ### Supabase Setup
 
-For Supabase, create this RPC function:
+For Supabase, create this RPC function for raw SQL queries:
 
 ```sql
 CREATE OR REPLACE FUNCTION execute_sql(query text, params jsonb DEFAULT '[]'::jsonb)
@@ -280,13 +362,15 @@ AS $$
 DECLARE
   result jsonb;
 BEGIN
-  -- Execute the query and return results as JSON
-  -- This is a simplified version - enhance with proper security
+  -- This is a simplified version. In production, you'd want proper parameter binding
+  -- and security checks
   EXECUTE format('SELECT jsonb_agg(row_to_json(t)) FROM (%s) t', query) INTO result;
   RETURN COALESCE(result, '[]'::jsonb);
 END;
 $$;
 ```
+
+> **Note:** Supabase client-side transactions are not supported. Consider using database functions for complex operations that require transactions.
 
 ### Prisma Schema
 

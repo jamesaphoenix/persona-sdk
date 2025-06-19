@@ -2,7 +2,8 @@
   "pages": [
     "getting-started",
     "personas",
-    "distributions",
+    "distributions", 
+    "database-setup",
     "prompt-optimization",
     "ai-features",
     "api"
