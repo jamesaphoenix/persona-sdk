@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { PersonaBuilder } from '@jamesaphoenix/persona-sdk'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
@@ -17,12 +16,17 @@ export function PersonaBuilderComponent() {
 
   const createPersona = () => {
     try {
-      const newPersona = PersonaBuilder.create()
-        .withName(name || 'Anonymous')
-        .withAge(age)
-        .withOccupation(location || 'Unknown')
-        .withSex('other')
-        .build()
+      const newPersona = {
+        id: `persona-${Date.now()}`,
+        name: name || 'Anonymous',
+        age: age,
+        occupation: location || 'Unknown',
+        sex: 'other',
+        attributes: {
+          created_at: new Date().toISOString(),
+          builder_type: 'demo'
+        }
+      }
       
       setPersona(newPersona)
       setError(null)

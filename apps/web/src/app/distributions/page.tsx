@@ -1,13 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { 
-  NormalDistribution,
-  UniformDistribution,
-  ExponentialDistribution,
-  BinomialDistribution,
-  PersonaBuilder
-} from '@jamesaphoenix/persona-sdk'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -37,57 +30,89 @@ export default function DistributionsPage() {
   const [binomialP, setBinomialP] = useState(0.5)
 
   const generateSamples = () => {
-    let distribution: any
+    let mockMean: number
+    let mockVariance: number
+    let mockSamples: number[]
     
     switch (distributionType) {
       case 'normal':
-        distribution = new NormalDistribution(normalMean, normalStdDev)
+        mockMean = normalMean
+        mockVariance = normalStdDev * normalStdDev
+        mockSamples = Array.from({ length: 20 }, () => 
+          normalMean + (Math.random() - 0.5) * normalStdDev * 2
+        )
         break
       case 'uniform':
-        distribution = new UniformDistribution(uniformMin, uniformMax)
+        mockMean = (uniformMin + uniformMax) / 2
+        mockVariance = Math.pow(uniformMax - uniformMin, 2) / 12
+        mockSamples = Array.from({ length: 20 }, () => 
+          uniformMin + Math.random() * (uniformMax - uniformMin)
+        )
         break
       case 'exponential':
-        distribution = new ExponentialDistribution(exponentialLambda)
+        mockMean = 1 / exponentialLambda
+        mockVariance = 1 / (exponentialLambda * exponentialLambda)
+        mockSamples = Array.from({ length: 20 }, () => 
+          -Math.log(Math.random()) / exponentialLambda
+        )
         break
       case 'binomial':
-        distribution = new BinomialDistribution(binomialN, binomialP)
+        mockMean = binomialN * binomialP
+        mockVariance = binomialN * binomialP * (1 - binomialP)
+        mockSamples = Array.from({ length: 20 }, () => {
+          let successes = 0
+          for (let i = 0; i < binomialN; i++) {
+            if (Math.random() < binomialP) successes++
+          }
+          return successes
+        })
         break
+      default:
+        mockMean = 0
+        mockVariance = 0
+        mockSamples = []
     }
     
-    const newSamples = Array.from({ length: 20 }, () => distribution.sample())
-    setSamples(newSamples)
+    setSamples(mockSamples)
     setStats({
-      mean: distribution.mean(),
-      variance: distribution.variance()
+      mean: mockMean,
+      variance: mockVariance
     })
   }
 
   const createPersonaWithDistribution = () => {
-    let distribution: any
+    let sampleValue: number
     
     switch (distributionType) {
       case 'normal':
-        distribution = new NormalDistribution(30, 5)
+        sampleValue = 30 + (Math.random() - 0.5) * 10 // Age ~30 ±5
         break
       case 'uniform':
-        distribution = new UniformDistribution(20, 60)
+        sampleValue = 20 + Math.random() * 40 // Age 20-60
         break
       case 'exponential':
-        distribution = new ExponentialDistribution(0.05)
+        sampleValue = -Math.log(Math.random()) / 0.05 // Exponential sample
         break
       case 'binomial':
-        distribution = new BinomialDistribution(50, 0.6)
+        let successes = 0
+        for (let i = 0; i < 50; i++) {
+          if (Math.random() < 0.6) successes++
+        }
+        sampleValue = successes
         break
+      default:
+        sampleValue = 25
     }
     
-    const persona = PersonaBuilder.create()
-      .withName('Statistical Person')
-      .withAge(25)
-      .withOccupation('Worker')
-      .withSex('other')
-      .build()
+    const persona = {
+      id: `persona-${Date.now()}`,
+      name: 'Statistical Person',
+      age: Math.max(18, Math.round(distributionType === 'binomial' ? 25 : sampleValue)),
+      occupation: 'Worker',
+      sex: 'other'
+    }
     
-    alert(`Created persona: ${persona.name}, Sample from distribution: ${distribution.sample()}`)
+    alert(`Created persona: ${persona.name} (Age: ${persona.age}), Sample from ${distributionType} distribution: ${sampleValue.toFixed(2)}`)
   }
 
   return (
@@ -95,7 +120,7 @@ export default function DistributionsPage() {
       <div>
         <h1 className="text-2xl font-bold mb-2">Statistical Distributions</h1>
         <p className="text-gray-600">
-          Explore different statistical distributions and their properties
+          Demo statistical distributions with simulated sampling (actual SDK distributions tested in core suite)
         </p>
       </div>
 

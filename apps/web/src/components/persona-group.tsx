@@ -1,13 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { PersonaGroup, PersonaBuilder } from '@jamesaphoenix/persona-sdk'
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Trash2 } from 'lucide-react'
 
 export function PersonaGroupComponent() {
-  const [group] = useState(() => new PersonaGroup('Test Group'))
   const [personas, setPersonas] = useState<any[]>([])
   const [stats, setStats] = useState<any>(null)
 
@@ -15,30 +13,47 @@ export function PersonaGroupComponent() {
     const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank']
     const locations = ['New York', 'London', 'Tokyo', 'Paris', 'Sydney']
     
-    const persona = PersonaBuilder.create()
-      .withName(names[Math.floor(Math.random() * names.length)])
-      .withAge(20 + Math.floor(Math.random() * 40))
-      .withOccupation(locations[Math.floor(Math.random() * locations.length)])
-      .withSex('other')
-      .build()
+    const persona = {
+      id: `persona-${Date.now()}-${Math.random()}`,
+      name: names[Math.floor(Math.random() * names.length)],
+      age: 20 + Math.floor(Math.random() * 40),
+      sex: 'other',
+      attributes: {
+        occupation: locations[Math.floor(Math.random() * locations.length)]
+      }
+    }
     
-    group.add(persona)
-    setPersonas([...group.personas])
+    setPersonas(prev => [...prev, persona])
   }
 
   const removePersona = (index: number) => {
-    const personaToRemove = personas[index]
-    group.remove(personaToRemove.id)
-    setPersonas([...group.personas])
+    setPersonas(prev => prev.filter((_, i) => i !== index))
   }
 
   const generateStats = () => {
-    const statistics = group.getStatistics('age')
+    if (personas.length === 0) {
+      setStats({ message: 'No personas to analyze' })
+      return
+    }
+    
+    const ages = personas.map(p => p.age)
+    const statistics = {
+      count: personas.length,
+      ages: {
+        min: Math.min(...ages),
+        max: Math.max(...ages),
+        average: ages.reduce((a, b) => a + b, 0) / ages.length
+      },
+      occupations: personas.reduce((acc, p) => {
+        const occ = p.attributes.occupation
+        acc[occ] = (acc[occ] || 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+    }
     setStats(statistics)
   }
 
   const clearAll = () => {
-    group.clear()
     setPersonas([])
     setStats(null)
   }

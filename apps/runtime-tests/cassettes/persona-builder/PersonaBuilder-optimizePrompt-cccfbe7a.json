@@ -4,12 +4,15 @@
     "args": [
       "young developer"
     ],
-    "timestamp": "2025-06-19T12:55:30.922Z"
+    "timestamp": "2025-06-19T15:36:01.552Z"
   },
   "response": {
-    "success": true,
-    "cassette": true
+    "error": {
+      "message": "Should include age guidance",
+      "stack": "Error: Should include age guidance\n    at fn (file:///Users/jamesaphoenix/Desktop/projects/just_understanding_data/persona-sdk/apps/runtime-tests/src/tests/persona-builder.test.js:89:59)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async CassetteManager.record (file:///Users/jamesaphoenix/Desktop/projects/just_understanding_data/persona-sdk/apps/runtime-tests/src/cassette-manager.js:134:18)\n    at async TestRunner.runTest (file:///Users/jamesaphoenix/Desktop/projects/just_understanding_data/persona-sdk/apps/runtime-tests/src/test-runner.js:40:26)",
+      "name": "Error"
+    }
   },
-  "timestamp": "2025-06-19T12:55:30.922Z",
+  "timestamp": "2025-06-19T15:36:01.552Z",
   "version": "1.0"
 }

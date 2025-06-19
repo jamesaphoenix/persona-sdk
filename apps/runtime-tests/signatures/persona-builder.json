@@ -7,7 +7,7 @@
       "options"
     ],
     "body": "async fromPrompt(prompt, options) {\n        return PersonaAI.fromPrompt(prompt, options);\n    }",
-    "lastModified": "2025-06-19T12:55:29.439Z"
+    "lastModified": "2025-06-19T15:35:59.908Z"
   },
   "PersonaBuilder.generateMultiple": {
     "hash": "536b939da6e040dd78015bbcac6f27bb",
@@ -18,7 +18,7 @@
       "options"
     ],
     "body": "async generateMultiple(prompt, count, options) {\n        return PersonaAI.generateMultiple(prompt, count, options);\n    }",
-    "lastModified": "2025-06-19T12:55:29.440Z"
+    "lastModified": "2025-06-19T15:35:59.920Z"
   },
   "PersonaBuilder.optimizePrompt": {
     "hash": "4b6935765c4ecc5a9101d4c935f6198e",
@@ -28,7 +28,7 @@
       "options"
     ],
     "body": "async optimizePrompt(basePrompt, options) {\n        return PersonaAI.optimizePrompt(basePrompt, options);\n    }",
-    "lastModified": "2025-06-19T12:55:29.440Z"
+    "lastModified": "2025-06-19T15:35:59.923Z"
   },
   "PersonaBuilder.suggestAttributes": {
     "hash": "87f8ca53702ddec56e7e907583f0bd65",
@@ -38,6 +38,6 @@
       "options"
     ],
     "body": "async suggestAttributes(context, options) {\n        return PersonaAI.suggestAttributes(context, options);\n    }",
-    "lastModified": "2025-06-19T12:55:29.440Z"
+    "lastModified": "2025-06-19T15:35:59.926Z"
   }
 }

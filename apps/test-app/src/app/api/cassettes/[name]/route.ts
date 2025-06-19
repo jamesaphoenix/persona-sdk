@@ -15,12 +15,13 @@ async function ensureDir() {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  { params }: { params: Promise<{ name: string }> }
 ) {
+  const { name } = await params;
   await ensureDir()
   
   try {
-    const cassettePath = path.join(CASSETTES_DIR, `${params.name}.json`)
+    const cassettePath = path.join(CASSETTES_DIR, `${name}.json`)
     const data = await fs.readFile(cassettePath, 'utf-8')
     return NextResponse.json(JSON.parse(data))
   } catch (error) {
@@ -33,13 +34,14 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { name: string } }
+  { params }: { params: Promise<{ name: string }> }
 ) {
+  const { name } = await params;
   await ensureDir()
   
   try {
     const cassette = await request.json()
-    const cassettePath = path.join(CASSETTES_DIR, `${params.name}.json`)
+    const cassettePath = path.join(CASSETTES_DIR, `${name}.json`)
     await fs.writeFile(cassettePath, JSON.stringify(cassette, null, 2))
     
     return NextResponse.json({ success: true })
