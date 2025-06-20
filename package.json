@@ -1,6 +1,6 @@
 {
-  "name": "@jamesaphoenix/persona-sdk-minimal",
-  "version": "1.0.0",
+  "name": "@jamesaphoenix/persona-sdk-workspace",
+  "version": "0.4.1",
   "private": true,
   "scripts": {
     "build": "cd packages/persona-sdk && pnpm build",
