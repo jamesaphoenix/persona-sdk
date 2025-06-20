@@ -1,11 +1,5 @@
 {
   "buildCommand": "cd apps/docs && pnpm build",
   "outputDirectory": "apps/docs/.next",
-  "installCommand": "pnpm install",
-  "framework": "nextjs",
-  "functions": {
-    "app/**": {
-      "runtime": "nodejs18.x"
-    }
-  }
+  "installCommand": "pnpm install"
 }
