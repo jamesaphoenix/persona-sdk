@@ -85,6 +85,9 @@ importers:
       tape:
         specifier: ^5.9.0
         version: 5.9.0
+      zod:
+        specifier: ^3.25.67
+        version: 3.25.67
     devDependencies:
       '@types/diff':
         specifier: ^5.2.1

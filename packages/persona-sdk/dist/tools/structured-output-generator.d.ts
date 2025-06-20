@@ -81,7 +81,7 @@ export declare class StructuredOutputGenerator {
         distributions: Array<{
             attribute: string;
             suggestedDistribution: string;
-            parameters: Record<string, any>;
+            parameters?: Record<string, any>;
             reasoning: string;
         }>;
         summary: string;

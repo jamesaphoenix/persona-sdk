@@ -129,6 +129,20 @@ Consider:
         return new BetaDistribution(params.alpha, params.beta);
       
       case DistributionType.Categorical:
+        // Ensure categories have probabilities
+        const categories = params.categories;
+        if (categories && categories.length > 0) {
+          // If probabilities are missing, assign equal probabilities
+          const hasProbs = categories.every((c: any) => c.probability !== undefined);
+          if (!hasProbs) {
+            const equalProb = 1 / categories.length;
+            const categoriesWithProbs = categories.map((c: any) => ({
+              value: c.value || c,
+              probability: c.probability ?? equalProb
+            }));
+            return new CategoricalDistribution(categoriesWithProbs);
+          }
+        }
         return new CategoricalDistribution(params.categories);
       
       default:

@@ -66,7 +66,7 @@ export declare class CategoricalDistribution<T> extends BaseDistribution<T> {
      */
     mean(): T;
     /**
-     * Get the probabilities.
+     * Get the probabilities as an array (for compatibility).
      *
      * @returns Array of values with their associated probabilities
      */
@@ -74,6 +74,12 @@ export declare class CategoricalDistribution<T> extends BaseDistribution<T> {
         value: T;
         probability: number;
     }>;
+    /**
+     * Get the probabilities as a record (for direct lookup).
+     *
+     * @returns Object mapping values to their probabilities
+     */
+    getProbabilityMap(): Record<string, number>;
     /**
      * Get string representation.
      *

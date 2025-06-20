@@ -127,7 +127,7 @@ ${personas.map(p => `- ${p.name}: ${JSON.stringify(p.attributes)}`).join('\n')}`
             distributions: z.array(z.object({
                 attribute: z.string().describe('The attribute name'),
                 suggestedDistribution: z.string().describe('The suggested distribution type (normal, uniform, exponential, beta, or categorical)'),
-                parameters: z.record(z.any()).describe('Parameters for the distribution (e.g., mean and stdDev for normal)'),
+                parameters: z.record(z.any()).optional().describe('Parameters for the distribution (e.g., mean and stdDev for normal)'),
                 reasoning: z.string().describe('Why this distribution was chosen')
             })).describe('Distribution recommendations for each attribute'),
             summary: z.string().describe('Overall summary of the persona group characteristics'),
@@ -146,7 +146,12 @@ ${stats.map(s => {
 
 For each attribute, recommend:
 1. The most appropriate statistical distribution (normal, uniform, exponential, beta, or categorical)
-2. Estimated parameters for that distribution
+2. Estimated parameters for that distribution. REQUIRED parameters by type:
+   - normal: { mean: number, stdDev: number }
+   - uniform: { min: number, max: number }
+   - exponential: { rate: number }
+   - beta: { alpha: number, beta: number }
+   - categorical: { categories: [{value: string, probability: number}] }
 3. Clear reasoning for the choice
 
 Also provide an overall summary and strategic recommendations.`;
@@ -194,7 +199,17 @@ For each segment:
 - Describe the segment in detail
 - Estimate the size (number of personas)
 - List 3-5 key characteristics
-- Create a typical persona with representative attribute values
+- Create a typical persona with ALL their attribute values wrapped in an "attributes" object
+
+IMPORTANT: The typicalPersona must have this exact structure:
+{
+  "attributes": {
+    "age": <number>,
+    "occupation": <string>,
+    "sex": <string>,
+    // ... other attributes
+  }
+}
 
 Also explain your segmentation strategy and provide actionable insights for each segment.`;
         return this.generate(group, SegmentSchema, prompt);

@@ -177,6 +177,12 @@ export class ElectionPredictionEngine {
      */
     applyScenarioChanges(baseElection, changes) {
         const modified = JSON.parse(JSON.stringify(baseElection)); // Deep copy
+        // Restore Date objects that were lost in JSON serialization
+        modified.date = new Date(modified.date);
+        modified.recent_events = modified.recent_events.map((event) => ({
+            ...event,
+            date: new Date(event.date)
+        }));
         // Apply economic changes
         if (changes.economic_shift && modified.economic_indicators) {
             modified.economic_indicators.gdp_growth += changes.economic_shift;

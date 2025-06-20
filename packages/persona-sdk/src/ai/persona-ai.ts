@@ -55,7 +55,23 @@ export class PersonaAI {
     // Remove markdown code blocks if present
     content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     
-    const personaData = JSON.parse(content);
+    // Fix common JSON issues
+    // Replace smart quotes with regular quotes
+    content = content.replace(/[""]/g, '"').replace(/['']/g, "'");
+    
+    // Try to extract JSON object if the response contains extra text
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      content = jsonMatch[0];
+    }
+    
+    let personaData;
+    try {
+      personaData = JSON.parse(content);
+    } catch (e) {
+      console.error('Failed to parse JSON:', content);
+      throw new Error(`Failed to parse persona JSON: ${e instanceof Error ? e.message : String(e)}`);
+    }
 
     const builder = PersonaBuilder.create()
       .withName(personaData.name || 'Generated Person')
@@ -116,7 +132,26 @@ export class PersonaAI {
     // Remove markdown code blocks if present
     content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     
-    const personasData = JSON.parse(content);
+    // Fix common JSON issues
+    // Replace smart quotes with regular quotes
+    content = content.replace(/[""]/g, '"').replace(/['']/g, "'");
+    
+    // Try to extract JSON array if the response contains extra text
+    const jsonMatch = content.match(/\[[\s\S]*\]/);
+    if (jsonMatch) {
+      content = jsonMatch[0];
+    }
+    
+    let personasData;
+    try {
+      personasData = JSON.parse(content);
+      if (!Array.isArray(personasData)) {
+        throw new Error('Response is not an array');
+      }
+    } catch (e) {
+      console.error('Failed to parse JSON:', content);
+      throw new Error(`Failed to parse personas JSON: ${e instanceof Error ? e.message : String(e)}`);
+    }
 
     return personasData.map((personaData: any) => {
       const builder = PersonaBuilder.create()

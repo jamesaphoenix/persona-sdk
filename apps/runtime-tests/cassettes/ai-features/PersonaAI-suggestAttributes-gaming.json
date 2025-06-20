@@ -1,0 +1,21 @@
+{
+  "request": {
+    "function": "PersonaAI.suggestAttributes-gaming",
+    "args": [
+      {
+        "industry": "gaming",
+        "targetAudience": "hardcore gamers",
+        "platform": "PC"
+      }
+    ],
+    "timestamp": "2025-06-19T18:05:30.946Z"
+  },
+  "response": {
+    "0": "tech-savvy",
+    "1": "competitive",
+    "2": "dedicated",
+    "3": "enthusiastic"
+  },
+  "timestamp": "2025-06-19T18:05:30.946Z",
+  "version": "1.0"
+}

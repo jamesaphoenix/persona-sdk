@@ -16,7 +16,7 @@ export class ExponentialDistribution extends BaseDistribution {
         super(seed);
         this.lambda = lambda;
         if (lambda <= 0) {
-            throw new Error('Rate parameter must be positive');
+            throw new Error('Lambda must be positive');
         }
     }
     /**

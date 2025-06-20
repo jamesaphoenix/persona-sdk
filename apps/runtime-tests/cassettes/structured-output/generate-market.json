@@ -1,0 +1,213 @@
+{
+  "request": {
+    "function": "StructuredOutputGenerator.generate-market",
+    "args": [
+      "{\"name\":\"Test Group\",\"personas\":[{\"id\":\"persona_1750356336629_aadnbw6mb\",\"name\":\"Person 1\",\"attributes\":{\"age\":25,\"occupation\":\"Engineer\",\"sex\":\"male\"}},{\"id\":\"persona_1750356336630_01cxjr8v9\",\"name\":\"Person 2\",\"attributes\":{\"age\":30,\"occupation\":\"Designer\",\"sex\":\"female\"}},{\"id\":\"persona_1750356336630_h4lcxh81e\",\"name\":\"Person 3\",\"attributes\":{\"age\":35,\"occupation\":\"Manager\",\"sex\":\"other\"}},{\"id\":\"persona_1750356336630_u7g235noo\",\"name\":\"Person 4\",\"attributes\":{\"age\":40,\"occupation\":\"Analyst\",\"sex\":\"male\"}},{\"id\":\"persona_1750356336630_4y6wksie3\",\"name\":\"Person 5\",\"attributes\":{\"age\":45,\"occupation\":\"Developer\",\"sex\":\"female\"}}],\"size\":5}",
+      {
+        "_def": {
+          "unknownKeys": "strip",
+          "catchall": {
+            "_def": {
+              "typeName": "ZodNever"
+            },
+            "~standard": {
+              "version": 1,
+              "vendor": "zod"
+            }
+          },
+          "typeName": "ZodObject"
+        },
+        "~standard": {
+          "version": 1,
+          "vendor": "zod"
+        },
+        "_cached": {
+          "shape": {
+            "targetSegments": {
+              "_def": {
+                "type": {
+                  "_def": {
+                    "checks": [],
+                    "typeName": "ZodString",
+                    "coerce": false
+                  },
+                  "~standard": {
+                    "version": 1,
+                    "vendor": "zod"
+                  }
+                },
+                "minLength": null,
+                "maxLength": null,
+                "exactLength": null,
+                "typeName": "ZodArray"
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "keyPainPoints": {
+              "_def": {
+                "type": {
+                  "_def": {
+                    "checks": [],
+                    "typeName": "ZodString",
+                    "coerce": false
+                  },
+                  "~standard": {
+                    "version": 1,
+                    "vendor": "zod"
+                  }
+                },
+                "minLength": null,
+                "maxLength": null,
+                "exactLength": null,
+                "typeName": "ZodArray"
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "productOpportunities": {
+              "_def": {
+                "type": {
+                  "_def": {
+                    "checks": [],
+                    "typeName": "ZodString",
+                    "coerce": false
+                  },
+                  "~standard": {
+                    "version": 1,
+                    "vendor": "zod"
+                  }
+                },
+                "minLength": null,
+                "maxLength": null,
+                "exactLength": null,
+                "typeName": "ZodArray"
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              }
+            },
+            "messagingRecommendations": {
+              "_def": {
+                "unknownKeys": "strip",
+                "catchall": {
+                  "_def": {
+                    "typeName": "ZodNever"
+                  },
+                  "~standard": {
+                    "version": 1,
+                    "vendor": "zod"
+                  }
+                },
+                "typeName": "ZodObject"
+              },
+              "~standard": {
+                "version": 1,
+                "vendor": "zod"
+              },
+              "_cached": {
+                "shape": {
+                  "primaryMessage": {
+                    "_def": {
+                      "checks": [],
+                      "typeName": "ZodString",
+                      "coerce": false
+                    },
+                    "~standard": {
+                      "version": 1,
+                      "vendor": "zod"
+                    }
+                  },
+                  "supportingPoints": {
+                    "_def": {
+                      "type": {
+                        "_def": {
+                          "checks": [],
+                          "typeName": "ZodString",
+                          "coerce": false
+                        },
+                        "~standard": {
+                          "version": 1,
+                          "vendor": "zod"
+                        }
+                      },
+                      "minLength": null,
+                      "maxLength": null,
+                      "exactLength": null,
+                      "typeName": "ZodArray"
+                    },
+                    "~standard": {
+                      "version": 1,
+                      "vendor": "zod"
+                    }
+                  }
+                },
+                "keys": [
+                  "primaryMessage",
+                  "supportingPoints"
+                ]
+              }
+            }
+          },
+          "keys": [
+            "targetSegments",
+            "keyPainPoints",
+            "productOpportunities",
+            "messagingRecommendations"
+          ]
+        }
+      },
+      "Analyze this focus group for a new productivity SaaS product"
+    ],
+    "timestamp": "2025-06-19T18:05:41.508Z"
+  },
+  "response": {
+    "data": {
+      "targetSegments": [
+        "Engineers",
+        "Designers",
+        "Managers",
+        "Analysts",
+        "Developers"
+      ],
+      "keyPainPoints": [
+        "Lack of integration across tools",
+        "Difficulty in tracking progress and productivity",
+        "Collaboration challenges among diverse roles",
+        "Overwhelming features causing steep learning curve",
+        "Limited customization for specific workflows"
+      ],
+      "productOpportunities": [
+        "Unified platform integrating multiple productivity tools",
+        "Real-time collaboration features tailored to role needs",
+        "Customizable dashboards and workflows",
+        "Intuitive user interface with easy onboarding",
+        "Advanced analytics for productivity insights"
+      ],
+      "messagingRecommendations": {
+        "primaryMessage": "Empower your team with a unified, customizable productivity platform designed for seamless collaboration and insightful analytics.",
+        "supportingPoints": [
+          "Integrates all essential tools in one place to streamline your workflow.",
+          "Offers real-time collaboration features customized for different roles.",
+          "Provides easy-to-use interface ensuring quick adoption and minimal training.",
+          "Delivers advanced analytics to help track and improve productivity.",
+          "Allows personalization to fit unique team and individual needs."
+        ]
+      }
+    },
+    "metadata": {
+      "model": "gpt-4.1-mini",
+      "timestamp": "2025-06-19T18:05:41.508Z",
+      "groupSize": 5,
+      "promptUsed": "Analyze this focus group for a new productivity SaaS product",
+      "systemPrompt": "You are acting as a focus group consisting of the following personas:\n\n1. Person 1 - Person 1 (25 year old male Engineer)\n2. Person 2 - Person 2 (30 year old female Designer)\n3. Person 3 - Person 3 (35 year old other Manager)\n4. Person 4 - Person 4 (40 year old male Analyst)\n5. Person 5 - Person 5 (45 year old female Developer)\n\nYou must respond as this collective group, considering all perspectives and demographics represented. \nGenerate insights that reflect the diverse viewpoints of all personas in the group."
+    }
+  },
+  "timestamp": "2025-06-19T18:05:41.508Z",
+  "version": "1.0"
+}

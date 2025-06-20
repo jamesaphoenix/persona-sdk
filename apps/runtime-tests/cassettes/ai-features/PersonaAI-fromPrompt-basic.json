@@ -1,0 +1,37 @@
+{
+  "request": {
+    "function": "PersonaAI.fromPrompt-basic",
+    "args": [
+      "Create a 35-year-old data scientist working at a tech startup in Austin"
+    ],
+    "timestamp": "2025-06-19T18:05:23.896Z"
+  },
+  "response": {
+    "id": "persona_1750356323896_a9ypqm1wc",
+    "name": "Sara Chen",
+    "_attributes": {
+      "age": 35,
+      "occupation": "Data Scientist",
+      "sex": "female",
+      "location": "Austin",
+      "industry": "Tech Startup",
+      "skills": [
+        "data analysis",
+        "machine learning",
+        "programming"
+      ],
+      "personality": [
+        "analytical",
+        "detail-oriented",
+        "innovative"
+      ],
+      "interests": [
+        "data visualization",
+        "AI ethics",
+        "coding challenges"
+      ]
+    }
+  },
+  "timestamp": "2025-06-19T18:05:23.897Z",
+  "version": "1.0"
+}

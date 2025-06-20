@@ -1,0 +1,40 @@
+{
+  "request": {
+    "function": "PersonaAI.fromPrompt-complex",
+    "args": [
+      "Create a retired teacher in their 60s who loves gardening and lives in Vermont. Include hobbies, personality traits, and lifestyle details."
+    ],
+    "timestamp": "2025-06-19T18:05:26.180Z"
+  },
+  "response": {
+    "id": "persona_1750356326180_kioviv9pi",
+    "name": "Evelyn Parker",
+    "_attributes": {
+      "age": 65,
+      "occupation": "Retired Teacher",
+      "sex": "female",
+      "hobbies": [
+        "gardening",
+        "reading",
+        "birdwatching"
+      ],
+      "personality_traits": [
+        "patient",
+        "knowledgeable",
+        "kind"
+      ],
+      "lifestyle_details": {
+        "location": "Vermont",
+        "daily_routine": "Starts the day with a cup of herbal tea and tends to her garden, enjoys afternoon walks in the countryside, and attends local book club meetings in the evenings.",
+        "interests": [
+          "nature",
+          "education",
+          "community"
+        ],
+        "home": "Lives in a cozy cottage with a well-maintained garden filled with various flowers and vegetables."
+      }
+    }
+  },
+  "timestamp": "2025-06-19T18:05:26.180Z",
+  "version": "1.0"
+}

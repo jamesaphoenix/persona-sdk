@@ -20,7 +20,8 @@
     "node-fetch": "^3.3.2",
     "ora": "^8.1.1",
     "p-limit": "^6.1.0",
-    "tape": "^5.9.0"
+    "tape": "^5.9.0",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/diff": "^5.2.1",

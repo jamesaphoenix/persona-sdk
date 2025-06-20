@@ -54,7 +54,7 @@ pnpm docs
 
 ### Persona SDK Usage
 
-```typescript
+```ts
 import { PersonaBuilder, PersonaGroup, NormalDistribution } from '@jamesaphoenix/persona-sdk';
 
 // Create a single persona
@@ -79,7 +79,7 @@ group.generateFromDistributions(100, {
 
 Prompt optimization is now integrated directly into the SDK:
 
-```typescript
+```ts
 import { 
   BootstrapOptimizer, 
   ExactMatch, 
@@ -107,7 +107,7 @@ console.log(`Improved score: ${result.finalScore}`);
 
 ### Integration Example
 
-```typescript
+```ts
 import { PersonaBuilder, NormalDistribution } from '@jamesaphoenix/persona-sdk';
 import { 
   BootstrapOptimizer, 
@@ -162,7 +162,7 @@ console.log(`Optimization improved score from baseline to ${optimizedResult.fina
 
 ### Advanced Persona Generation with Correlations
 
-```typescript
+```ts
 import { 
   PersonaBuilder, 
   CorrelatedDistribution,
@@ -210,7 +210,7 @@ console.log('Generated personas with realistic age-income correlation');
 
 ### AI-Powered Persona Generation from Media
 
-```typescript
+```ts
 import { 
   MediaToPersonaGenerator,
   PersonaGroup 
@@ -250,7 +250,7 @@ console.log('Group statistics:', group.getStats());
 
 ### Prompt Optimization with Different Strategies
 
-```typescript
+```ts
 import {
   BootstrapOptimizer,
   COPROOptimizer,
@@ -308,7 +308,7 @@ console.log('Confidence:', ensemblePrediction.confidence);
 
 ### Media Diet Influence on Personas
 
-```typescript
+```ts
 import { 
   MediaDietManager,
   PersonaGroup,

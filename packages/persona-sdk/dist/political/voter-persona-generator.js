@@ -285,6 +285,8 @@ export class VoterPersonaGenerator {
             .withAttribute('turnout_likelihood', voterData.turnout_likelihood)
             .withAttribute('voting_history', voterData.voting_history)
             .withAttribute('issue_positions', voterData.issue_positions)
+            .withAttribute('uncertainty', voterData.uncertainty)
+            .withAttribute('cross_pressures', voterData.cross_pressures)
             .build();
     }
     convertANESToPersona(anesData, index) {
