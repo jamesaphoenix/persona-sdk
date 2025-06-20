@@ -10,7 +10,10 @@
     "type-check": "cd packages/persona-sdk && pnpm type-check",
     "clean": "cd packages/persona-sdk && pnpm clean",
     "runtime:test": "cd apps/runtime-tests && pnpm test",
-    "runtime:test:record": "cd apps/runtime-tests && CASSETTE_MODE=record pnpm test"
+    "runtime:test:record": "cd apps/runtime-tests && CASSETTE_MODE=record pnpm test",
+    "docs:dev": "cd apps/docs && pnpm dev",
+    "docs:build": "cd apps/docs && pnpm build",
+    "docs:preview": "cd apps/docs && pnpm preview"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",

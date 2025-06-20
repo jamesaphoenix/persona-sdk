@@ -1,0 +1,417 @@
+---
+title: API Reference
+description: Complete API documentation for the Persona SDK
+---
+
+## Core Classes
+
+### Persona
+
+The main persona class representing an individual with attributes.
+
+#### Constructor
+
+```typescript
+new Persona(name: string, attributes: PersonaAttributes)
+```
+
+#### Properties
+
+- `id: string` - Unique identifier
+- `name: string` - Persona name
+- `age: number` - Age in years
+- `occupation: string` - Job title or occupation
+- `sex: 'male' | 'female' | 'other'` - Gender identity
+
+#### Methods
+
+```typescript
+// Get custom attribute
+getAttribute(key: string): any
+
+// Set custom attribute  
+setAttribute(key: string, value: any): void
+
+// Clone the persona
+clone(newName?: string): Persona
+
+// Export to JSON
+toJSON(): PersonaData
+```
+
+### PersonaBuilder
+
+Builder pattern for creating personas with a fluent interface.
+
+#### Static Methods
+
+```typescript
+// Create new builder
+PersonaBuilder.create(): PersonaBuilder
+
+// Create from AI prompt
+PersonaBuilder.fromPrompt(
+  prompt: string, 
+  options: { apiKey: string }
+): Promise<Persona>
+```
+
+#### Instance Methods
+
+```typescript
+// Set basic attributes
+setName(name: string): PersonaBuilder
+setAge(age: number): PersonaBuilder
+setOccupation(occupation: string): PersonaBuilder
+setSex(sex: 'male' | 'female' | 'other'): PersonaBuilder
+
+// Set custom attributes
+setCustomAttribute(key: string, value: any): PersonaBuilder
+
+// Build the persona
+build(): Persona
+```
+
+### PersonaGroup
+
+Manage collections of personas.
+
+#### Constructor
+
+```typescript
+new PersonaGroup(options?: PersonaGroupOptions)
+```
+
+#### Properties
+
+- `size: number` - Number of personas in the group
+
+#### Methods
+
+```typescript
+// Add persona to group
+add(persona: Persona): void
+
+// Remove persona from group
+remove(persona: Persona): boolean
+
+// Get all personas
+getAll(): Persona[]
+
+// Filter personas
+filter(predicate: (persona: Persona) => boolean): Persona[]
+
+// Find persona by ID
+findById(id: string): Persona | undefined
+
+// Clear all personas
+clear(): void
+
+// Export group to JSON
+toJSON(): PersonaData[]
+```
+
+## Distributions
+
+### BaseDistribution
+
+Abstract base class for all distributions.
+
+```typescript
+abstract class BaseDistribution {
+  abstract sample(): number
+  setSeed(seed: number): void
+}
+```
+
+### NormalDistribution
+
+Normal (Gaussian) distribution for continuous values.
+
+```typescript
+new NormalDistribution(mean: number, standardDeviation: number)
+
+// Methods
+sample(): number
+setSeed(seed: number): void
+```
+
+### UniformDistribution
+
+Uniform distribution with equal probability across a range.
+
+```typescript
+new UniformDistribution(min: number, max: number)
+
+// Methods
+sample(): number
+setSeed(seed: number): void
+```
+
+### ExponentialDistribution
+
+Exponential distribution for modeling waiting times.
+
+```typescript
+new ExponentialDistribution(rate: number)
+
+// Methods
+sample(): number
+setSeed(seed: number): void
+```
+
+### BetaDistribution
+
+Beta distribution bounded between 0 and 1.
+
+```typescript
+new BetaDistribution(alpha: number, beta: number)
+
+// Methods
+sample(): number
+setSeed(seed: number): void
+```
+
+### CategoricalDistribution
+
+Discrete distribution for categorical values.
+
+```typescript
+interface Category {
+  value: any;
+  probability: number;
+}
+
+new CategoricalDistribution(categories: Category[])
+
+// Methods
+sample(): any
+setSeed(seed: number): void
+```
+
+## AI Features
+
+### PersonaAI
+
+AI-powered persona generation utilities.
+
+#### Static Methods
+
+```typescript
+// Generate multiple personas
+PersonaAI.generateMultiple(options: {
+  prompt: string;
+  count: number;
+  apiKey: string;
+}): Promise<Persona[]>
+
+// Optimize a prompt
+PersonaAI.optimizePrompt(options: {
+  originalPrompt: string;
+  goal: string;
+  apiKey: string;
+}): Promise<string>
+
+// Suggest attributes
+PersonaAI.suggestAttributes(options: {
+  context: string;
+  existingAttributes?: string[];
+  apiKey: string;
+}): Promise<string[]>
+```
+
+### DistributionSelector
+
+Intelligent distribution selection based on context.
+
+#### Static Methods
+
+```typescript
+// Select distribution for attribute
+DistributionSelector.selectForAttribute(options: {
+  attribute: string;
+  context?: string;
+  apiKey: string;
+}): Promise<BaseDistribution>
+
+// Get distribution by type
+DistributionSelector.getDistribution(
+  type: DistributionType,
+  params: DistributionParams
+): BaseDistribution
+```
+
+### StructuredOutputGenerator
+
+Generate structured data with schema validation.
+
+#### Static Methods
+
+```typescript
+// Generate structured output
+StructuredOutputGenerator.generate<T>(options: {
+  prompt: string;
+  schema: ZodSchema<T>;
+  apiKey: string;
+}): Promise<T>
+```
+
+## Types
+
+### PersonaAttributes
+
+```typescript
+interface PersonaAttributes {
+  age: number;
+  occupation: string;
+  sex: 'male' | 'female' | 'other';
+  [key: string]: any; // Custom attributes
+}
+```
+
+### BasePersonaAttributes
+
+```typescript
+interface BasePersonaAttributes {
+  age: number;
+  occupation: string;
+  sex: 'male' | 'female' | 'other';
+}
+```
+
+### StructuredOutput
+
+```typescript
+interface StructuredOutput {
+  [key: string]: any;
+}
+```
+
+### Distribution
+
+```typescript
+interface Distribution {
+  sample(): number;
+  setSeed?(seed: number): void;
+}
+```
+
+## Schemas
+
+### Validation Schemas
+
+Zod schemas for runtime validation:
+
+```typescript
+// Import schemas
+import {
+  PersonaAttributesSchema,
+  BasePersonaAttributesSchema,
+  SexSchema
+} from '@jamesaphoenix/persona-sdk';
+
+// Use for validation
+const result = PersonaAttributesSchema.parse(data);
+```
+
+### SexSchema
+
+```typescript
+const SexSchema = z.enum(['male', 'female', 'other']);
+type Sex = z.infer<typeof SexSchema>;
+```
+
+### BasePersonaAttributesSchema
+
+```typescript
+const BasePersonaAttributesSchema = z.object({
+  age: z.number().min(0).max(150),
+  occupation: z.string().min(1),
+  sex: SexSchema
+});
+```
+
+### PersonaAttributesSchema
+
+```typescript
+const PersonaAttributesSchema = BasePersonaAttributesSchema.extend({
+  // Allows additional properties
+}).passthrough();
+```
+
+## Error Handling
+
+### Common Errors
+
+```typescript
+// Validation errors
+try {
+  const persona = PersonaBuilder.create()
+    .setAge(-5) // Invalid age
+    .build();
+} catch (error) {
+  console.error('Validation error:', error.message);
+}
+
+// API errors
+try {
+  const persona = await PersonaBuilder.fromPrompt(
+    'Create a persona',
+    { apiKey: 'invalid-key' }
+  );
+} catch (error) {
+  if (error.message.includes('API key')) {
+    console.error('Invalid API key');
+  }
+}
+```
+
+### Custom Error Types
+
+The SDK throws specific error types for different scenarios:
+
+- `ValidationError` - Invalid input data
+- `APIError` - OpenAI API issues
+- `ConfigurationError` - Missing or invalid configuration
+
+## Examples
+
+### Complete Workflow
+
+```typescript
+import { 
+  PersonaBuilder, 
+  PersonaGroup, 
+  NormalDistribution,
+  DistributionSelector 
+} from '@jamesaphoenix/persona-sdk';
+
+async function createUserStudy() {
+  // Create group
+  const group = new PersonaGroup();
+  
+  // Generate AI persona
+  const aiPersona = await PersonaBuilder.fromPrompt(
+    'Tech-savvy millennial interested in productivity apps',
+    { apiKey: process.env.OPENAI_API_KEY }
+  );
+  group.add(aiPersona);
+  
+  // Create personas with distributions
+  const ageDistribution = new NormalDistribution(28, 6);
+  
+  for (let i = 0; i < 10; i++) {
+    const persona = PersonaBuilder.create()
+      .setName(`User ${i + 1}`)
+      .setAge(Math.round(ageDistribution.sample()))
+      .setOccupation('Professional')
+      .setSex(i % 2 === 0 ? 'female' : 'male')
+      .build();
+    
+    group.add(persona);
+  }
+  
+  // Export results
+  return group.toJSON();
+}
+```

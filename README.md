@@ -1,49 +1,46 @@
-# Persona SDK Minimal
+# Persona SDK
 
-A minimal TypeScript SDK for generating personas with AI-powered features. Perfect for internal use and rapid prototyping.
+A lightweight TypeScript SDK for generating personas with AI-powered features and statistical distributions.
 
 ## Features
 
 - **Persona Creation**: Build realistic personas with customizable attributes
 - **AI-Powered Generation**: Create personas from natural language prompts
-- **Structured Output**: Generate insights and analysis using LangChain
-- **Prompt Optimization**: Enhance prompts for better persona generation
+- **Structured Output**: Generate structured data with Zod schema validation
 - **Statistical Distributions**: Use various distributions for realistic data
-- **100% Test Coverage**: Comprehensive runtime tests with cassette recording
+- **Runtime Testing**: Comprehensive test system with VCR-style cassettes
 
 ## Installation
 
 ```bash
-pnpm install
-pnpm build
+npm install @jamesaphoenix/persona-sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { PersonaBuilder, PersonaAI, StructuredOutputGenerator } from '@internal/persona-sdk-minimal';
+import { PersonaBuilder, PersonaAI, StructuredOutputGenerator } from '@jamesaphoenix/persona-sdk';
 
 // Create a persona manually
 const persona = PersonaBuilder.create()
-  .withName('Alice Johnson')
-  .withAge(28)
-  .withOccupation('Software Engineer')
-  .withSex('female')
+  .setName('Alice Johnson')
+  .setAge(28)
+  .setOccupation('Software Engineer')
+  .setSex('female')
   .build();
 
 // Generate from AI prompt
-const aiPersona = await PersonaAI.fromPrompt(
+const aiPersona = await PersonaBuilder.fromPrompt(
   'Create a 35-year-old data scientist in Austin',
   { apiKey: process.env.OPENAI_API_KEY }
 );
 
 // Generate structured insights
-const generator = new StructuredOutputGenerator(apiKey);
-const insights = await generator.generate(
-  personaGroup,
-  MarketInsightSchema,
-  'Analyze for product-market fit'
-);
+const insights = await StructuredOutputGenerator.generate({
+  prompt: 'Analyze user personas for product-market fit',
+  schema: MarketInsightSchema,
+  apiKey: process.env.OPENAI_API_KEY
+});
 ```
 
 ## Core Components

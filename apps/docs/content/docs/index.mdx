@@ -1,0 +1,62 @@
+---
+title: Persona SDK
+description: TypeScript SDK for generating personas with statistical distributions and AI-powered features
+---
+
+# Persona SDK
+
+A lightweight TypeScript SDK for creating personas with AI-powered features:
+
+## Quick Start
+
+Install the SDK:
+
+```bash
+npm install @jamesaphoenix/persona-sdk
+```
+
+Create your first persona:
+
+```typescript
+import { PersonaBuilder } from '@jamesaphoenix/persona-sdk';
+
+// Create a basic persona
+const persona = PersonaBuilder.create()
+  .setName('Alex')
+  .setAge(28)
+  .setOccupation('Developer')
+  .setSex('other')
+  .build();
+
+console.log(persona.name); // "Alex"
+console.log(persona.age);  // 28
+```
+
+## Key Features
+
+### 🤖 AI-Powered Generation
+Generate personas from natural language prompts using OpenAI integration.
+
+### 📊 Statistical Distributions  
+Create realistic personas using normal, uniform, exponential, beta, and categorical distributions.
+
+### ⚡ Structured Output
+Generate structured data with Zod schema validation and LangChain integration.
+
+### 🧪 Runtime Testing
+Comprehensive testing system with VCR-style cassette recording for reliable tests.
+
+## Core Components
+
+- **Persona** - Individual persona instances with attributes
+- **PersonaBuilder** - Builder pattern for persona creation  
+- **PersonaGroup** - Manage collections of personas
+- **Distributions** - Statistical distributions for realistic data
+- **AI Tools** - OpenAI integration for intelligent generation
+
+## Next Steps
+
+- [Installation](/docs/installation) - Get started with the SDK
+- [Basic Usage](/docs/basic-usage) - Learn the fundamentals
+- [AI Features](/docs/ai-features) - Explore AI-powered capabilities
+- [API Reference](/docs/api) - Complete API documentation

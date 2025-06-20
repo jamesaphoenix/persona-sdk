@@ -1,0 +1,187 @@
+---
+title: Statistical Distributions
+description: Generate realistic persona attributes using statistical distributions
+---
+
+## Overview
+
+The Persona SDK includes several statistical distributions for generating realistic persona attributes:
+
+- **Normal Distribution** - Bell curve distribution for continuous values
+- **Uniform Distribution** - Equal probability across a range
+- **Exponential Distribution** - Exponential decay pattern
+- **Beta Distribution** - Flexible distribution bounded between 0 and 1
+- **Categorical Distribution** - Discrete categories with probabilities
+
+## Normal Distribution
+
+Perfect for attributes like height, weight, or IQ scores:
+
+```typescript
+import { NormalDistribution, PersonaBuilder } from '@jamesaphoenix/persona-sdk';
+
+const ageDistribution = new NormalDistribution(35, 10); // mean=35, stdDev=10
+
+const persona = PersonaBuilder.create()
+  .setName('Random Person')
+  .setAge(Math.round(ageDistribution.sample()))
+  .build();
+
+console.log(persona.age); // e.g., 32 (randomly sampled around 35)
+```
+
+## Uniform Distribution
+
+For evenly distributed values:
+
+```typescript
+import { UniformDistribution } from '@jamesaphoenix/persona-sdk';
+
+const salaryDistribution = new UniformDistribution(30000, 100000);
+const salary = salaryDistribution.sample();
+
+console.log(salary); // Random value between 30,000 and 100,000
+```
+
+## Exponential Distribution
+
+For values that follow exponential patterns:
+
+```typescript
+import { ExponentialDistribution } from '@jamesaphoenix/persona-sdk';
+
+const responseTimeDistribution = new ExponentialDistribution(0.1);
+const responseTime = responseTimeDistribution.sample();
+
+console.log(responseTime); // Exponentially distributed value
+```
+
+## Beta Distribution
+
+For bounded distributions with flexible shapes:
+
+```typescript
+import { BetaDistribution } from '@jamesaphoenix/persona-sdk';
+
+const satisfactionDistribution = new BetaDistribution(8, 2); // High satisfaction bias
+const satisfaction = satisfactionDistribution.sample();
+
+console.log(satisfaction); // Value between 0 and 1, biased toward 1
+```
+
+## Categorical Distribution
+
+For discrete categories with specific probabilities:
+
+```typescript
+import { CategoricalDistribution } from '@jamesaphoenix/persona-sdk';
+
+const occupationDistribution = new CategoricalDistribution([
+  { value: 'Engineer', probability: 0.3 },
+  { value: 'Designer', probability: 0.2 },
+  { value: 'Manager', probability: 0.2 },
+  { value: 'Analyst', probability: 0.15 },
+  { value: 'Other', probability: 0.15 }
+]);
+
+const occupation = occupationDistribution.sample();
+console.log(occupation); // e.g., "Engineer" (30% chance)
+```
+
+## Using Distributions with PersonaBuilder
+
+### Single Attribute
+
+```typescript
+import { PersonaBuilder, NormalDistribution } from '@jamesaphoenix/persona-sdk';
+
+const ageDistribution = new NormalDistribution(30, 8);
+
+const persona = PersonaBuilder.create()
+  .setName('Sam')
+  .setAge(Math.round(ageDistribution.sample()))
+  .setOccupation('Developer')
+  .build();
+```
+
+### Multiple Attributes
+
+```typescript
+const ageDistribution = new NormalDistribution(32, 10);
+const experienceDistribution = new UniformDistribution(1, 15);
+
+const persona = PersonaBuilder.create()
+  .setName('Taylor')
+  .setAge(Math.round(ageDistribution.sample()))
+  .setCustomAttribute('experience', Math.round(experienceDistribution.sample()))
+  .build();
+```
+
+## Advanced Usage
+
+### Seeded Distributions
+
+For reproducible results:
+
+```typescript
+import { NormalDistribution } from '@jamesaphoenix/persona-sdk';
+
+const distribution = new NormalDistribution(25, 5);
+distribution.setSeed(12345); // Set a specific seed
+
+// Will always generate the same sequence
+const value1 = distribution.sample(); // Always the same
+const value2 = distribution.sample(); // Always the same
+```
+
+### Distribution Chaining
+
+```typescript
+const baseAge = new NormalDistribution(30, 8).sample();
+const experienceBonus = new ExponentialDistribution(0.2).sample();
+
+const persona = PersonaBuilder.create()
+  .setName('Alex')
+  .setAge(Math.round(baseAge))
+  .setCustomAttribute('experienceYears', Math.round(experienceBonus))
+  .build();
+```
+
+## Real-World Examples
+
+### Creating Realistic Demographics
+
+```typescript
+import { 
+  NormalDistribution, 
+  CategoricalDistribution,
+  PersonaGroup 
+} from '@jamesaphoenix/persona-sdk';
+
+const ageDistribution = new NormalDistribution(35, 12);
+const genderDistribution = new CategoricalDistribution([
+  { value: 'female', probability: 0.51 },
+  { value: 'male', probability: 0.49 }
+]);
+
+const group = new PersonaGroup();
+
+// Generate 100 realistic personas
+for (let i = 0; i < 100; i++) {
+  const persona = PersonaBuilder.create()
+    .setName(`Person ${i + 1}`)
+    .setAge(Math.max(18, Math.round(ageDistribution.sample())))
+    .setSex(genderDistribution.sample() as 'male' | 'female')
+    .setOccupation('Professional')
+    .build();
+  
+  group.add(persona);
+}
+
+console.log(`Generated ${group.size} personas`);
+```
+
+## Next Steps
+
+- [AI Features](/docs/ai-features) - Generate personas with AI assistance
+- [API Reference](/docs/api) - Complete distribution API reference

@@ -1,0 +1,150 @@
+---
+title: Basic Usage
+description: Learn how to create and manage personas with the SDK
+---
+
+## Creating Personas
+
+### Using PersonaBuilder
+
+The `PersonaBuilder` provides a fluent interface for creating personas:
+
+```typescript
+import { PersonaBuilder } from '@jamesaphoenix/persona-sdk';
+
+const persona = PersonaBuilder.create()
+  .setName('Sarah Johnson')
+  .setAge(32)
+  .setOccupation('Software Engineer')
+  .setSex('female')
+  .build();
+
+console.log(persona.name); // "Sarah Johnson"
+console.log(persona.age);  // 32
+```
+
+### Direct Persona Creation
+
+You can also create personas directly:
+
+```typescript
+import { Persona } from '@jamesaphoenix/persona-sdk';
+
+const persona = new Persona('John Doe', {
+  age: 28,
+  occupation: 'Designer',
+  sex: 'male'
+});
+```
+
+## Managing Persona Groups
+
+### Creating Groups
+
+Use `PersonaGroup` to manage collections of personas:
+
+```typescript
+import { PersonaGroup, PersonaBuilder } from '@jamesaphoenix/persona-sdk';
+
+const group = new PersonaGroup();
+
+// Add personas to the group
+const persona1 = PersonaBuilder.create()
+  .setName('Alice')
+  .setAge(25)
+  .build();
+
+const persona2 = PersonaBuilder.create()
+  .setName('Bob')
+  .setAge(30)
+  .build();
+
+group.add(persona1);
+group.add(persona2);
+
+console.log(group.size); // 2
+```
+
+### Group Operations
+
+```typescript
+// Get all personas
+const allPersonas = group.getAll();
+
+// Find personas by attribute
+const youngPersonas = group.filter(p => p.age < 30);
+
+// Remove a persona
+group.remove(persona1);
+
+// Clear all personas
+group.clear();
+```
+
+## Working with Attributes
+
+### Standard Attributes
+
+All personas have these core attributes:
+
+```typescript
+interface PersonaAttributes {
+  age: number;
+  occupation: string;
+  sex: 'male' | 'female' | 'other';
+  // Additional custom attributes...
+}
+```
+
+### Custom Attributes
+
+Add custom attributes to your personas:
+
+```typescript
+const persona = PersonaBuilder.create()
+  .setName('Maria')
+  .setAge(35)
+  .setOccupation('Teacher')
+  .setSex('female')
+  .setCustomAttribute('location', 'New York')
+  .setCustomAttribute('interests', ['reading', 'hiking'])
+  .build();
+
+console.log(persona.getAttribute('location')); // "New York"
+```
+
+## Persona Serialization
+
+### Export to JSON
+
+```typescript
+const personaData = persona.toJSON();
+console.log(JSON.stringify(personaData, null, 2));
+```
+
+### Clone Personas
+
+```typescript
+const clonedPersona = persona.clone();
+const renamedClone = persona.clone('New Name');
+```
+
+## Error Handling
+
+The SDK provides comprehensive error handling:
+
+```typescript
+try {
+  const persona = PersonaBuilder.create()
+    .setAge(-5) // Invalid age
+    .build();
+} catch (error) {
+  console.error('Validation error:', error.message);
+}
+```
+
+## Next Steps
+
+- [Distributions](/docs/distributions) - Use statistical distributions for realistic data
+- [AI Features](/docs/ai-features) - Generate personas with AI
+- [API Reference](/docs/api) - Complete API documentation

@@ -1,0 +1,262 @@
+---
+title: AI Features
+description: Generate personas using AI-powered natural language prompts
+---
+
+## Overview
+
+The Persona SDK integrates with OpenAI to provide intelligent persona generation from natural language prompts. This allows you to create realistic personas by simply describing what you want.
+
+## Setup
+
+First, ensure you have an OpenAI API key:
+
+```bash
+# .env.local
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+## AI-Powered Persona Generation
+
+### Basic Generation
+
+Generate a persona from a simple prompt:
+
+```typescript
+import { PersonaBuilder } from '@jamesaphoenix/persona-sdk';
+
+const persona = await PersonaBuilder.fromPrompt(
+  'Create a 25-year-old software developer who loves gaming',
+  { apiKey: process.env.OPENAI_API_KEY }
+);
+
+console.log(persona.name);       // e.g., "Alex Chen"
+console.log(persona.age);        // 25
+console.log(persona.occupation); // "Software Developer"
+```
+
+### Advanced Prompts
+
+Use detailed prompts for more specific personas:
+
+```typescript
+const persona = await PersonaBuilder.fromPrompt(`
+  Create a persona for a marketing campaign targeting eco-conscious millennials.
+  They should be between 28-35 years old, work in a creative field, 
+  live in an urban area, and be interested in sustainability.
+`, {
+  apiKey: process.env.OPENAI_API_KEY
+});
+```
+
+## Multiple Persona Generation
+
+### Generate Multiple at Once
+
+```typescript
+import { PersonaAI } from '@jamesaphoenix/persona-sdk';
+
+const personas = await PersonaAI.generateMultiple({
+  prompt: 'Create diverse personas for a fitness app user study',
+  count: 5,
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+console.log(`Generated ${personas.length} personas`);
+personas.forEach(persona => {
+  console.log(`${persona.name}: ${persona.age} years old, ${persona.occupation}`);
+});
+```
+
+### Batch Generation with Variations
+
+```typescript
+const prompts = [
+  'Young professional interested in finance',
+  'Retired person who loves gardening',
+  'Student studying computer science',
+  'Parent working from home',
+  'Small business owner'
+];
+
+const personas = await Promise.all(
+  prompts.map(prompt => 
+    PersonaBuilder.fromPrompt(prompt, { 
+      apiKey: process.env.OPENAI_API_KEY 
+    })
+  )
+);
+```
+
+## Intelligent Distribution Selection
+
+### Automatic Distribution Matching
+
+The AI can automatically select appropriate statistical distributions:
+
+```typescript
+import { DistributionSelector } from '@jamesaphoenix/persona-sdk';
+
+const distribution = await DistributionSelector.selectForAttribute({
+  attribute: 'age',
+  context: 'university students',
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+// Returns a Normal distribution centered around college age
+const age = Math.round(distribution.sample());
+console.log(age); // e.g., 20 (appropriate for university students)
+```
+
+### Context-Aware Selection
+
+```typescript
+const incomeDistribution = await DistributionSelector.selectForAttribute({
+  attribute: 'income',
+  context: 'software engineers in San Francisco',
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+const income = incomeDistribution.sample();
+console.log(income); // High income reflecting SF tech salaries
+```
+
+## Structured Output Generation
+
+### Custom Schemas
+
+Generate structured data with Zod validation:
+
+```typescript
+import { StructuredOutputGenerator } from '@jamesaphoenix/persona-sdk';
+import { z } from 'zod';
+
+const marketResearchSchema = z.object({
+  demographics: z.object({
+    ageRange: z.string(),
+    income: z.string(),
+    location: z.string()
+  }),
+  preferences: z.array(z.string()),
+  behaviors: z.object({
+    shoppingFrequency: z.string(),
+    brandLoyalty: z.string()
+  })
+});
+
+const result = await StructuredOutputGenerator.generate({
+  prompt: 'Analyze the target market for premium coffee subscriptions',
+  schema: marketResearchSchema,
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+console.log(result.demographics.ageRange); // e.g., "25-40"
+console.log(result.preferences);           // e.g., ["quality", "convenience"]
+```
+
+## Prompt Optimization
+
+### Optimize Prompts for Better Results
+
+```typescript
+import { PersonaAI } from '@jamesaphoenix/persona-sdk';
+
+const optimizedPrompt = await PersonaAI.optimizePrompt({
+  originalPrompt: 'Create a user persona',
+  goal: 'Generate realistic personas for UX research',
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+console.log(optimizedPrompt);
+// Returns a more detailed, effective prompt
+```
+
+### A/B Testing Prompts
+
+```typescript
+const prompts = [
+  'Create a young professional',
+  'Generate a persona for a 25-30 year old working in tech',
+  'Design a user profile for an early-career software developer'
+];
+
+const results = await Promise.all(
+  prompts.map(async (prompt) => {
+    const persona = await PersonaBuilder.fromPrompt(prompt, {
+      apiKey: process.env.OPENAI_API_KEY
+    });
+    return { prompt, persona };
+  })
+);
+
+// Compare results to find the most effective prompt
+```
+
+## Attribute Suggestions
+
+### Get AI Suggestions
+
+```typescript
+const suggestions = await PersonaAI.suggestAttributes({
+  context: 'mobile gaming app users',
+  existingAttributes: ['age', 'location'],
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+console.log(suggestions);
+// e.g., ["gaming_experience", "device_type", "spending_habits", "social_preferences"]
+```
+
+## Error Handling
+
+### Robust Error Handling
+
+```typescript
+try {
+  const persona = await PersonaBuilder.fromPrompt(
+    'Create a persona',
+    { apiKey: process.env.OPENAI_API_KEY }
+  );
+} catch (error) {
+  if (error.message.includes('API key')) {
+    console.error('Invalid or missing OpenAI API key');
+  } else if (error.message.includes('rate limit')) {
+    console.error('API rate limit exceeded');
+  } else {
+    console.error('Generation failed:', error.message);
+  }
+}
+```
+
+## Best Practices
+
+### Effective Prompts
+
+```typescript
+// ❌ Too vague
+const vague = await PersonaBuilder.fromPrompt('Create a person');
+
+// ✅ Specific and detailed
+const specific = await PersonaBuilder.fromPrompt(`
+  Create a persona for a fitness tracking app user study.
+  Target: Health-conscious professional, age 28-35,
+  works desk job, wants to improve fitness,
+  uses smartphone regularly, values data insights.
+`);
+```
+
+### Cost Optimization
+
+```typescript
+// Batch requests when possible
+const personas = await PersonaAI.generateMultiple({
+  prompt: 'Create personas for user research',
+  count: 10, // More efficient than 10 separate calls
+  apiKey: process.env.OPENAI_API_KEY
+});
+```
+
+## Next Steps
+
+- [API Reference](/docs/api) - Complete AI features API reference
+- [Examples](/docs/examples) - Real-world usage examples

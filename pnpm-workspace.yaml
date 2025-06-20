@@ -1,3 +1,7 @@
 packages:
   - packages/persona-sdk
   - apps/runtime-tests
+  - apps/docs
+ignoredBuiltDependencies:
+  - esbuild
+  - unrs-resolver
