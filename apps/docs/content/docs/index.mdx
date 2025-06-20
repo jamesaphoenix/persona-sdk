@@ -1,0 +1,39 @@
+---
+title: Persona SDK API Reference
+description: Core API documentation for the Persona SDK
+---
+
+## Installation
+
+```bash
+npm install @jamesaphoenix/persona-sdk
+```
+
+## Quick Start
+
+```typescript
+import { PersonaBuilder } from '@jamesaphoenix/persona-sdk';
+
+const persona = PersonaBuilder.create()
+  .setName('Alex')
+  .setAge(28)
+  .setOccupation('Developer')
+  .build();
+```
+
+## Core Classes
+
+### [Persona](/docs/persona)
+Individual persona instances with attributes
+
+### [PersonaBuilder](/docs/persona-builder)
+Fluent builder for creating personas
+
+### [PersonaGroup](/docs/persona-group)
+Manage collections of personas
+
+### [Distributions](/docs/distributions)
+Statistical distributions for realistic data
+
+### [AI Features](/docs/ai)
+OpenAI integration for intelligent generation
