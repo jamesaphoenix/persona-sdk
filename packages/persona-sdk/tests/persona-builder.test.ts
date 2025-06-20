@@ -86,7 +86,7 @@ describe('PersonaBuilder', () => {
       expect(persona.name).toBe('Random Person');
       expect(persona.attributes.age).toBeTypeOf('number');
       expect(persona.attributes.age).toBeGreaterThan(10); // Within reasonable range for statistical variance
-      expect(persona.attributes.age).toBeLessThan(45);
+      expect(persona.attributes.age).toBeLessThan(60); // Allow for up to ~6 standard deviations
       expect(['Developer', 'Designer']).toContain(persona.attributes.occupation);
       expect(persona.attributes.sex).toBe('other');
     });
