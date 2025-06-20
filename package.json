@@ -5,6 +5,7 @@
   "scripts": {
     "build": "cd packages/persona-sdk && pnpm build",
     "test": "cd packages/persona-sdk && pnpm test",
+    "test:coverage": "cd packages/persona-sdk && pnpm test:coverage",
     "test:watch": "cd packages/persona-sdk && pnpm test:watch",
     "type-check": "cd packages/persona-sdk && pnpm type-check",
     "clean": "cd packages/persona-sdk && pnpm clean",
