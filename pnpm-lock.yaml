@@ -26,7 +26,7 @@ importers:
 
   apps/runtime-tests:
     dependencies:
-      '@internal/persona-sdk-minimal':
+      '@jamesaphoenix/persona-sdk':
         specifier: workspace:*
         version: link:../../packages/persona-sdk
       chalk:
