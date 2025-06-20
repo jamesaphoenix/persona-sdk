@@ -1,4 +1,5 @@
 {
+  "root": ".",
   "buildCommand": "cd apps/docs && pnpm build",
   "outputDirectory": "apps/docs/.next",
   "installCommand": "pnpm install"
