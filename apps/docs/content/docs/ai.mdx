@@ -1,0 +1,118 @@
+---
+title: AI Features
+description: AI-powered persona generation and structured output
+---
+
+## PersonaAI
+
+Static methods for AI-powered persona generation.
+
+### generateMultiple
+
+```typescript
+static async generateMultiple(options: {
+  prompt: string;
+  count: number;
+  apiKey: string;
+}): Promise<Persona[]>
+```
+
+Generate multiple personas from a single prompt.
+
+### optimizePrompt
+
+```typescript
+static async optimizePrompt(options: {
+  originalPrompt: string;
+  goal: string;
+  apiKey: string;
+}): Promise<string>
+```
+
+Optimize a prompt for better results.
+
+### suggestAttributes
+
+```typescript
+static async suggestAttributes(options: {
+  context: string;
+  existingAttributes?: string[];
+  apiKey: string;
+}): Promise<string[]>
+```
+
+Suggest relevant attributes for personas.
+
+## DistributionSelector
+
+Intelligent distribution selection.
+
+### selectForAttribute
+
+```typescript
+static async selectForAttribute(options: {
+  attribute: string;
+  context?: string;
+  apiKey: string;
+}): Promise<BaseDistribution>
+```
+
+Select appropriate distribution for an attribute.
+
+## StructuredOutputGenerator
+
+Generate structured data with validation.
+
+### generate
+
+```typescript
+static async generate<T>(options: {
+  prompt: string;
+  schema: ZodSchema<T>;
+  apiKey: string;
+}): Promise<T>
+```
+
+Generate data matching a Zod schema.
+
+## Examples
+
+### Generate Multiple Personas
+
+```typescript
+const personas = await PersonaAI.generateMultiple({
+  prompt: 'Create diverse personas for a fitness app',
+  count: 5,
+  apiKey: process.env.OPENAI_API_KEY
+});
+```
+
+### Structured Output
+
+```typescript
+import { z } from 'zod';
+
+const MarketAnalysisSchema = z.object({
+  targetAge: z.string(),
+  interests: z.array(z.string()),
+  painPoints: z.array(z.string())
+});
+
+const analysis = await StructuredOutputGenerator.generate({
+  prompt: 'Analyze target market for productivity app',
+  schema: MarketAnalysisSchema,
+  apiKey: process.env.OPENAI_API_KEY
+});
+```
+
+### Distribution Selection
+
+```typescript
+const ageDistribution = await DistributionSelector.selectForAttribute({
+  attribute: 'age',
+  context: 'college students',
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+// Returns appropriate distribution (e.g., Normal(20, 2))
+```

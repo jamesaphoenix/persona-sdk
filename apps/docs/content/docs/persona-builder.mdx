@@ -1,0 +1,120 @@
+---
+title: PersonaBuilder
+description: Fluent builder for creating personas
+---
+
+## Static Methods
+
+### create
+
+```typescript
+static create(): PersonaBuilder
+```
+
+Create a new builder instance.
+
+### fromPrompt
+
+```typescript  
+static async fromPrompt(
+  prompt: string,
+  options: { apiKey: string }
+): Promise<Persona>
+```
+
+Generate a persona from natural language prompt using AI.
+
+## Instance Methods
+
+### setName
+
+```typescript
+setName(name: string): PersonaBuilder
+```
+
+Set the persona's name.
+
+### setAge
+
+```typescript
+setAge(age: number | Distribution): PersonaBuilder
+```
+
+Set age using a value or distribution.
+
+### setOccupation
+
+```typescript
+setOccupation(occupation: string | Distribution): PersonaBuilder
+```
+
+Set occupation using a value or distribution.
+
+### setSex
+
+```typescript
+setSex(sex: Sex | Distribution): PersonaBuilder
+```
+
+Set gender using a value or distribution.
+
+### setCustomAttribute
+
+```typescript
+setCustomAttribute(key: string, value: any): PersonaBuilder
+```
+
+Add a custom attribute.
+
+### build
+
+```typescript
+build(): Persona
+```
+
+Build and return the persona.
+
+### buildMany
+
+```typescript
+buildMany(count: number, baseName?: string): Persona[]
+```
+
+Build multiple personas.
+
+## Examples
+
+### Simple Persona
+
+```typescript
+const persona = PersonaBuilder.create()
+  .setName('Alice')
+  .setAge(25)
+  .setOccupation('Designer')
+  .setSex('female')
+  .build();
+```
+
+### Using Distributions
+
+```typescript
+import { NormalDistribution, CategoricalDistribution } from '@jamesaphoenix/persona-sdk';
+
+const randomPersona = PersonaBuilder.create()
+  .setName('Random User')
+  .setAge(new NormalDistribution(30, 5))
+  .setOccupation(new CategoricalDistribution([
+    { value: 'Developer', probability: 0.6 },
+    { value: 'Designer', probability: 0.4 }
+  ]))
+  .build();
+```
+
+### AI Generation
+
+```typescript
+const aiPersona = await PersonaBuilder.fromPrompt(
+  'Create a 25-year-old software developer from Austin',
+  { apiKey: process.env.OPENAI_API_KEY }
+);
+```

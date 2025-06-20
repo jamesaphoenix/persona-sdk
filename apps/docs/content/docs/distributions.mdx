@@ -1,0 +1,114 @@
+---
+title: Statistical Distributions
+description: Generate realistic persona attributes using statistical distributions
+---
+
+## Base Distribution
+
+All distributions extend the abstract `BaseDistribution` class:
+
+```typescript
+abstract class BaseDistribution {
+  abstract sample(): number;
+  setSeed(seed: number): void;
+}
+```
+
+## Normal Distribution
+
+Bell curve distribution for continuous values.
+
+```typescript
+new NormalDistribution(mean: number, standardDeviation: number)
+```
+
+### Example
+
+```typescript
+const age = new NormalDistribution(35, 10);
+const value = age.sample(); // e.g., 32.5
+```
+
+## Uniform Distribution
+
+Equal probability across a range.
+
+```typescript
+new UniformDistribution(min: number, max: number)
+```
+
+### Example
+
+```typescript
+const salary = new UniformDistribution(30000, 100000);
+const value = salary.sample(); // e.g., 65432
+```
+
+## Exponential Distribution
+
+Models waiting times and rare events.
+
+```typescript
+new ExponentialDistribution(rate: number)
+```
+
+### Example
+
+```typescript
+const waitTime = new ExponentialDistribution(0.1);
+const value = waitTime.sample(); // e.g., 8.3
+```
+
+## Beta Distribution
+
+Flexible distribution bounded between 0 and 1.
+
+```typescript
+new BetaDistribution(alpha: number, beta: number)
+```
+
+### Example
+
+```typescript
+const satisfaction = new BetaDistribution(8, 2);
+const value = satisfaction.sample(); // e.g., 0.85
+```
+
+## Categorical Distribution
+
+Discrete values with probabilities.
+
+```typescript
+interface Category {
+  value: any;
+  probability: number;
+}
+
+new CategoricalDistribution(categories: Category[])
+```
+
+### Example
+
+```typescript
+const occupation = new CategoricalDistribution([
+  { value: 'Engineer', probability: 0.3 },
+  { value: 'Designer', probability: 0.2 },
+  { value: 'Manager', probability: 0.2 },
+  { value: 'Analyst', probability: 0.3 }
+]);
+
+const job = occupation.sample(); // e.g., "Engineer"
+```
+
+## Seeded Random
+
+All distributions support deterministic generation:
+
+```typescript
+const dist = new NormalDistribution(25, 5);
+dist.setSeed(12345);
+
+// Will always generate same sequence
+const value1 = dist.sample(); // Always same
+const value2 = dist.sample(); // Always same
+```
