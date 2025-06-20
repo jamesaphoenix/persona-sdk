@@ -1,0 +1,69 @@
+{
+  "polyfillFiles": [
+    "static/chunks/polyfills-78c92fac7aa8fdd8.js"
+  ],
+  "devFiles": [],
+  "ampDevFiles": [],
+  "lowPriorityFiles": [
+    "static/Yrik9fNKqqDnmX4Ndl46Y/_buildManifest.js",
+    "static/Yrik9fNKqqDnmX4Ndl46Y/_ssgManifest.js"
+  ],
+  "rootMainFiles": [],
+  "pages": {
+    "/": [
+      "static/chunks/webpack-8fa1640cc84ba8fe.js",
+      "static/chunks/framework-e0f347a11a70369e.js",
+      "static/chunks/main-88bcb54ffe9140d6.js",
+      "static/chunks/791-6839def773e172cf.js",
+      "static/chunks/pages/index-f8c4c8f14ab249d0.js"
+    ],
+    "/_app": [
+      "static/chunks/webpack-8fa1640cc84ba8fe.js",
+      "static/chunks/framework-e0f347a11a70369e.js",
+      "static/chunks/main-88bcb54ffe9140d6.js",
+      "static/chunks/pages/_app-e86040d3d69e0d4a.js"
+    ],
+    "/_error": [
+      "static/chunks/webpack-8fa1640cc84ba8fe.js",
+      "static/chunks/framework-e0f347a11a70369e.js",
+      "static/chunks/main-88bcb54ffe9140d6.js",
+      "static/chunks/pages/_error-113e7c147076c2a1.js"
+    ],
+    "/docs/ai": [
+      "static/chunks/webpack-8fa1640cc84ba8fe.js",
+      "static/chunks/framework-e0f347a11a70369e.js",
+      "static/chunks/main-88bcb54ffe9140d6.js",
+      "static/chunks/791-6839def773e172cf.js",
+      "static/chunks/pages/docs/ai-0a12cec49c9afebc.js"
+    ],
+    "/docs/distributions": [
+      "static/chunks/webpack-8fa1640cc84ba8fe.js",
+      "static/chunks/framework-e0f347a11a70369e.js",
+      "static/chunks/main-88bcb54ffe9140d6.js",
+      "static/chunks/791-6839def773e172cf.js",
+      "static/chunks/pages/docs/distributions-1893feb16322b89e.js"
+    ],
+    "/docs/persona": [
+      "static/chunks/webpack-8fa1640cc84ba8fe.js",
+      "static/chunks/framework-e0f347a11a70369e.js",
+      "static/chunks/main-88bcb54ffe9140d6.js",
+      "static/chunks/791-6839def773e172cf.js",
+      "static/chunks/pages/docs/persona-330e46d1a944f24d.js"
+    ],
+    "/docs/persona-builder": [
+      "static/chunks/webpack-8fa1640cc84ba8fe.js",
+      "static/chunks/framework-e0f347a11a70369e.js",
+      "static/chunks/main-88bcb54ffe9140d6.js",
+      "static/chunks/791-6839def773e172cf.js",
+      "static/chunks/pages/docs/persona-builder-324925e688ed0694.js"
+    ],
+    "/docs/persona-group": [
+      "static/chunks/webpack-8fa1640cc84ba8fe.js",
+      "static/chunks/framework-e0f347a11a70369e.js",
+      "static/chunks/main-88bcb54ffe9140d6.js",
+      "static/chunks/791-6839def773e172cf.js",
+      "static/chunks/pages/docs/persona-group-a2b50e1c102df395.js"
+    ]
+  },
+  "ampFirstPages": []
+}

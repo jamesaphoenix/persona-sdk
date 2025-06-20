@@ -1,0 +1,15 @@
+<!DOCTYPE html><html><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="next-head-count" content="2"/><noscript data-n-css=""></noscript><script defer="" nomodule="" src="/_next/static/chunks/polyfills-78c92fac7aa8fdd8.js"></script><script src="/_next/static/chunks/webpack-8fa1640cc84ba8fe.js" defer=""></script><script src="/_next/static/chunks/framework-e0f347a11a70369e.js" defer=""></script><script src="/_next/static/chunks/main-88bcb54ffe9140d6.js" defer=""></script><script src="/_next/static/chunks/pages/_app-e86040d3d69e0d4a.js" defer=""></script><script src="/_next/static/chunks/791-6839def773e172cf.js" defer=""></script><script src="/_next/static/chunks/pages/docs/persona-330e46d1a944f24d.js" defer=""></script><script src="/_next/static/Yrik9fNKqqDnmX4Ndl46Y/_buildManifest.js" defer=""></script><script src="/_next/static/Yrik9fNKqqDnmX4Ndl46Y/_ssgManifest.js" defer=""></script></head><body><div id="__next"><div style="max-width:800px;margin:0 auto;padding:2rem;font-family:system-ui, sans-serif"><a style="color:#0070f3;text-decoration:none" href="/">← Back to Docs</a><h1>Persona Class</h1><h2>Overview</h2><p>The Persona class represents an individual with attributes.</p><h2>Constructor</h2><pre style="background:#f5f5f5;padding:1rem;border-radius:4px">new Persona(name: string, attributes: PersonaAttributes)</pre><h2>Properties</h2><ul><li><code>id: string</code> - Unique identifier</li><li><code>name: string</code> - Persona name</li><li><code>age: number</code> - Age</li><li><code>occupation: string</code> - Occupation</li><li><code>sex: Sex</code> - Gender</li></ul><h2>Methods</h2><h3>getAttribute(key: string): any</h3><p>Get a custom attribute value.</p><h3>setAttribute(key: string, value: any): void</h3><p>Set a custom attribute.</p><h3>clone(newName?: string): Persona</h3><p>Create a copy of the persona with optional new name.</p><h3>toJSON(): PersonaData</h3><p>Export persona data as JSON.</p><h2>Example</h2><pre style="background:#f5f5f5;padding:1rem;border-radius:4px">const persona = new Persona(&#x27;John Doe&#x27;, {
+  age: 30,
+  occupation: &#x27;Engineer&#x27;,
+  sex: &#x27;male&#x27;
+});
+
+// Set custom attributes
+persona.setAttribute(&#x27;location&#x27;, &#x27;New York&#x27;);
+persona.setAttribute(&#x27;skills&#x27;, [&#x27;JavaScript&#x27;, &#x27;Python&#x27;]);
+
+// Clone with new name
+const clone = persona.clone(&#x27;Jane Doe&#x27;);
+
+// Export as JSON
+const data = persona.toJSON();</pre></div></div><script id="__NEXT_DATA__" type="application/json">{"props":{"pageProps":{}},"page":"/docs/persona","query":{},"buildId":"Yrik9fNKqqDnmX4Ndl46Y","nextExport":true,"autoExport":true,"isFallback":false,"scriptLoader":[]}</script></body></html>
