@@ -140,21 +140,21 @@ const routeModule = new next_dist_server_route_modules_app_page_module_compiled_
 /***/ 7380:
 /***/ (() => {
 
-throw new Error("Module build failed (from ../../node_modules/.pnpm/next@15.0.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):\nError: unknown field `lintCodemodComments` at line 1 column 3877");
+throw new Error("Module build failed (from ../../node_modules/.pnpm/next@15.0.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):\nError: unknown field `lintCodemodComments` at line 1 column 3863");
 
 /***/ }),
 
 /***/ 5399:
 /***/ (() => {
 
-throw new Error("Module build failed (from ../../node_modules/.pnpm/next@15.0.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):\nError: unknown field `lintCodemodComments` at line 1 column 3847");
+throw new Error("Module build failed (from ../../node_modules/.pnpm/next@15.0.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):\nError: unknown field `lintCodemodComments` at line 1 column 3833");
 
 /***/ }),
 
 /***/ 3953:
 /***/ (() => {
 
-throw new Error("Module build failed (from ../../node_modules/.pnpm/next@15.0.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):\nError: unknown field `lintCodemodComments` at line 1 column 3832");
+throw new Error("Module build failed (from ../../node_modules/.pnpm/next@15.0.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):\nError: unknown field `lintCodemodComments` at line 1 column 3818");
 
 /***/ })
 

@@ -7,7 +7,7 @@ exports.modules = {
 /***/ 136:
 /***/ (() => {
 
-throw new Error("Module build failed (from ../../node_modules/.pnpm/next@15.0.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):\nError: unknown field `lintCodemodComments` at line 1 column 4065");
+throw new Error("Module build failed (from ../../node_modules/.pnpm/next@15.0.0_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):\nError: unknown field `lintCodemodComments` at line 1 column 4051");
 
 /***/ })
 
