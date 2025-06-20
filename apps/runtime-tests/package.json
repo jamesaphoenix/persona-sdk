@@ -1,5 +1,5 @@
 {
-  "name": "@persona-sdk/runtime-tests",
+  "name": "@internal/runtime-tests",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "clean-cassettes": "rm -rf cassettes/*.json && rm -rf signatures/*.json"
   },
   "dependencies": {
-    "@jamesaphoenix/persona-sdk": "workspace:*",
+    "@internal/persona-sdk-minimal": "workspace:*",
     "chalk": "^5.3.0",
     "crypto": "^1.0.1",
     "diff": "^7.0.0",

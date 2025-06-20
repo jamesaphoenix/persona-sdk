@@ -56,6 +56,8 @@ export declare const PersonaGroupSchema: z.ZodBranded<z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     name: string;
     id: string;
+    createdAt: Date;
+    updatedAt: Date;
     personas: ({
         name: string;
         attributes: Record<string, unknown>;
@@ -63,12 +65,12 @@ export declare const PersonaGroupSchema: z.ZodBranded<z.ZodObject<{
         createdAt: Date;
         updatedAt: Date;
     } & z.BRAND<"Persona">)[];
-    createdAt: Date;
-    updatedAt: Date;
     metadata?: Record<string, unknown> | undefined;
 }, {
     name: string;
     id: string;
+    createdAt: Date;
+    updatedAt: Date;
     personas: {
         name: string;
         attributes: Record<string, unknown>;
@@ -76,8 +78,6 @@ export declare const PersonaGroupSchema: z.ZodBranded<z.ZodObject<{
         createdAt: Date;
         updatedAt: Date;
     }[];
-    createdAt: Date;
-    updatedAt: Date;
     metadata?: Record<string, unknown> | undefined;
 }>, "PersonaGroup">;
 export type ValidatedPersonaGroup = z.infer<typeof PersonaGroupSchema>;
@@ -438,12 +438,12 @@ export declare const MediaAnalysisRequestSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     content: string;
     mediaType: "audio" | "text" | "image" | "video";
-    analysisType: "demographics" | "ctr" | "engagement" | "sentiment";
+    analysisType: "ctr" | "engagement" | "sentiment" | "demographics";
     options?: Record<string, unknown> | undefined;
 }, {
     content: string;
     mediaType: "audio" | "text" | "image" | "video";
-    analysisType: "demographics" | "ctr" | "engagement" | "sentiment";
+    analysisType: "ctr" | "engagement" | "sentiment" | "demographics";
     options?: Record<string, unknown> | undefined;
 }>;
 export type ValidatedMediaAnalysisRequest = z.infer<typeof MediaAnalysisRequestSchema>;
@@ -512,6 +512,8 @@ export declare const safeParsePersona: (data: unknown) => z.SafeParseReturnType<
 export declare const safeParsePersonaGroup: (data: unknown) => z.SafeParseReturnType<{
     name: string;
     id: string;
+    createdAt: Date;
+    updatedAt: Date;
     personas: {
         name: string;
         attributes: Record<string, unknown>;
@@ -519,12 +521,12 @@ export declare const safeParsePersonaGroup: (data: unknown) => z.SafeParseReturn
         createdAt: Date;
         updatedAt: Date;
     }[];
-    createdAt: Date;
-    updatedAt: Date;
     metadata?: Record<string, unknown> | undefined;
 }, {
     name: string;
     id: string;
+    createdAt: Date;
+    updatedAt: Date;
     personas: ({
         name: string;
         attributes: Record<string, unknown>;
@@ -532,8 +534,6 @@ export declare const safeParsePersonaGroup: (data: unknown) => z.SafeParseReturn
         createdAt: Date;
         updatedAt: Date;
     } & z.BRAND<"Persona">)[];
-    createdAt: Date;
-    updatedAt: Date;
     metadata?: Record<string, unknown> | undefined;
 } & z.BRAND<"PersonaGroup">>;
 export declare const safeParseDistribution: (data: unknown) => z.SafeParseReturnType<{

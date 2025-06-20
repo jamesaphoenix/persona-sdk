@@ -1,7 +1,7 @@
 {
-  "name": "@jamesaphoenix/persona-sdk",
-  "version": "0.5.0",
-  "description": "TypeScript SDK for generating personas from statistical distributions with AI-powered insights, REST API, and React hooks",
+  "name": "@internal/persona-sdk-minimal",
+  "version": "1.0.0",
+  "description": "Minimal TypeScript SDK for generating personas with AI-powered features",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -21,114 +21,35 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:stress": "vitest run tests/adapters/postgres/stress-test.ts",
-    "test:integration": "vitest run tests/integration/",
     "build": "tsc --build",
-    "clean": "rm -rf dist coverage docs",
-    "type-check": "tsc --noEmit",
-    "docs": "DISPLAY= BROWSER=none typedoc --logLevel Error",
-    "docs:watch": "typedoc --watch"
+    "clean": "rm -rf dist coverage",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@langchain/core": "^0.3.59",
     "@langchain/openai": "^0.1.0",
-    "langchain": "^0.3.0",
-    "mime-types": "^3.0.1",
     "openai": "^4.70.0",
     "random-js": "^2.1.0",
-    "simple-statistics": "^7.8.0",
-    "tiktoken": "^1.0.21",
+    "simple-statistics": "^7.8.5",
     "zod": "^3.23.0"
   },
-  "peerDependencies": {
-    "@fastify/cors": "^10.0.0",
-    "@fastify/swagger": "^9.0.0",
-    "@fastify/swagger-ui": "^5.0.0",
-    "@prisma/client": "^5.0.0",
-    "@supabase/supabase-js": "^2.0.0",
-    "fastify": "^5.0.0",
-    "fastify-type-provider-zod": "^2.0.0",
-    "pg": "^8.0.0",
-    "react": "^18.0.0 || ^19.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@fastify/cors": {
-      "optional": true
-    },
-    "@fastify/swagger": {
-      "optional": true
-    },
-    "@fastify/swagger-ui": {
-      "optional": true
-    },
-    "@prisma/client": {
-      "optional": true
-    },
-    "@supabase/supabase-js": {
-      "optional": true
-    },
-    "fastify": {
-      "optional": true
-    },
-    "fastify-type-provider-zod": {
-      "optional": true
-    },
-    "pg": {
-      "optional": true
-    },
-    "react": {
-      "optional": true
-    }
-  },
   "devDependencies": {
-    "@fastify/cors": "^10.1.0",
-    "@fastify/swagger": "^9.5.1",
-    "@fastify/swagger-ui": "^5.2.3",
-    "@types/mime-types": "^3.0.1",
     "@types/node": "^22.10.7",
-    "@types/pg": "^8.0.0",
-    "@types/react": "^18.3.23",
-    "@vitest/coverage-v8": "^3.2.3",
-    "dotenv": "^16.0.3",
-    "fastify": "^5.4.0",
-    "fastify-type-provider-zod": "^2.0.0",
-    "react": "^19.1.0",
-    "typedoc": "^0.26.0",
+    "@types/random-js": "^2.0.0",
+    "@vitest/coverage-v8": "^3.0.0",
+    "@vitest/ui": "^3.0.0",
     "typescript": "5.7.3",
-    "typescript-transform-extensions": "^1.0.1",
-    "vitest": "^3.2.3"
-  },
-  "engines": {
-    "node": ">=20"
+    "vitest": "^3.0.0"
   },
   "keywords": [
     "persona",
-    "audience",
-    "generation",
-    "statistics",
-    "distributions",
     "ai",
-    "typescript",
-    "sdk",
-    "react",
-    "rest-api",
-    "langchain",
-    "postgresql",
+    "openai",
     "structured-output",
-    "prompt-optimization",
-    "media-analysis"
+    "typescript"
   ],
-  "author": "",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jamesaphoenix/persona-sdk"
-  },
-  "bugs": {
-    "url": "https://github.com/jamesaphoenix/persona-sdk/issues"
-  },
-  "homepage": "https://persona-sdk-docs.vercel.app",
-  "publishConfig": {
-    "access": "public"
+  "private": true,
+  "engines": {
+    "node": ">=20"
   }
 }

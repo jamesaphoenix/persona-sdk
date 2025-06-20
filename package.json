@@ -1,41 +1,20 @@
 {
-  "name": "@jamesaphoenix/persona-sdk",
-  "version": "0.5.0",
-  "private": false,
+  "name": "@jamesaphoenix/persona-sdk-minimal",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
-    "dev": "turbo dev",
-    "test": "turbo run test",
-    "test:watch": "turbo run test:watch",
-    "test:coverage": "turbo run test:coverage",
-    "build": "DISPLAY= BROWSER=none turbo run build",
-    "clean": "turbo run clean",
-    "type-check": "turbo run type-check",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "docs": "DISPLAY= BROWSER=none turbo run docs",
-    "api:dev": "pnpm --filter @jamesaphoenix/persona-api dev",
-    "api:build": "pnpm --filter @jamesaphoenix/persona-api build",
-    "api:start": "pnpm --filter @jamesaphoenix/persona-api start",
-    "api:docker": "cd packages/persona-api && docker-compose up api-dev",
-    "test-app:dev": "pnpm --filter @persona-sdk/test-app dev",
-    "test-app:build": "pnpm --filter @persona-sdk/test-app build",
-    "test-app:start": "pnpm --filter @persona-sdk/test-app start",
-    "web:dev": "pnpm --filter @persona-sdk/web dev",
-    "web:build": "pnpm --filter @persona-sdk/web build",
-    "web:test": "pnpm --filter @persona-sdk/web test",
-    "web:test:e2e": "pnpm --filter @persona-sdk/web test:e2e",
-    "web:test:coverage": "pnpm --filter @persona-sdk/web test:coverage",
-    "runtime:test": "pnpm --filter @persona-sdk/runtime-tests test",
-    "runtime:test:record": "pnpm --filter @persona-sdk/runtime-tests test:record",
-    "runtime:test:replay": "pnpm --filter @persona-sdk/runtime-tests test:replay"
+    "build": "cd packages/persona-sdk && pnpm build",
+    "test": "cd packages/persona-sdk && pnpm test",
+    "test:watch": "cd packages/persona-sdk && pnpm test:watch",
+    "type-check": "cd packages/persona-sdk && pnpm type-check",
+    "clean": "cd packages/persona-sdk && pnpm clean",
+    "runtime:test": "cd apps/runtime-tests && pnpm test",
+    "runtime:test:record": "cd apps/runtime-tests && CASSETTE_MODE=record pnpm test"
   },
   "devDependencies": {
-    "@esbuild/darwin-arm64": "^0.25.5",
     "@types/node": "^22.10.7",
     "@vitest/coverage-v8": "^3.2.3",
-    "@vitest/ui": "^3.2.3",
     "prettier": "^3.4.2",
-    "turbo": "^2.5.3",
     "typescript": "5.7.3",
     "vitest": "^3.2.3"
   },
@@ -43,11 +22,5 @@
     "node": ">=20"
   },
   "type": "module",
-  "packageManager": "pnpm@10.10.0",
-  "dependencies": {
-    "@langchain/core": "^0.3.59",
-    "mime-types": "^3.0.1",
-    "node-fetch": "^3.3.2",
-    "tiktoken": "^1.0.21"
-  }
+  "packageManager": "pnpm@10.10.0"
 }
