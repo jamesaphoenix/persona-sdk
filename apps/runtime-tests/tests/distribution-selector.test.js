@@ -1,4 +1,4 @@
-import * as PersonaSDK from '@internal/persona-sdk-minimal';
+import * as PersonaSDK from '@jamesaphoenix/persona-sdk';
 
 const { DistributionSelector, NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution } = PersonaSDK;
 

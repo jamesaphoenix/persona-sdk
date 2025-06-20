@@ -5,7 +5,7 @@ import {
   BetaDistribution,
   CategoricalDistribution,
   PersonaBuilder
-} from '@internal/persona-sdk-minimal';
+} from '@jamesaphoenix/persona-sdk';
 
 export const distributionTests = [
   {

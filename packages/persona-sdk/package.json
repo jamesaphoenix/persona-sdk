@@ -1,7 +1,7 @@
 {
-  "name": "@internal/persona-sdk-minimal",
-  "version": "1.0.0",
-  "description": "Minimal TypeScript SDK for generating personas with AI-powered features",
+  "name": "@jamesaphoenix/persona-sdk",
+  "version": "0.4.1",
+  "description": "TypeScript SDK for generating personas with statistical distributions and AI-powered features",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -48,7 +48,7 @@
     "structured-output",
     "typescript"
   ],
-  "private": true,
+  "private": false,
   "engines": {
     "node": ">=20"
   }

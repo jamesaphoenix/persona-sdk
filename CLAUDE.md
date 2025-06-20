@@ -29,6 +29,39 @@ This is a TypeScript SDK for generating personas from statistical distributions.
 - Test edge cases and error states
 - Aim for high coverage
 
+### TDD Development Loop
+
+We follow a strict TDD approach with runtime validation:
+
+1. **Write failing tests first** - Define expected behavior
+2. **Implement minimal code** - Make tests pass
+3. **Run runtime tests** - Spot runtime bugs and API mismatches
+4. **Fix runtime issues** - Update implementation
+5. **Add more tests** - Cover edge cases discovered
+6. **Repeat** - Continue the loop until feature complete
+
+This infinite loop ensures:
+- Tests always reflect actual usage
+- Runtime behavior matches expectations
+- API contracts are validated
+- Edge cases are discovered and tested
+- No regression bugs
+
+Example workflow:
+```bash
+# 1. Write failing test
+pnpm test:watch
+
+# 2. Implement feature
+# 3. Run runtime tests to validate
+cd apps/runtime-tests
+pnpm test
+
+# 4. Fix any runtime issues found
+# 5. Add tests for discovered edge cases
+# 6. Repeat until 100% runtime test success
+```
+
 ### Architecture
 - Keep personas in memory (no persistence)
 - Use clean interfaces and types
@@ -318,7 +351,7 @@ test('persona creation', () => {
 
 ### Overview
 
-The runtime testing system (`apps/runtime-tests`) is a custom test harness that validates the SDK's actual runtime behavior. Unlike unit tests which test isolated components, runtime tests execute real SDK functions to catch:
+We build a custom runtime for the SDK that validates actual runtime behavior. The runtime testing system (`apps/runtime-tests`) is a custom test harness built from scratch. Unlike unit tests which test isolated components, runtime tests execute real SDK functions to catch:
 
 - API mismatches between tests and implementation
 - Edge cases in real usage

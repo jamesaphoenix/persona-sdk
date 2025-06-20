@@ -1,4 +1,4 @@
-import { PersonaBuilder } from '@internal/persona-sdk-minimal';
+import { PersonaBuilder } from '@jamesaphoenix/persona-sdk';
 
 export const personaBuilderTests = [
   {

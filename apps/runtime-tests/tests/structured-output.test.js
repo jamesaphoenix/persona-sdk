@@ -1,4 +1,4 @@
-import * as PersonaSDK from '@internal/persona-sdk-minimal';
+import * as PersonaSDK from '@jamesaphoenix/persona-sdk';
 import { z } from 'zod';
 
 const { StructuredOutputGenerator, PersonaGroup, PersonaBuilder } = PersonaSDK;
