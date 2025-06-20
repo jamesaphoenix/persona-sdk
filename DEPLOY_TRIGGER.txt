@@ -1,0 +1,7 @@
+This file forces Vercel to deploy the latest commit with correct fumadocs-ui import path.
+
+Commit: 6aaa378
+Fixed import: fumadocs-ui/layouts/docs (not fumadocs-ui/layout)
+Removed: turbopack from next.config.mjs
+
+Timestamp: 2025-06-20 14:24:00
