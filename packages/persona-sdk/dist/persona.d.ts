@@ -1,4 +1,4 @@
-import { BasePersonaAttributes, PersonaAttributes, DistributionMap, StructuredOutput } from './types';
+import { BasePersonaAttributes, PersonaAttributes, DistributionMap, StructuredOutput } from './types/index.js';
 import { z } from 'zod';
 /**
  * Represents an individual persona with required and custom attributes.

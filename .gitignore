@@ -94,3 +94,4 @@ cleanup-worktree.sh
 # Generated monitoring configs
 monitoring-configs/
 *.worktree.yml
+apps/docs/.next/

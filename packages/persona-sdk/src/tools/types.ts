@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Distribution } from '../types';
+import { Distribution } from '../types/index.js';
 
 /**
  * Tool for selecting distributions based on persona context

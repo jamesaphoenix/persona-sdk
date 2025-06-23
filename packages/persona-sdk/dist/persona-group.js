@@ -1,6 +1,6 @@
-import { Persona } from './persona';
+import { Persona } from './persona.js';
 import * as ss from 'simple-statistics';
-import { CorrelatedDistribution } from './distributions/correlated-distribution';
+import { CorrelatedDistribution } from './distributions/correlated-distribution.js';
 /**
  * Represents a group of personas for collective analysis and generation.
  *

@@ -1,4 +1,4 @@
-import { BaseDistribution } from './base';
+import { BaseDistribution } from './base.js';
 /**
  * Uniform distribution over [min, max]
  */

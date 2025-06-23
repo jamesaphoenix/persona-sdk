@@ -1,8 +1,8 @@
-export { NormalDistribution } from './normal';
-export { UniformDistribution } from './uniform';
-export { ExponentialDistribution } from './exponential';
-export { BetaDistribution } from './beta';
-export { BinomialDistribution } from './binomial';
-export { CategoricalDistribution } from './categorical';
-export { CorrelatedDistribution, CommonCorrelations, PersonaCorrelationPresets } from './correlated-distribution';
-export type { ConditionalDistribution } from './correlated-distribution';
+export { NormalDistribution } from './normal.js';
+export { UniformDistribution } from './uniform.js';
+export { ExponentialDistribution } from './exponential.js';
+export { BetaDistribution } from './beta.js';
+export { BinomialDistribution } from './binomial.js';
+export { CategoricalDistribution } from './categorical.js';
+export { CorrelatedDistribution, CommonCorrelations, PersonaCorrelationPresets } from './correlated-distribution.js';
+export type { ConditionalDistribution } from './correlated-distribution.js';

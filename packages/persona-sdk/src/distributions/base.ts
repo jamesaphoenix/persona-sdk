@@ -1,5 +1,5 @@
 import { Random, MersenneTwister19937 } from 'random-js';
-import { Distribution } from '../types';
+import { Distribution } from '../types/index.js';
 
 /**
  * Base class for all distributions

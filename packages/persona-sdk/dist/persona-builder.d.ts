@@ -1,7 +1,7 @@
-import { PersonaAttributes, AttributeValue, Distribution, SexSchema } from './types';
-import { Persona } from './persona';
+import { PersonaAttributes, AttributeValue, Distribution, SexSchema } from './types/index.js';
+import { Persona } from './persona.js';
 import { z } from 'zod';
-import { AIOptions } from './ai/persona-ai';
+import { AIOptions } from './ai/persona-ai.js';
 /**
  * Builder class for creating personas with a fluent API.
  *

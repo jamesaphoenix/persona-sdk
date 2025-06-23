@@ -1,7 +1,7 @@
 /**
  * Seeded versions of all distributions for deterministic testing
  */
-import { Distribution } from '../types';
+import { Distribution } from '../types/index.js';
 /**
  * Base class for seeded distributions
  */

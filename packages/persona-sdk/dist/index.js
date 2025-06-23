@@ -8,18 +8,18 @@
  * - Statistical distributions
  */
 // Core Classes
-export { Persona } from './persona';
-export { PersonaBuilder } from './persona-builder';
-export { PersonaGroup } from './persona-group';
+export { Persona } from './persona.js';
+export { PersonaBuilder } from './persona-builder.js';
+export { PersonaGroup } from './persona-group.js';
 // AI Features
-export { PersonaAI } from './ai/persona-ai';
+export { PersonaAI } from './ai/persona-ai.js';
 // Distributions
-export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution } from './distributions';
+export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution } from './distributions/index.js';
 // Export base distribution separately
-export { BaseDistribution } from './distributions/base';
+export { BaseDistribution } from './distributions/base.js';
 // Tools
-export { StructuredOutputGenerator } from './tools/structured-output-generator';
-export { DistributionSelector } from './tools/distribution-selector';
+export { StructuredOutputGenerator } from './tools/structured-output-generator.js';
+export { DistributionSelector } from './tools/distribution-selector.js';
 // Schemas for validation
-export { BasePersonaAttributesSchema, PersonaAttributesSchema, SexSchema } from './types';
+export { BasePersonaAttributesSchema, PersonaAttributesSchema, SexSchema } from './types/index.js';
 //# sourceMappingURL=index.js.map

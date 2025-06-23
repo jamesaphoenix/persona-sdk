@@ -196,10 +196,10 @@ export interface AttributeCorrelation {
 }
 
 // Re-export branded types
-export * from './branded';
+export * from './branded.js';
 
 // Re-export inference types
-export * from './inference';
+export * from './inference.js';
 
 // Re-export distribution types
-export * from './distribution';
+export * from './distribution.js';

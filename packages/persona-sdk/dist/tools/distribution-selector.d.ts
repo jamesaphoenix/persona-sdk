@@ -1,5 +1,5 @@
-import { Distribution } from '../types';
-import { DistributionSelectionParams } from './types';
+import { Distribution } from '../types/index.js';
+import { DistributionSelectionParams } from './types.js';
 /**
  * AI-powered distribution selector
  */

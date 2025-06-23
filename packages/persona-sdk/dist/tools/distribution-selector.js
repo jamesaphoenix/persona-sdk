@@ -1,6 +1,6 @@
 import { OpenAI } from 'openai';
-import { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution } from '../distributions';
-import { DistributionType } from './types';
+import { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution } from '../distributions/index.js';
+import { DistributionType } from './types.js';
 /**
  * AI-powered distribution selector
  */

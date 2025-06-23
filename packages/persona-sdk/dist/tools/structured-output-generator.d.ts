@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { PersonaGroup } from '../persona-group';
-import { StructuredOutput } from '../types';
+import { PersonaGroup } from '../persona-group.js';
+import { StructuredOutput } from '../types/index.js';
 /**
  * Generate structured outputs from PersonaGroup using LangChain.
  *

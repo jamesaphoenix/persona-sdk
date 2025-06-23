@@ -1,4 +1,4 @@
-import { PersonaAttributesSchema } from './types';
+import { PersonaAttributesSchema } from './types/index.js';
 import { z } from 'zod';
 /**
  * Represents an individual persona with required and custom attributes.

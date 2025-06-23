@@ -7,14 +7,14 @@
  * - Prompt optimization
  * - Statistical distributions
  */
-export { Persona } from './persona';
-export { PersonaBuilder } from './persona-builder';
-export { PersonaGroup } from './persona-group';
-export { PersonaAI } from './ai/persona-ai';
-export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution } from './distributions';
-export { BaseDistribution } from './distributions/base';
-export { StructuredOutputGenerator } from './tools/structured-output-generator';
-export { DistributionSelector } from './tools/distribution-selector';
-export type { PersonaAttributes, Sex, StructuredOutput, Distribution, BasePersonaAttributes } from './types';
-export { BasePersonaAttributesSchema, PersonaAttributesSchema, SexSchema } from './types';
+export { Persona } from './persona.js';
+export { PersonaBuilder } from './persona-builder.js';
+export { PersonaGroup } from './persona-group.js';
+export { PersonaAI } from './ai/persona-ai.js';
+export { NormalDistribution, UniformDistribution, ExponentialDistribution, BetaDistribution, CategoricalDistribution } from './distributions/index.js';
+export { BaseDistribution } from './distributions/base.js';
+export { StructuredOutputGenerator } from './tools/structured-output-generator.js';
+export { DistributionSelector } from './tools/distribution-selector.js';
+export type { PersonaAttributes, Sex, StructuredOutput, Distribution, BasePersonaAttributes } from './types/index.js';
+export { BasePersonaAttributesSchema, PersonaAttributesSchema, SexSchema } from './types/index.js';
 //# sourceMappingURL=index.d.ts.map

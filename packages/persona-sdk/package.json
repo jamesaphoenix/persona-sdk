@@ -1,6 +1,6 @@
 {
   "name": "@jamesaphoenix/persona-sdk",
-  "version": "0.4.1",
+  "version": "0.5.5",
   "description": "TypeScript SDK for generating personas with statistical distributions and AI-powered features",
   "type": "module",
   "main": "./dist/index.js",
@@ -9,7 +9,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
     }
   },
   "files": [

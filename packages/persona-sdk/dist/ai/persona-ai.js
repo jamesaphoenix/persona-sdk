@@ -1,4 +1,4 @@
-import { PersonaBuilder } from '../persona-builder';
+import { PersonaBuilder } from '../persona-builder.js';
 /**
  * AI-powered persona generation methods
  */

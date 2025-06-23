@@ -6,7 +6,7 @@ import {
   AttributeValue,
   PersonaAttributesSchema,
   StructuredOutput
-} from './types';
+} from './types/index.js';
 import { z } from 'zod';
 
 /**

@@ -1,5 +1,5 @@
-import { Distribution, AttributeCorrelation } from '../types';
-import { NormalDistribution } from './normal';
+import { Distribution, AttributeCorrelation } from '../types/index.js';
+import { NormalDistribution } from './normal.js';
 
 /**
  * Configuration for conditional distributions

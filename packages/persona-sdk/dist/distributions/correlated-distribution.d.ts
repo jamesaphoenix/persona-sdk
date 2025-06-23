@@ -1,4 +1,4 @@
-import { Distribution, AttributeCorrelation } from '../types';
+import { Distribution, AttributeCorrelation } from '../types/index.js';
 /**
  * Configuration for conditional distributions
  */

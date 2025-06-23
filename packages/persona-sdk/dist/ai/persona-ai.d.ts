@@ -1,4 +1,4 @@
-import { Persona } from '../persona';
+import { Persona } from '../persona.js';
 export interface AIOptions {
     apiKey: string;
     model?: string;

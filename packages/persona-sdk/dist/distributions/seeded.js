@@ -1,7 +1,7 @@
 /**
  * Seeded versions of all distributions for deterministic testing
  */
-import { SeedManager, DeterministicRandom } from '../utils/seed-manager';
+import { SeedManager, DeterministicRandom } from '../utils/seed-manager.js';
 /**
  * Base class for seeded distributions
  */

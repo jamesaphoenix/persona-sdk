@@ -201,6 +201,7 @@ const result = await selector.selectDistributions({
 // Use the AI-selected distributions
 const group = new PersonaGroup('Startup Employees');
 group.generateFromDistributions(100, result.distributions);
+```
 
 ### 🎯 Structured Output Generation
 
@@ -228,6 +229,7 @@ const insights = await generator.generate(
 );
 
 console.log(insights.data.segments);
+```
 
 ### 📸 Media-to-Persona Generation
 
@@ -261,6 +263,7 @@ const collectionResult = await generator.fromMediaCollection([
   './photo1.jpg',
   './blog-post.txt'
 ]);
+```
 
 ### 🚀 REST API Server
 
@@ -365,7 +368,7 @@ const optimizer = new BootstrapOptimizer({
 
 const result = await optimizer.optimize(sentimentModule, trainData);
 console.log(`Final accuracy: ${result.finalScore}`);
-
+```
 
 
 ## Advanced Usage
@@ -450,6 +453,7 @@ const prediction = await generator.generate(
 
 console.log(`Predicted CTR: ${prediction.data.predicted_ctr}%`);
 console.log(`Best segment: ${prediction.data.best_segment}`);
+```
 
 ### Comment Engagement Prediction
 
@@ -485,6 +489,7 @@ const bestHook = results.reduce((best, current) =>
 );
 
 console.log(`Best hook: ${bestHook.data.predicted_comments} comments`);
+```
 
 ### Voting & Polling Systems
 
@@ -517,6 +522,7 @@ const prediction = await generator.generate(
 
 console.log(`Predicted winner: ${prediction.data.winner}`);
 console.log(`Expected turnout: ${prediction.data.turnout}%`);
+```
 
 ### Market Research Surveys
 
@@ -568,6 +574,7 @@ const surveyResults = await generator.generate(
 
 console.log(`Optimal price: $${surveyResults.data.pricing_sensitivity.optimal_price}`);
 console.log(`Interest breakdown:`, surveyResults.data.product_interest);
+```
 
 ## Configuration
 
@@ -611,10 +618,6 @@ See the [API documentation](https://persona-sdk-docs.vercel.app/docs/api) for de
 ## Contributing
 
 Contributions welcome! Please open an issue or submit a pull request.
-
-## License
-
-MIT
 
 ## License
 

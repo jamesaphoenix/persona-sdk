@@ -4,11 +4,11 @@ import {
   DistributionMap,
   Distribution,
   SexSchema
-} from './types';
-import { Persona } from './persona';
+} from './types/index.js';
+import { Persona } from './persona.js';
 import { z } from 'zod';
-import { CorrelatedDistribution } from './distributions/correlated-distribution';
-import { PersonaAI, AIOptions } from './ai/persona-ai';
+import { CorrelatedDistribution } from './distributions/correlated-distribution.js';
+import { PersonaAI, AIOptions } from './ai/persona-ai.js';
 
 /**
  * Builder class for creating personas with a fluent API.

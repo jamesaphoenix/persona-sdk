@@ -1,5 +1,5 @@
-import { PersonaBuilder } from '../persona-builder';
-import { Persona } from '../persona';
+import { PersonaBuilder } from '../persona-builder.js';
+import { Persona } from '../persona.js';
 
 export interface AIOptions {
   apiKey: string;

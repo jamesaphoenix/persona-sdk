@@ -1,5 +1,5 @@
-import { Persona } from './persona';
-import { PersonaGroupOptions, DistributionMap, StructuredOutput, PersonaAttributes, AttributeCorrelation } from './types';
+import { Persona } from './persona.js';
+import { PersonaGroupOptions, DistributionMap, StructuredOutput, PersonaAttributes, AttributeCorrelation } from './types/index.js';
 import { z } from 'zod';
 /**
  * Represents a group of personas for collective analysis and generation.

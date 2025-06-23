@@ -1,7 +1,7 @@
 /**
  * Advanced type inference utilities
  */
-import type { Distribution } from './distribution';
+import type { Distribution } from './distribution.js';
 /**
  * Distribution map type
  */

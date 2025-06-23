@@ -1,4 +1,4 @@
-import { NormalDistribution } from './normal';
+import { NormalDistribution } from './normal.js';
 /**
  * Generates correlated values for multiple attributes
  */

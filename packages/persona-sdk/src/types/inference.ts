@@ -2,7 +2,7 @@
  * Advanced type inference utilities
  */
 
-import type { Distribution } from './distribution';
+import type { Distribution } from './distribution.js';
 // PersonaAttributes is not needed here
 
 /**

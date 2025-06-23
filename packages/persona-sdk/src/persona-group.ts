@@ -1,8 +1,8 @@
-import { Persona } from './persona';
-import { PersonaGroupOptions, DistributionMap, StructuredOutput, PersonaAttributes, AttributeCorrelation, Distribution } from './types';
+import { Persona } from './persona.js';
+import { PersonaGroupOptions, DistributionMap, StructuredOutput, PersonaAttributes, AttributeCorrelation, Distribution } from './types/index.js';
 import * as ss from 'simple-statistics';
 import { z } from 'zod';
-import { CorrelatedDistribution } from './distributions/correlated-distribution';
+import { CorrelatedDistribution } from './distributions/correlated-distribution.js';
 
 /**
  * Represents a group of personas for collective analysis and generation.

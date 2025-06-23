@@ -1,6 +1,6 @@
-import { Persona } from './persona';
-import { CorrelatedDistribution } from './distributions/correlated-distribution';
-import { PersonaAI } from './ai/persona-ai';
+import { Persona } from './persona.js';
+import { CorrelatedDistribution } from './distributions/correlated-distribution.js';
+import { PersonaAI } from './ai/persona-ai.js';
 /**
  * Builder class for creating personas with a fluent API.
  *

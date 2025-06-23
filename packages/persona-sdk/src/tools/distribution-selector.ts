@@ -5,9 +5,9 @@ import {
   ExponentialDistribution,
   BetaDistribution,
   CategoricalDistribution
-} from '../distributions';
-import { Distribution } from '../types';
-import { DistributionType, DistributionSelectionParams } from './types';
+} from '../distributions/index.js';
+import { Distribution } from '../types/index.js';
+import { DistributionType, DistributionSelectionParams } from './types.js';
 
 /**
  * AI-powered distribution selector
