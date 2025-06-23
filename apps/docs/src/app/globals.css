@@ -115,8 +115,4 @@ code .variable { color: #f7768e; }
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Line highlight on hover */
-.group/line:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  box-shadow: inset 3px 0 0 0 rgba(59, 130, 246, 0.5);
-}
+/* Line highlight on hover - handled via Tailwind classes */

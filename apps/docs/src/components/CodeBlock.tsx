@@ -79,11 +79,11 @@ export function CodeBlock({ code, language = 'typescript', showLineNumbers = fal
         </div>
       )}
       <div className={`relative bg-gradient-to-br from-gray-900 via-gray-900 to-gray-950 ${filename ? 'rounded-b-xl' : 'rounded-xl'} overflow-hidden shadow-2xl border border-gray-800`}>
-        <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 via-transparent to-purple-500 opacity-5 pointer-events-none"></div>
         <div className="relative">
           <button
             onClick={copyToClipboard}
-            className="absolute top-4 right-4 p-2 rounded-lg bg-gray-800/80 hover:bg-gray-700/80 transition-all duration-200 opacity-0 group-hover:opacity-100 backdrop-blur-sm border border-gray-700"
+            className="absolute top-4 right-4 p-2 rounded-lg bg-gray-800 bg-opacity-80 hover:bg-gray-700 hover:bg-opacity-80 transition-all duration-200 opacity-0 group-hover:opacity-100 backdrop-blur-sm border border-gray-700"
             aria-label="Copy code"
           >
             {copied ? (
@@ -99,7 +99,7 @@ export function CodeBlock({ code, language = 'typescript', showLineNumbers = fal
           <pre className="overflow-x-auto p-6 text-sm">
             <code className="font-mono">
               {lines.map((line, index) => (
-                <div key={index} className="table-row group/line hover:bg-white/5 -mx-6 px-6">
+                <div key={index} className="table-row hover:bg-white hover:bg-opacity-5 -mx-6 px-6">
                   {showLineNumbers && (
                     <span className="table-cell pr-6 text-gray-600 select-none text-right w-8">
                       {index + 1}
