@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { CodeBlock } from '@/components/CodeBlock';
 
 const navigation = [
   { name: 'Introduction', href: '/docs' },
@@ -20,15 +21,16 @@ const pageContent: Record<string, { title: string; content: JSX.Element }> = {
         
         <section>
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Installation</h2>
-          <div className="bg-gray-900 text-gray-100 rounded-xl p-6 mb-6 overflow-x-auto shadow-lg">
-            <code className="text-base font-mono">npm install @jamesaphoenix/persona-sdk</code>
-          </div>
+          <CodeBlock 
+            code="npm install @jamesaphoenix/persona-sdk"
+            language="bash"
+          />
         </section>
         
         <section>
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Quick Start</h2>
-          <div className="bg-gray-900 text-gray-100 rounded-xl p-6 mb-6 overflow-x-auto shadow-lg">
-            <pre className="text-base font-mono leading-relaxed"><code>{`import { Persona, PersonaBuilder } from '@jamesaphoenix/persona-sdk';
+          <CodeBlock 
+            code={`import { Persona, PersonaBuilder } from '@jamesaphoenix/persona-sdk';
 
 // Create a persona using the builder pattern
 const persona = PersonaBuilder.create()
@@ -37,8 +39,9 @@ const persona = PersonaBuilder.create()
   .setOccupation('Developer')
   .build();
 
-console.log(persona.toObject());`}</code></pre>
-          </div>
+console.log(persona.toObject());`}
+            filename="example.ts"
+          />
         </section>
 
         <section>
@@ -88,8 +91,8 @@ console.log(persona.toObject());`}</code></pre>
         <section>
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Basic Usage</h2>
           <p className="text-gray-600 mb-4">Create personas directly with the constructor:</p>
-          <div className="bg-gray-900 text-gray-100 rounded-xl p-6 mb-6 overflow-x-auto shadow-lg">
-            <pre className="text-base font-mono leading-relaxed"><code>{`// Direct instantiation
+          <CodeBlock 
+            code={`// Direct instantiation
 const persona = new Persona('John Doe', {
   age: 30,
   occupation: 'Engineer',
@@ -100,22 +103,24 @@ const persona = new Persona('John Doe', {
 // Access properties
 console.log(persona.name);       // 'John Doe'
 console.log(persona.age);        // 30
-console.log(persona.occupation); // 'Engineer'`}</code></pre>
-          </div>
+console.log(persona.occupation); // 'Engineer'`}
+            showLineNumbers
+          />
         </section>
 
         <section>
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Builder Pattern</h2>
           <p className="text-gray-600 mb-4">Use the fluent builder API for more readable code:</p>
-          <div className="bg-gray-900 text-gray-100 rounded-xl p-6 mb-6 overflow-x-auto shadow-lg">
-            <pre className="text-base font-mono leading-relaxed"><code>{`const persona = PersonaBuilder.create()
+          <CodeBlock 
+            code={`const persona = PersonaBuilder.create()
   .setName('Jane Smith')
   .setAge(25)
   .setOccupation('Designer')
   .setSex('female')
   .setCustom('skills', ['UI/UX', 'Prototyping'])
-  .build();`}</code></pre>
-          </div>
+  .build();`}
+            showLineNumbers
+          />
         </section>
 
         <section className="bg-blue-50 rounded-xl p-6">
@@ -138,8 +143,8 @@ console.log(persona.occupation); // 'Engineer'`}</code></pre>
         <section>
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Creating Groups</h2>
           <p className="text-gray-600 mb-4">Build groups manually or generate them using distributions:</p>
-          <div className="bg-gray-900 text-gray-100 rounded-xl p-6 mb-6 overflow-x-auto shadow-lg">
-            <pre className="text-base font-mono leading-relaxed"><code>{`const group = new PersonaGroup('Marketing Audience');
+          <CodeBlock 
+            code={`const group = new PersonaGroup('Marketing Audience');
 
 // Add personas manually
 group.add(new Persona('Alice', { age: 25, occupation: 'Designer' }));
@@ -152,23 +157,26 @@ group.generateFromDistributions(100, {
     { value: 'Developer', probability: 0.6 },
     { value: 'Manager', probability: 0.4 }
   ])
-});`}</code></pre>
-          </div>
+});`}
+            filename="persona-group-example.ts"
+            showLineNumbers
+          />
         </section>
 
         <section>
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Group Statistics</h2>
           <p className="text-gray-600 mb-4">Analyze your persona groups with built-in statistical methods:</p>
-          <div className="bg-gray-900 text-gray-100 rounded-xl p-6 mb-6 overflow-x-auto shadow-lg">
-            <pre className="text-base font-mono leading-relaxed"><code>{`const stats = group.getStatistics('age');
+          <CodeBlock 
+            code={`const stats = group.getStatistics('age');
 console.log(\`Average age: \${stats.mean}\`);
 console.log(\`Age range: \${stats.min} - \${stats.max}\`);
 console.log(\`Standard deviation: \${stats.stdDev}\`);
 
 // Filter personas
 const seniors = group.filter(p => p.age > 50);
-console.log(\`Seniors: \${seniors.length}\`);`}</code></pre>
-          </div>
+console.log(\`Seniors: \${seniors.length}\`);`}
+            showLineNumbers
+          />
         </section>
 
         <section className="grid md:grid-cols-2 gap-6">
@@ -209,36 +217,36 @@ console.log(\`Seniors: \${seniors.length}\`);`}</code></pre>
             <div className="border-l-4 border-blue-500 pl-6">
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Normal Distribution</h3>
               <p className="text-gray-600 mb-4">Bell curve distribution, perfect for natural phenomena like height, weight, or IQ.</p>
-              <div className="bg-gray-900 text-gray-100 rounded-xl p-6 overflow-x-auto shadow-lg">
-                <pre className="text-base font-mono leading-relaxed"><code>{`const age = new NormalDistribution(35, 10);
+              <CodeBlock 
+                code={`const age = new NormalDistribution(35, 10);
 // mean: 35, stdDev: 10
-const sample = age.sample(); // e.g., 32.5`}</code></pre>
-              </div>
+const sample = age.sample(); // e.g., 32.5`}
+              />
             </div>
 
             {/* Uniform Distribution */}
             <div className="border-l-4 border-green-500 pl-6">
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Uniform Distribution</h3>
               <p className="text-gray-600 mb-4">Equal probability across a range, ideal for random selections within bounds.</p>
-              <div className="bg-gray-900 text-gray-100 rounded-xl p-6 overflow-x-auto shadow-lg">
-                <pre className="text-base font-mono leading-relaxed"><code>{`const income = new UniformDistribution(40000, 120000);
+              <CodeBlock 
+                code={`const income = new UniformDistribution(40000, 120000);
 // min: 40k, max: 120k
-const sample = income.sample(); // e.g., 75432`}</code></pre>
-              </div>
+const sample = income.sample(); // e.g., 75432`}
+              />
             </div>
 
             {/* Categorical Distribution */}
             <div className="border-l-4 border-purple-500 pl-6">
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Categorical Distribution</h3>
               <p className="text-gray-600 mb-4">Discrete values with probabilities, perfect for categories like occupation or status.</p>
-              <div className="bg-gray-900 text-gray-100 rounded-xl p-6 overflow-x-auto shadow-lg">
-                <pre className="text-base font-mono leading-relaxed"><code>{`const occupation = new CategoricalDistribution([
+              <CodeBlock 
+                code={`const occupation = new CategoricalDistribution([
   { value: 'Engineer', probability: 0.4 },
   { value: 'Designer', probability: 0.3 },
   { value: 'Manager', probability: 0.3 }
 ]);
-const sample = occupation.sample(); // e.g., 'Engineer'`}</code></pre>
-              </div>
+const sample = occupation.sample(); // e.g., 'Engineer'`}
+              />
             </div>
 
             {/* Additional Distributions */}
@@ -279,8 +287,8 @@ const sample = occupation.sample(); // e.g., 'Engineer'`}</code></pre>
         <section>
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Create from Prompt</h2>
           <p className="text-gray-600 mb-4">Generate complete personas from natural language descriptions:</p>
-          <div className="bg-gray-900 text-gray-100 rounded-xl p-6 mb-6 overflow-x-auto shadow-lg">
-            <pre className="text-base font-mono leading-relaxed"><code>{`const persona = await PersonaBuilder.fromPrompt(
+          <CodeBlock 
+            code={`const persona = await PersonaBuilder.fromPrompt(
   'Create a 25-year-old software developer who enjoys gaming',
   { apiKey: process.env.OPENAI_API_KEY }
 );
@@ -292,15 +300,17 @@ const sample = occupation.sample(); // e.g., 'Engineer'`}</code></pre>
 //   occupation: 'Software Developer',
 //   hobbies: ['gaming', 'coding', 'tech blogs'],
 //   personality: 'analytical, creative, introverted'
-// }`}</code></pre>
-          </div>
+// }`}
+            filename="ai-prompt-example.ts"
+            showLineNumbers
+          />
         </section>
 
         <section>
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Structured Output</h2>
           <p className="text-gray-600 mb-4">Extract structured insights from persona groups using Zod schemas:</p>
-          <div className="bg-gray-900 text-gray-100 rounded-xl p-6 mb-6 overflow-x-auto shadow-lg">
-            <pre className="text-base font-mono leading-relaxed"><code>{`import { z } from 'zod';
+          <CodeBlock 
+            code={`import { z } from 'zod';
 
 const MarketInsightSchema = z.object({
   targetSegment: z.string(),
@@ -311,8 +321,10 @@ const MarketInsightSchema = z.object({
 const insights = await group.generateStructuredOutput(
   MarketInsightSchema,
   'Analyze this audience for marketing'
-);`}</code></pre>
-          </div>
+);`}
+            filename="structured-output.ts"
+            showLineNumbers
+          />
         </section>
 
         <section className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-8">

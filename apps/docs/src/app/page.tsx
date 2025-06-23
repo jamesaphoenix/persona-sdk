@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CodeBlock } from '@/components/CodeBlock';
 
 export default function HomePage() {
   return (
@@ -71,8 +72,8 @@ export default function HomePage() {
         
         <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
           <h2 className="text-2xl font-bold mb-6">Quick Example</h2>
-          <div className="bg-gray-900 text-gray-100 rounded-lg p-6 overflow-x-auto">
-            <pre className="text-sm"><code>{`import { 
+          <CodeBlock 
+            code={`import { 
   PersonaBuilder, 
   PersonaGroup, 
   NormalDistribution,
@@ -98,8 +99,10 @@ group.generateFromDistributions(100, {
 
 // Get statistics
 const stats = group.getStatistics('age');
-console.log(\`Average age: \${stats.mean.toFixed(1)}\`);`}</code></pre>
-          </div>
+console.log(\`Average age: \${stats.mean.toFixed(1)}\`);`}
+            filename="quick-start.ts"
+            showLineNumbers
+          />
         </div>
       </main>
       
