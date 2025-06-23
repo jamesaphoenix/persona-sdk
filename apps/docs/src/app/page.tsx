@@ -102,6 +102,38 @@ console.log(\`Average age: \${stats.mean.toFixed(1)}\`);`}</code></pre>
           </div>
         </div>
       </main>
+      
+      <footer className="bg-gray-900 text-white mt-20">
+        <div className="container mx-auto px-6 py-12">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-lg font-bold mb-4">Persona SDK</h3>
+              <p className="text-gray-400 text-sm">Generate realistic personas using statistical distributions and AI.</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold mb-4">Documentation</h3>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/docs" className="text-gray-400 hover:text-white">Getting Started</Link></li>
+                <li><Link href="/docs/persona" className="text-gray-400 hover:text-white">API Reference</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold mb-4">Community</h3>
+              <ul className="space-y-2 text-sm">
+                <li><a href="https://github.com/jamesaphoenix/persona-sdk" className="text-gray-400 hover:text-white">GitHub</a></li>
+                <li><a href="https://www.npmjs.com/package/@jamesaphoenix/persona-sdk" className="text-gray-400 hover:text-white">npm</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold mb-4">Built with</h3>
+              <p className="text-gray-400 text-sm">TypeScript, Next.js, and lots of ☕</p>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+            © {new Date().getFullYear()} Persona SDK. All rights reserved.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
