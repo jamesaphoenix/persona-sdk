@@ -4,10 +4,15 @@ import { CodeBlock } from '@/components/CodeBlock';
 
 const navigation = [
   { name: 'Introduction', href: '/docs' },
+  { name: 'Quick Start', href: '/docs/quick-start' },
   { name: 'Persona', href: '/docs/persona' },
+  { name: 'PersonaBuilder', href: '/docs/persona-builder' },
   { name: 'PersonaGroup', href: '/docs/persona-group' },
   { name: 'Distributions', href: '/docs/distributions' },
+  { name: 'Correlations', href: '/docs/correlations' },
   { name: 'AI Features', href: '/docs/ai' },
+  { name: 'Advanced Usage', href: '/docs/advanced' },
+  { name: 'API Reference', href: '/docs/api' },
 ];
 
 const pageContent: Record<string, { title: string; content: JSX.Element }> = {
@@ -75,6 +80,172 @@ console.log(persona.toObject());`}
                 <p className="text-gray-600 text-sm mt-1">Model real-world attribute relationships</p>
               </div>
             </div>
+          </div>
+        </section>
+      </div>
+    ),
+  },
+  'persona-builder': {
+    title: 'PersonaBuilder',
+    content: (
+      <div className="space-y-8">
+        <p className="text-xl text-gray-600 leading-relaxed">
+          PersonaBuilder provides a fluent API for constructing personas with method chaining, distributions, and AI-powered generation.
+        </p>
+        
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Basic Builder Usage</h2>
+          <p className="text-gray-600 mb-4">Create personas using the fluent builder pattern:</p>
+          <CodeBlock 
+            code={`import { PersonaBuilder } from '@jamesaphoenix/persona-sdk';
+
+// Basic fluent API
+const persona = PersonaBuilder.create()
+  .withName('Emma Rodriguez')
+  .withAge(29)
+  .withOccupation('Data Scientist')
+  .withSex('female')
+  .withAttribute('education', 'PhD in Statistics')
+  .withAttribute('programmingLanguages', ['Python', 'R', 'SQL'])
+  .withAttribute('yearsExperience', 5)
+  .build();
+
+console.log(persona.toObject());`}
+            filename="basic-builder.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Using Distributions</h2>
+          <p className="text-gray-600 mb-4">Mix static values with statistical distributions for variety:</p>
+          <CodeBlock 
+            code={`import { PersonaBuilder, NormalDistribution, CategoricalDistribution } from '@jamesaphoenix/persona-sdk';
+
+// Using distributions for dynamic values
+const persona = PersonaBuilder.create()
+  .withName('Random Employee')
+  .withAge(new NormalDistribution(35, 7)) // Mean 35, StdDev 7
+  .withOccupation(new CategoricalDistribution([
+    { value: 'Engineer', probability: 0.4 },
+    { value: 'Designer', probability: 0.3 },
+    { value: 'Manager', probability: 0.3 }
+  ]))
+  .withSex('other')
+  .withAttribute('salary', new NormalDistribution(85000, 15000))
+  .build();
+
+// Each build() call generates different values
+const persona1 = builder.build(); // age: 32, occupation: 'Engineer'
+const persona2 = builder.build(); // age: 41, occupation: 'Designer'`}
+            filename="builder-distributions.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Building Multiple Personas</h2>
+          <p className="text-gray-600 mb-4">Generate multiple personas with variations:</p>
+          <CodeBlock 
+            code={`// Build multiple personas at once
+const personas = PersonaBuilder.create()
+  .withAge(new NormalDistribution(30, 5))
+  .withOccupation(new CategoricalDistribution([
+    { value: 'Developer', probability: 0.6 },
+    { value: 'QA Engineer', probability: 0.4 }
+  ]))
+  .withSex('other')
+  .buildMany(10, 'Employee'); // Creates Employee 1, Employee 2, etc.
+
+console.log(\`Generated \${personas.length} personas\`);
+personas.forEach(p => console.log(\`\${p.name}: \${p.age} year old \${p.occupation}\`));`}
+            filename="build-many.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">AI-Powered Generation</h2>
+          <p className="text-gray-600 mb-4">Generate personas from natural language descriptions:</p>
+          <CodeBlock 
+            code={`// Generate from text prompt
+const persona = await PersonaBuilder.fromPrompt(
+  'Create a 28-year-old freelance graphic designer who loves travel and coffee',
+  { apiKey: process.env.OPENAI_API_KEY }
+);
+
+console.log(persona.toObject());
+// Result might include:
+// {
+//   name: 'Maya Patel',
+//   age: 28,
+//   occupation: 'Freelance Graphic Designer',
+//   interests: ['travel', 'coffee', 'design'],
+//   personality: 'creative, adventurous, detail-oriented'
+// }
+
+// Generate multiple diverse personas
+const personas = await PersonaBuilder.generateMultiple(
+  'Tech startup employees in their 20s-30s',
+  5,
+  { apiKey: process.env.OPENAI_API_KEY }
+);`}
+            filename="ai-generation.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Correlated Generation</h2>
+          <p className="text-gray-600 mb-4">Create personas with realistic attribute relationships:</p>
+          <CodeBlock 
+            code={`// Generate with correlations
+const persona = PersonaBuilder.create()
+  .withName('Realistic Professional')
+  .buildWithCorrelations({
+    attributes: {
+      age: new NormalDistribution(35, 8),
+      income: new NormalDistribution(75000, 25000),
+      yearsExperience: new NormalDistribution(10, 5)
+    },
+    correlations: [
+      { attribute1: 'age', attribute2: 'income', correlation: 0.6 },
+      { attribute1: 'age', attribute2: 'yearsExperience', correlation: 0.8 }
+    ],
+    conditionals: [{
+      attribute: 'yearsExperience',
+      dependsOn: 'age',
+      transform: (exp, age) => Math.min(exp, Math.max(0, age - 22))
+    }]
+  });
+
+// Results in realistic combinations:
+// 45-year-old with 20 years experience and $95k income
+// 25-year-old with 3 years experience and $55k income`}
+            filename="correlated-generation.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section className="grid md:grid-cols-2 gap-6">
+          <div className="bg-green-50 rounded-xl p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-3">✨ Builder Methods</h3>
+            <ul className="space-y-2 text-gray-700 text-sm">
+              <li><code className="bg-white px-2 py-1 rounded">withName()</code> - Set persona name</li>
+              <li><code className="bg-white px-2 py-1 rounded">withAge()</code> - Set age (static or distribution)</li>
+              <li><code className="bg-white px-2 py-1 rounded">withOccupation()</code> - Set occupation</li>
+              <li><code className="bg-white px-2 py-1 rounded">withSex()</code> - Set sex/gender</li>
+              <li><code className="bg-white px-2 py-1 rounded">withAttribute()</code> - Add custom attribute</li>
+              <li><code className="bg-white px-2 py-1 rounded">withAttributes()</code> - Add multiple attributes</li>
+            </ul>
+          </div>
+          <div className="bg-purple-50 rounded-xl p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-3">🔧 Build Methods</h3>
+            <ul className="space-y-2 text-gray-700 text-sm">
+              <li><code className="bg-white px-2 py-1 rounded">build()</code> - Create single persona</li>
+              <li><code className="bg-white px-2 py-1 rounded">buildMany()</code> - Create multiple personas</li>
+              <li><code className="bg-white px-2 py-1 rounded">buildWithCorrelations()</code> - Create with correlations</li>
+            </ul>
           </div>
         </section>
       </div>
@@ -197,6 +368,186 @@ console.log(\`Seniors: \${seniors.length}\`);`}
               <li><code className="bg-white px-2 py-1 rounded text-sm">name</code> - Group name</li>
             </ul>
           </div>
+        </section>
+      </div>
+    ),
+  },
+  correlations: {
+    title: 'Correlations & Realistic Relationships',
+    content: (
+      <div className="space-y-8">
+        <p className="text-xl text-gray-600 leading-relaxed">
+          Create realistic personas by modeling real-world relationships between attributes like age-income correlation, education-salary relationships, and experience-skill dependencies.
+        </p>
+        
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Basic Correlations</h2>
+          <p className="text-gray-600 mb-4">Define linear relationships between numeric attributes:</p>
+          <CodeBlock 
+            code={`import { PersonaGroup, NormalDistribution } from '@jamesaphoenix/persona-sdk';
+
+const group = new PersonaGroup('Professionals');
+
+// Generate personas with age-income correlation
+group.generateWithCorrelations(100, {
+  attributes: {
+    age: new NormalDistribution(35, 8),
+    income: new NormalDistribution(75000, 20000),
+    yearsExperience: new NormalDistribution(10, 5)
+  },
+  correlations: [
+    // Older people tend to earn more
+    { attribute1: 'age', attribute2: 'income', correlation: 0.6 },
+    // Age correlates with experience
+    { attribute1: 'age', attribute2: 'yearsExperience', correlation: 0.8 },
+    // Experience correlates with income
+    { attribute1: 'yearsExperience', attribute2: 'income', correlation: 0.7 }
+  ]
+});
+
+// Results in realistic combinations:
+// 45-year-old, 18 years exp, $95k income
+// 28-year-old, 5 years exp, $65k income`}
+            filename="basic-correlations.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Conditional Dependencies</h2>
+          <p className="text-gray-600 mb-4">Add logical constraints and transformations:</p>
+          <CodeBlock 
+            code={`// Add realistic constraints
+group.generateWithCorrelations(50, {
+  attributes: {
+    age: new NormalDistribution(32, 7),
+    yearsExperience: new NormalDistribution(8, 4),
+    education: new CategoricalDistribution([
+      { value: 'High School', probability: 0.2 },
+      { value: 'Bachelor', probability: 0.5 },
+      { value: 'Master', probability: 0.25 },
+      { value: 'PhD', probability: 0.05 }
+    ])
+  },
+  conditionals: [
+    {
+      // Experience can't exceed working years (age - 18)
+      attribute: 'yearsExperience',
+      dependsOn: 'age',
+      transform: (experience, age) => {
+        const maxExperience = Math.max(0, age - 18);
+        return Math.min(experience, maxExperience);
+      }
+    },
+    {
+      // Adjust income based on education level
+      attribute: 'income',
+      dependsOn: 'education',
+      transform: (baseIncome, education) => {
+        const multipliers = {
+          'High School': 0.8,
+          'Bachelor': 1.0,
+          'Master': 1.3,
+          'PhD': 1.6
+        };
+        return baseIncome * (multipliers[education] || 1.0);
+      }
+    }
+  ]
+});`}
+            filename="conditional-dependencies.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Common Correlation Patterns</h2>
+          <p className="text-gray-600 mb-4">Use built-in correlation patterns for realistic relationships:</p>
+          <CodeBlock 
+            code={`import { CommonCorrelations, PersonaCorrelationPresets } from '@jamesaphoenix/persona-sdk';
+
+// Use built-in correlation functions
+const correlatedIncome = CommonCorrelations.ageIncome(50000, age);
+const boundedExperience = CommonCorrelations.ageExperience(experience, age);
+const realisticWeight = CommonCorrelations.heightWeight(weight, height);
+const educationBonus = CommonCorrelations.educationIncome(income, educationYears);
+
+// Use preset correlation configurations
+group.generateWithCorrelations(100, {
+  ...PersonaCorrelationPresets.REALISTIC_ADULT,
+  // Adds common correlations:
+  // - Age ↔ Income (0.5)
+  // - Age ↔ Experience (0.8)
+  // - Height ↔ Weight (0.7)
+  // - Education ↔ Income (0.6)
+});
+
+// Professional preset for workplace personas
+group.generateWithCorrelations(50, {
+  ...PersonaCorrelationPresets.PROFESSIONAL,
+  // Adds workplace-specific correlations:
+  // - Experience ↔ Salary (0.8)
+  // - Education ↔ Position Level (0.7)
+  // - Age ↔ Management Role (0.6)
+});`}
+            filename="correlation-patterns.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Correlation Types</h2>
+          <div className="space-y-6">
+            <div className="border-l-4 border-blue-500 pl-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Linear Correlation</h3>
+              <p className="text-gray-600 mb-4">Direct proportional relationship (default):</p>
+              <CodeBlock 
+                code={`{
+  attribute1: 'age',
+  attribute2: 'income',
+  correlation: 0.6,
+  type: 'linear' // As age increases, income increases proportionally
+}`}
+              />
+            </div>
+
+            <div className="border-l-4 border-green-500 pl-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Exponential Correlation</h3>
+              <p className="text-gray-600 mb-4">Accelerating relationship for compound effects:</p>
+              <CodeBlock 
+                code={`{
+  attribute1: 'yearsExperience',
+  attribute2: 'skillLevel',
+  correlation: 0.7,
+  type: 'exponential' // Skill grows faster with more experience
+}`}
+              />
+            </div>
+
+            <div className="border-l-4 border-purple-500 pl-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Logarithmic Correlation</h3>
+              <p className="text-gray-600 mb-4">Diminishing returns relationship:</p>
+              <CodeBlock 
+                code={`{
+  attribute1: 'hoursStudied',
+  attribute2: 'testScore',
+  correlation: 0.5,
+  type: 'logarithmic' // Returns diminish with more study time
+}`}
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-orange-50 rounded-xl p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">💡 Best Practices</h3>
+          <ul className="space-y-2 text-gray-700">
+            <li>• <strong>Keep correlations realistic:</strong> Use values between -0.8 and 0.8 for most relationships</li>
+            <li>• <strong>Add logical constraints:</strong> Use conditionals to prevent impossible combinations</li>
+            <li>• <strong>Layer correlations:</strong> Build complex relationships by combining multiple simple ones</li>
+            <li>• <strong>Test your model:</strong> Generate samples and verify the relationships make sense</li>
+            <li>• <strong>Use presets:</strong> Start with built-in patterns and customize as needed</li>
+          </ul>
         </section>
       </div>
     ),
@@ -356,6 +707,117 @@ const insights = await group.generateStructuredOutput(
       </div>
     ),
   },
+  'quick-start': {
+    title: 'Quick Start',
+    content: (
+      <div className="space-y-8">
+        <p className="text-xl text-gray-600 leading-relaxed">
+          Get up and running with the Persona SDK in just a few minutes. This guide covers installation, basic usage, and your first persona generation.
+        </p>
+        
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Installation</h2>
+          <CodeBlock 
+            code="npm install @jamesaphoenix/persona-sdk"
+            language="bash"
+          />
+          <p className="text-gray-600 mt-4">Or using other package managers:</p>
+          <div className="grid md:grid-cols-2 gap-4 mt-4">
+            <CodeBlock code="pnpm add @jamesaphoenix/persona-sdk" language="bash" />
+            <CodeBlock code="yarn add @jamesaphoenix/persona-sdk" language="bash" />
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Your First Persona</h2>
+          <p className="text-gray-600 mb-4">Create a basic persona with required attributes:</p>
+          <CodeBlock 
+            code={`import { Persona } from '@jamesaphoenix/persona-sdk';
+
+// Create a persona with required attributes
+const persona = new Persona('Alice Johnson', {
+  age: 28,
+  occupation: 'UX Designer',
+  sex: 'female'
+});
+
+console.log(persona.toObject());
+// Output:
+// {
+//   id: 'persona_1234567890_abcdef',
+//   name: 'Alice Johnson',
+//   attributes: {
+//     age: 28,
+//     occupation: 'UX Designer',
+//     sex: 'female'
+//   }
+// }`}
+            filename="basic-persona.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Adding Custom Attributes</h2>
+          <p className="text-gray-600 mb-4">Extend personas with any custom attributes you need:</p>
+          <CodeBlock 
+            code={`const persona = new Persona('Bob Wilson', {
+  age: 35,
+  occupation: 'Software Engineer',
+  sex: 'male',
+  // Custom attributes
+  salary: 95000,
+  skills: ['JavaScript', 'Python', 'React'],
+  location: 'San Francisco',
+  yearsExperience: 8,
+  isRemote: true,
+  hobbies: ['photography', 'hiking']
+});
+
+// Access attributes
+console.log(persona.age); // 35
+console.log(persona.attributes.salary); // 95000
+console.log(persona.attributes.skills); // ['JavaScript', 'Python', 'React']`}
+            filename="custom-attributes.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Using the Builder Pattern</h2>
+          <p className="text-gray-600 mb-4">Use PersonaBuilder for a more fluent API:</p>
+          <CodeBlock 
+            code={`import { PersonaBuilder } from '@jamesaphoenix/persona-sdk';
+
+const persona = PersonaBuilder.create()
+  .withName('Sarah Chen')
+  .withAge(32)
+  .withOccupation('Product Manager')
+  .withSex('female')
+  .withAttribute('department', 'Engineering')
+  .withAttribute('teamSize', 12)
+  .withAttribute('budget', 500000)
+  .build();
+
+console.log(persona.getSummary());
+// "Sarah Chen is a 32-year-old Product Manager"`}
+            filename="builder-pattern.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section className="bg-blue-50 rounded-xl p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-3">🎯 Next Steps</h3>
+          <ul className="space-y-2 text-gray-700">
+            <li>• Learn about <Link href="/docs/distributions" className="text-blue-600 hover:underline">Statistical Distributions</Link> for realistic data generation</li>
+            <li>• Explore <Link href="/docs/persona-group" className="text-blue-600 hover:underline">PersonaGroup</Link> for managing collections</li>
+            <li>• Try <Link href="/docs/ai" className="text-blue-600 hover:underline">AI Features</Link> for natural language generation</li>
+            <li>• Check out <Link href="/docs/correlations" className="text-blue-600 hover:underline">Correlations</Link> for realistic relationships</li>
+          </ul>
+        </section>
+      </div>
+    ),
+  },
 };
 
 export default async function Page({
@@ -441,9 +903,14 @@ export default async function Page({
 export async function generateStaticParams() {
   return [
     { slug: [] },
+    { slug: ['quick-start'] },
     { slug: ['persona'] },
+    { slug: ['persona-builder'] },
     { slug: ['persona-group'] },
     { slug: ['distributions'] },
-    { slug: ['ai'] }
+    { slug: ['correlations'] },
+    { slug: ['ai'] },
+    { slug: ['advanced'] },
+    { slug: ['api'] },
   ];
 }
