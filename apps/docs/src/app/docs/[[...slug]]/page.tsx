@@ -1074,7 +1074,7 @@ console.log('Generated realistic persona:', persona.name);`}
             <h3 className="text-xl font-bold text-gray-900 mb-3">⚡ Performance Tips</h3>
             <ul className="space-y-2 text-gray-700 text-sm">
               <li>• Use seeded distributions for reproducible results</li>
-              <li>• Batch generate for large datasets (>1000 personas)</li>
+              <li>• Batch generate for large datasets (&gt;1000 personas)</li>
               <li>• Stream processing for memory-constrained environments</li>
               <li>• Cache compiled distributions for repeated use</li>
               <li>• Use Web Workers for client-side parallel generation</li>
