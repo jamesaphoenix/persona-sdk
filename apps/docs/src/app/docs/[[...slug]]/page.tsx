@@ -695,27 +695,63 @@ const sample = occupation.sample(); // e.g., 'Engineer'`}
               />
             </div>
 
-            {/* Additional Distributions */}
+            {/* Exponential Distribution */}
             <div className="border-l-4 border-orange-500 pl-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">More Distributions</h3>
-              <div className="grid md:grid-cols-2 gap-4 mt-4">
-                <div className="bg-orange-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-900">Exponential</h4>
-                  <p className="text-sm text-gray-600 mt-1">Time between events, like customer arrivals</p>
-                </div>
-                <div className="bg-orange-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-900">Beta</h4>
-                  <p className="text-sm text-gray-600 mt-1">Probabilities and percentages</p>
-                </div>
-                <div className="bg-orange-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-900">Poisson</h4>
-                  <p className="text-sm text-gray-600 mt-1">Count of events in fixed time</p>
-                </div>
-                <div className="bg-orange-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-900">Custom</h4>
-                  <p className="text-sm text-gray-600 mt-1">Create your own distributions</p>
-                </div>
-              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Exponential Distribution</h3>
+              <p className="text-gray-600 mb-4">Time between events, like customer arrivals.</p>
+              <CodeBlock 
+                code={`const waitTime = new ExponentialDistribution(0.5);
+// lambda: 0.5 (rate parameter)
+const sample = waitTime.sample(); // e.g., 1.38 minutes`}
+              />
+            </div>
+
+            {/* Beta Distribution */}
+            <div className="border-l-4 border-red-500 pl-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Beta Distribution</h3>
+              <p className="text-gray-600 mb-4">Probabilities and percentages.</p>
+              <CodeBlock 
+                code={`const successRate = new BetaDistribution(2, 5);
+// alpha: 2, beta: 5
+const sample = successRate.sample(); // e.g., 0.23 (23%)`}
+              />
+            </div>
+
+            {/* Poisson Distribution */}
+            <div className="border-l-4 border-indigo-500 pl-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Poisson Distribution</h3>
+              <p className="text-gray-600 mb-4">Count of events in fixed time.</p>
+              <CodeBlock 
+                code={`const emailsPerHour = new PoissonDistribution(3);
+// lambda: 3 (average events per period)
+const sample = emailsPerHour.sample(); // e.g., 2 emails`}
+              />
+            </div>
+
+            {/* Custom Distribution */}
+            <div className="border-l-4 border-gray-500 pl-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Custom Distribution</h3>
+              <p className="text-gray-600 mb-4">Create your own distributions.</p>
+              <CodeBlock 
+                code={`class TriangularDistribution extends BaseDistribution<number> {
+  constructor(min: number, max: number, mode: number) {
+    super();
+    this.min = min;
+    this.max = max;
+    this.mode = mode;
+  }
+
+  sample(): number {
+    // Implementation here
+    const u = Math.random();
+    // ... triangular distribution logic
+    return value;
+  }
+}
+
+const custom = new TriangularDistribution(0, 100, 75);
+const sample = custom.sample(); // e.g., 68.2`}
+              />
             </div>
           </div>
         </section>
@@ -773,26 +809,93 @@ const insights = await group.generateStructuredOutput(
           />
         </section>
 
-        <section className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">🚀 Advanced AI Features</h3>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-semibold text-lg mb-2">Distribution Selection</h4>
-              <p className="text-gray-600">AI automatically selects the best statistical distribution for your data based on context.</p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-lg mb-2">Media-to-Persona</h4>
-              <p className="text-gray-600">Generate personas from images, videos, or audio content analysis.</p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-lg mb-2">Focus Groups</h4>
-              <p className="text-gray-600">Simulate focus group discussions with diverse persona perspectives.</p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-lg mb-2">LangChain Integration</h4>
-              <p className="text-gray-600">Build complex AI pipelines with LangChain compatibility.</p>
-            </div>
-          </div>
+        <section>
+          <h2>Distribution Selection</h2>
+          <p>AI automatically selects the best statistical distribution for your data based on context.</p>
+          <CodeBlock 
+            code={`import { DistributionSelector } from '@jamesaphoenix/persona-sdk';
+
+const selector = new DistributionSelector({ apiKey: process.env.OPENAI_API_KEY });
+
+const result = await selector.selectDistribution({
+  attribute: 'income',
+  context: 'Tech startup employees in Silicon Valley',
+  constraints: { min: 50000, max: 200000 }
+});
+
+// Result: { 
+//   type: 'normal', 
+//   params: { mean: 120000, stdDev: 25000 },
+//   reasoning: 'Normal distribution fits tech salaries...'
+// }`}
+          />
+        </section>
+
+        <section>
+          <h2>Media-to-Persona</h2>
+          <p>Generate personas from images, videos, or audio content analysis.</p>
+          <CodeBlock 
+            code={`import { MediaToPersonaGenerator } from '@jamesaphoenix/persona-sdk';
+
+const generator = new MediaToPersonaGenerator();
+
+// From image
+const personas = await generator.fromImage('./lifestyle-photo.jpg');
+
+// From video
+const personas = await generator.fromVideo('./customer-interview.mp4');
+
+// From audio
+const personas = await generator.fromAudio('./podcast-segment.mp3');
+
+console.log(personas[0].attributes);
+// { age: 28, lifestyle: 'urban professional', interests: ['fitness', 'technology'] }`}
+          />
+        </section>
+
+        <section>
+          <h2>Focus Groups</h2>
+          <p>Simulate focus group discussions with diverse persona perspectives.</p>
+          <CodeBlock 
+            code={`import { FocusGroupSimulator } from '@jamesaphoenix/persona-sdk';
+
+const simulator = new FocusGroupSimulator();
+
+const discussion = await simulator.simulate({
+  personas: techStartupGroup,
+  topic: 'New mobile app features',
+  duration: '30 minutes',
+  moderatorStyle: 'structured'
+});
+
+console.log(discussion.transcript);
+// [
+//   { speaker: 'Alice (Designer)', message: 'I think the UI should be...' },
+//   { speaker: 'Bob (Engineer)', message: 'From a technical standpoint...' }
+// ]`}
+          />
+        </section>
+
+        <section>
+          <h2>LangChain Integration</h2>
+          <p>Build complex AI pipelines with LangChain compatibility.</p>
+          <CodeBlock 
+            code={`import { PersonaChain } from '@jamesaphoenix/persona-sdk';
+import { ChatOpenAI } from 'langchain/chat_models/openai';
+
+const chain = new PersonaChain({
+  llm: new ChatOpenAI({ temperature: 0.7 }),
+  personas: marketingGroup
+});
+
+const result = await chain.invoke({
+  input: 'Analyze market reaction to product launch',
+  outputSchema: MarketAnalysisSchema
+});
+
+// Integrates seamlessly with LangChain pipelines
+const pipeline = chain.pipe(analysisChain).pipe(reportChain);`}
+          />
         </section>
 
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
