@@ -818,6 +818,579 @@ console.log(persona.getSummary());
       </div>
     ),
   },
+  advanced: {
+    title: 'Advanced Usage',
+    content: (
+      <div className="space-y-8">
+        <p className="text-xl text-gray-600 leading-relaxed">
+          Explore advanced patterns for custom distributions, validation, serialization, and extending the Persona SDK for complex use cases.
+        </p>
+        
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Custom Distributions</h2>
+          <p className="text-gray-600 mb-4">Create your own distribution classes by extending BaseDistribution:</p>
+          <CodeBlock 
+            code={`import { BaseDistribution } from '@jamesaphoenix/persona-sdk';
+
+// Custom triangular distribution
+export class TriangularDistribution extends BaseDistribution<number> {
+  constructor(
+    private readonly min: number,
+    private readonly max: number,
+    private readonly mode: number,
+    seed?: number
+  ) {
+    super(seed);
+    if (min >= max || mode < min || mode > max) {
+      throw new Error('Invalid triangular distribution parameters');
+    }
+  }
+
+  sample(): number {
+    const u = this.random.real(0, 1, false);
+    const F = (this.mode - this.min) / (this.max - this.min);
+    
+    if (u < F) {
+      return this.min + Math.sqrt(u * (this.max - this.min) * (this.mode - this.min));
+    } else {
+      return this.max - Math.sqrt((1 - u) * (this.max - this.min) * (this.max - this.mode));
+    }
+  }
+
+  mean(): number {
+    return (this.min + this.max + this.mode) / 3;
+  }
+
+  variance(): number {
+    const a = this.min, b = this.max, c = this.mode;
+    return (a*a + b*b + c*c - a*b - a*c - b*c) / 18;
+  }
+
+  toString(): string {
+    return \`Triangular(\${this.min}, \${this.max}, \${this.mode})\`;
+  }
+}
+
+// Use in PersonaBuilder
+const persona = PersonaBuilder.create()
+  .withAge(new TriangularDistribution(22, 65, 35)) // Most people around 35
+  .withName('Professional')
+  .build();`}
+            filename="custom-distribution.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Validation & Constraints</h2>
+          <p className="text-gray-600 mb-4">Add validation rules and constraints to ensure data quality:</p>
+          <CodeBlock 
+            code={`import { PersonaBuilder, ValidationRule } from '@jamesaphoenix/persona-sdk';
+
+// Custom validation rules
+const ageValidation: ValidationRule = {
+  attribute: 'age',
+  validate: (value: any) => {
+    if (typeof value !== 'number' || value < 0 || value > 120) {
+      throw new Error('Age must be between 0 and 120');
+    }
+    return true;
+  }
+};
+
+const emailValidation: ValidationRule = {
+  attribute: 'email',
+  validate: (value: any) => {
+    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+    if (typeof value !== 'string' || !emailRegex.test(value)) {
+      throw new Error('Invalid email format');
+    }
+    return true;
+  }
+};
+
+// Builder with validation
+const persona = PersonaBuilder.create()
+  .withValidation([ageValidation, emailValidation])
+  .withAge(28)
+  .withAttribute('email', 'alice@example.com')
+  .withAttribute('salary', 75000)
+  .addConstraint('salary', (value) => value > 0 && value < 1000000)
+  .build();
+
+// Validation runs automatically during build()
+console.log('Persona created with valid data:', persona.toObject());`}
+            filename="validation.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Serialization & Persistence</h2>
+          <p className="text-gray-600 mb-4">Save and load personas with complete state preservation:</p>
+          <CodeBlock 
+            code={`import { PersonaGroup, PersonaSerializer } from '@jamesaphoenix/persona-sdk';
+
+// Create and populate group
+const group = new PersonaGroup('Engineering Team');
+group.add(PersonaBuilder.create()
+  .withName('Alice')
+  .withAge(28)
+  .withOccupation('Developer')
+  .build()
+);
+
+// Serialize to JSON
+const serialized = PersonaSerializer.serialize(group);
+console.log('Serialized:', JSON.stringify(serialized, null, 2));
+
+// Save to file
+await PersonaSerializer.saveToFile(group, 'team.json');
+
+// Load from file
+const loadedGroup = await PersonaSerializer.loadFromFile('team.json');
+console.log('Loaded group:', loadedGroup.name, loadedGroup.size);
+
+// Serialize with distributions (preserves random state)
+const builderWithDistribution = PersonaBuilder.create()
+  .withAge(new NormalDistribution(35, 5, 12345)) // with seed
+  .withName('Random Employee');
+
+const serializedBuilder = PersonaSerializer.serializeBuilder(builderWithDistribution);
+const restoredBuilder = PersonaSerializer.deserializeBuilder(serializedBuilder);
+
+// Both builders will generate identical personas
+const persona1 = builderWithDistribution.build();
+const persona2 = restoredBuilder.build();
+console.log('Ages match:', persona1.age === persona2.age);`}
+            filename="serialization.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Performance Optimization</h2>
+          <p className="text-gray-600 mb-4">Optimize for large-scale persona generation:</p>
+          <CodeBlock 
+            code={`import { PersonaGroup, BatchGenerator } from '@jamesaphoenix/persona-sdk';
+
+// Batch generation for performance
+const batchGenerator = new BatchGenerator({
+  batchSize: 1000,
+  parallelWorkers: 4,
+  memoryLimit: '512MB'
+});
+
+// Generate 100,000 personas efficiently
+const largeGroup = await batchGenerator.generate(100000, {
+  template: PersonaBuilder.create()
+    .withAge(new NormalDistribution(35, 10))
+    .withOccupation(new CategoricalDistribution([
+      { value: 'Engineer', probability: 0.4 },
+      { value: 'Designer', probability: 0.3 },
+      { value: 'Manager', probability: 0.3 }
+    ])),
+  nameTemplate: 'Employee',
+  correlations: [
+    { attribute1: 'age', attribute2: 'salary', correlation: 0.6 }
+  ]
+});
+
+console.log(\`Generated \${largeGroup.size} personas in batches\`);
+
+// Stream processing for memory efficiency
+const stream = batchGenerator.createStream(PersonaBuilder.create()
+  .withAge(new UniformDistribution(25, 65))
+  .withName('Streamed Persona')
+);
+
+let count = 0;
+for await (const persona of stream) {
+  // Process each persona without storing all in memory
+  console.log(\`Processing persona \${++count}: \${persona.name}\`);
+  
+  if (count >= 10000) break; // Process 10k personas
+}`}
+            filename="performance.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Plugin System</h2>
+          <p className="text-gray-600 mb-4">Extend functionality with custom plugins:</p>
+          <CodeBlock 
+            code={`import { PersonaPlugin, PersonaBuilder } from '@jamesaphoenix/persona-sdk';
+
+// Create a plugin for generating realistic names
+class RealisticNamesPlugin implements PersonaPlugin {
+  name = 'realistic-names';
+  
+  async install(builder: PersonaBuilder) {
+    // Add methods to builder
+    builder.withRealisticName = (demographics: {
+      ethnicity?: string;
+      gender?: string;
+      region?: string;
+    }) => {
+      const name = this.generateRealisticName(demographics);
+      return builder.withName(name);
+    };
+  }
+  
+  private generateRealisticName(demographics: any): string {
+    // Implementation would use name databases
+    // This is a simplified example
+    const firstNames = {
+      'male': ['James', 'John', 'Robert', 'Michael'],
+      'female': ['Mary', 'Patricia', 'Jennifer', 'Linda']
+    };
+    
+    const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown'];
+    
+    const first = firstNames[demographics.gender]?.[0] || 'Alex';
+    const last = lastNames[0];
+    
+    return \`\${first} \${last}\`;
+  }
+}
+
+// Register and use plugin
+PersonaBuilder.use(new RealisticNamesPlugin());
+
+const persona = PersonaBuilder.create()
+  .withRealisticName({ gender: 'female', ethnicity: 'hispanic' })
+  .withAge(30)
+  .build();
+
+console.log('Generated realistic persona:', persona.name);`}
+            filename="plugins.ts"
+            showLineNumbers
+          />
+        </section>
+
+        <section className="grid md:grid-cols-2 gap-6">
+          <div className="bg-yellow-50 rounded-xl p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-3">⚡ Performance Tips</h3>
+            <ul className="space-y-2 text-gray-700 text-sm">
+              <li>• Use seeded distributions for reproducible results</li>
+              <li>• Batch generate for large datasets (>1000 personas)</li>
+              <li>• Stream processing for memory-constrained environments</li>
+              <li>• Cache compiled distributions for repeated use</li>
+              <li>• Use Web Workers for client-side parallel generation</li>
+            </ul>
+          </div>
+          <div className="bg-red-50 rounded-xl p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-3">🔒 Security & Privacy</h3>
+            <ul className="space-y-2 text-gray-700 text-sm">
+              <li>• Never include real PII in synthetic personas</li>
+              <li>• Use differential privacy for sensitive correlations</li>
+              <li>• Validate all inputs in custom distributions</li>
+              <li>• Sanitize generated data before persistence</li>
+              <li>• Audit persona data for potential privacy leaks</li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    ),
+  },
+  api: {
+    title: 'API Reference',
+    content: (
+      <div className="space-y-8">
+        <p className="text-xl text-gray-600 leading-relaxed">
+          Complete API documentation for all classes, methods, and interfaces in the Persona SDK.
+        </p>
+        
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Core Classes</h2>
+          
+          <div className="space-y-8">
+            <div className="border-l-4 border-blue-500 pl-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Persona</h3>
+              <p className="text-gray-600 mb-4">Main persona class representing an individual with attributes.</p>
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Constructor</h4>
+                  <CodeBlock 
+                    code={`new Persona(name: string, attributes: PersonaAttributes)`}
+                    language="typescript"
+                  />
+                  <p className="text-sm text-gray-600 mt-2">Creates a new persona with required attributes: age, occupation, sex.</p>
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Properties</h4>
+                  <CodeBlock 
+                    code={`readonly id: string          // Unique identifier
+readonly name: string        // Persona name
+readonly age: number         // Age in years
+readonly occupation: string  // Job/occupation
+readonly sex: Sex           // 'male' | 'female' | 'other'
+readonly attributes: Record<string, any> // Custom attributes`}
+                    language="typescript"
+                  />
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Methods</h4>
+                  <CodeBlock 
+                    code={`toObject(): PersonaData        // Serialize to plain object
+toJSON(): string              // Serialize to JSON string
+getSummary(): string          // Get human-readable summary
+clone(newName?: string): Persona // Create a copy
+setAttribute(key: string, value: any): void // Update attribute
+getAttribute(key: string): any // Get attribute value
+hasAttribute(key: string): boolean // Check if attribute exists`}
+                    language="typescript"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="border-l-4 border-green-500 pl-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">PersonaBuilder</h3>
+              <p className="text-gray-600 mb-4">Fluent API for constructing personas with method chaining.</p>
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Static Methods</h4>
+                  <CodeBlock 
+                    code={`PersonaBuilder.create(): PersonaBuilder
+PersonaBuilder.fromPrompt(prompt: string, options?: AIOptions): Promise<Persona>
+PersonaBuilder.generateMultiple(prompt: string, count: number, options?: AIOptions): Promise<Persona[]>`}
+                    language="typescript"
+                  />
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Builder Methods</h4>
+                  <CodeBlock 
+                    code={`withName(name: string | Distribution<string>): PersonaBuilder
+withAge(age: number | Distribution<number>): PersonaBuilder
+withOccupation(occupation: string | Distribution<string>): PersonaBuilder
+withSex(sex: Sex): PersonaBuilder
+withAttribute(key: string, value: any): PersonaBuilder
+withAttributes(attributes: Record<string, any>): PersonaBuilder
+withValidation(rules: ValidationRule[]): PersonaBuilder`}
+                    language="typescript"
+                  />
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Build Methods</h4>
+                  <CodeBlock 
+                    code={`build(): Persona
+buildMany(count: number, namePrefix?: string): Persona[]
+buildWithCorrelations(config: CorrelationConfig): Persona`}
+                    language="typescript"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="border-l-4 border-purple-500 pl-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">PersonaGroup</h3>
+              <p className="text-gray-600 mb-4">Collection manager for multiple personas with analysis capabilities.</p>
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Constructor</h4>
+                  <CodeBlock 
+                    code={`new PersonaGroup(name: string, personas?: Persona[])`}
+                    language="typescript"
+                  />
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Properties</h4>
+                  <CodeBlock 
+                    code={`readonly name: string
+readonly size: number
+readonly personas: Persona[]`}
+                    language="typescript"
+                  />
+                </div>
+                
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Methods</h4>
+                  <CodeBlock 
+                    code={`add(persona: Persona): void
+addMany(personas: Persona[]): void
+remove(id: string): boolean
+clear(): void
+find(predicate: (persona: Persona) => boolean): Persona | undefined
+filter(predicate: (persona: Persona) => boolean): Persona[]
+getStatistics(attribute: string): AttributeStatistics
+groupBy(attribute: string): Map<any, Persona[]>
+sample(count: number): Persona[]
+toArray(): Persona[]
+toObject(): GroupData`}
+                    language="typescript"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Distribution Classes</h2>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">NormalDistribution</h4>
+              <CodeBlock 
+                code={`new NormalDistribution(
+  mean: number,
+  stdDev: number,
+  seed?: number
+)`}
+                language="typescript"
+              />
+            </div>
+            
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">UniformDistribution</h4>
+              <CodeBlock 
+                code={`new UniformDistribution(
+  min: number,
+  max: number,
+  seed?: number
+)`}
+                language="typescript"
+              />
+            </div>
+            
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">CategoricalDistribution</h4>
+              <CodeBlock 
+                code={`new CategoricalDistribution(
+  categories: CategoryOption[],
+  seed?: number
+)`}
+                language="typescript"
+              />
+            </div>
+            
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">ExponentialDistribution</h4>
+              <CodeBlock 
+                code={`new ExponentialDistribution(
+  lambda: number,
+  seed?: number
+)`}
+                language="typescript"
+              />
+            </div>
+          </div>
+          
+          <div className="mt-6">
+            <h4 className="text-lg font-semibold text-gray-900 mb-2">Distribution Interface</h4>
+            <p className="text-gray-600 mb-4">All distributions implement the Distribution interface:</p>
+            <CodeBlock 
+              code={`interface Distribution<T> {
+  sample(): T;           // Generate a random sample
+  mean(): number;        // Expected value
+  variance(): number;    // Variance
+  toString(): string;    // String representation
+}`}
+              language="typescript"
+            />
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Type Definitions</h2>
+          
+          <div className="space-y-6">
+            <div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">Core Types</h4>
+              <CodeBlock 
+                code={`type Sex = 'male' | 'female' | 'other';
+
+interface PersonaAttributes {
+  age: number;
+  occupation: string;
+  sex: Sex;
+  [key: string]: any;
+}
+
+interface PersonaData {
+  id: string;
+  name: string;
+  attributes: PersonaAttributes;
+}
+
+interface GroupData {
+  name: string;
+  size: number;
+  personas: PersonaData[];
+}`}
+                language="typescript"
+              />
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">Correlation Types</h4>
+              <CodeBlock 
+                code={`interface CorrelationConfig {
+  attributes: Record<string, Distribution<any>>;
+  correlations: Correlation[];
+  conditionals?: Conditional[];
+}
+
+interface Correlation {
+  attribute1: string;
+  attribute2: string;
+  correlation: number;
+  type?: 'linear' | 'exponential' | 'logarithmic';
+}
+
+interface Conditional {
+  attribute: string;
+  dependsOn: string;
+  transform: (value: any, dependency: any) => any;
+}`}
+                language="typescript"
+              />
+            </div>
+            
+            <div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">AI Integration Types</h4>
+              <CodeBlock 
+                code={`interface AIOptions {
+  apiKey: string;
+  model?: string;
+  temperature?: number;
+  maxTokens?: number;
+}
+
+interface StructuredOutputSchema {
+  name: string;
+  description: string;
+  schema: any; // Zod schema
+}`}
+                language="typescript"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-blue-50 rounded-xl p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">📚 Additional Resources</h3>
+          <ul className="space-y-2 text-gray-700">
+            <li>• <a href="https://github.com/jamesaphoenix/persona-sdk" className="text-blue-600 hover:underline">GitHub Repository</a> - Source code and examples</li>
+            <li>• <a href="https://www.npmjs.com/package/@jamesaphoenix/persona-sdk" className="text-blue-600 hover:underline">npm Package</a> - Installation and version info</li>
+            <li>• <strong>TypeScript Support:</strong> Full type definitions included</li>
+            <li>• <strong>Node.js Compatibility:</strong> Requires Node.js 16+</li>
+            <li>• <strong>Browser Support:</strong> Modern browsers with ES2020+ support</li>
+          </ul>
+        </section>
+      </div>
+    ),
+  },
 };
 
 export default async function Page({
