@@ -44,9 +44,10 @@ export function CodeBlock({ code, language = 'typescript', showLineNumbers = fal
                         {i + 1}
                       </span>
                     )}
-                    {line.map((token, key) => (
-                      <span key={key} {...getTokenProps({ token, key })} />
-                    ))}
+                    {line.map((token, key) => {
+                      const { key: tokenKey, ...tokenProps } = getTokenProps({ token, key });
+                      return <span key={key} {...tokenProps} />;
+                    })}
                   </div>
                 ))}
               </code>
