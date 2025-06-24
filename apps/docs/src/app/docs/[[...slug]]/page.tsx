@@ -13,8 +13,6 @@ const navigation = [
   { name: 'AI Features', href: '/docs/ai' },
   { name: 'Media to Persona', href: '/docs/media-to-persona' },
   { name: 'Real-World Examples', href: '/docs/real-world-examples' },
-  { name: 'REST API', href: '/docs/rest-api' },
-  { name: 'React Integration', href: '/docs/react-integration' },
   { name: 'Prompt Optimization', href: '/docs/prompt-optimization' },
   { name: 'Advanced Usage', href: '/docs/advanced' },
   { name: 'API Reference', href: '/docs/api' },
@@ -111,20 +109,6 @@ console.log(persona.toObject());`}
               <div>
                 <h3 className="font-semibold text-gray-900">Deterministic Testing</h3>
                 <p className="text-gray-600 text-sm mt-1">Comprehensive seeding for reproducible simulations</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-3 p-4 rounded-lg bg-teal-50">
-              <span className="text-2xl">🚀</span>
-              <div>
-                <h3 className="font-semibold text-gray-900">REST API</h3>
-                <p className="text-gray-600 text-sm mt-1">Full HTTP API with PostgreSQL persistence</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-3 p-4 rounded-lg bg-cyan-50">
-              <span className="text-2xl">⚛️</span>
-              <div>
-                <h3 className="font-semibold text-gray-900">React Hooks</h3>
-                <p className="text-gray-600 text-sm mt-1">React integration for frontend applications</p>
               </div>
             </div>
             <div className="flex items-start space-x-3 p-4 rounded-lg bg-emerald-50">
@@ -411,24 +395,72 @@ console.log(\`Seniors: \${seniors.length}\`);`}
           />
         </section>
 
-        <section className="grid md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">🎯 Key Methods</h3>
-            <ul className="space-y-2 text-gray-700">
-              <li><code className="bg-white px-2 py-1 rounded text-sm">add()</code> - Add a persona</li>
-              <li><code className="bg-white px-2 py-1 rounded text-sm">remove()</code> - Remove by ID</li>
-              <li><code className="bg-white px-2 py-1 rounded text-sm">filter()</code> - Filter personas</li>
-              <li><code className="bg-white px-2 py-1 rounded text-sm">getStatistics()</code> - Get stats</li>
-            </ul>
-          </div>
-          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">📊 Properties</h3>
-            <ul className="space-y-2 text-gray-700">
-              <li><code className="bg-white px-2 py-1 rounded text-sm">size</code> - Number of personas</li>
-              <li><code className="bg-white px-2 py-1 rounded text-sm">personas</code> - All personas array</li>
-              <li><code className="bg-white px-2 py-1 rounded text-sm">name</code> - Group name</li>
-            </ul>
-          </div>
+        <section>
+          <h2>Key Methods</h2>
+          <h3>add()</h3>
+          <p>Add a persona to the group.</p>
+          <CodeBlock 
+            code={`const group = new PersonaGroup('My Team');
+const persona = PersonaBuilder.create()
+  .withName('Alice')
+  .withAge(30)
+  .build();
+
+group.add(persona);
+console.log(group.size); // 1`}
+          />
+
+          <h3>remove()</h3>
+          <p>Remove a persona by ID.</p>
+          <CodeBlock 
+            code={`const removed = group.remove(persona.id);
+console.log(removed); // true if found and removed`}
+          />
+
+          <h3>filter()</h3>
+          <p>Filter personas based on criteria.</p>
+          <CodeBlock 
+            code={`const developers = group.filter(p => 
+  p.occupation === 'Developer'
+);
+
+const seniors = group.filter(p => 
+  p.age >= 35
+);`}
+          />
+
+          <h3>getStatistics()</h3>
+          <p>Get statistical analysis of an attribute.</p>
+          <CodeBlock 
+            code={`const ageStats = group.getStatistics('age');
+console.log(ageStats.mean);     // Average age
+console.log(ageStats.median);   // Median age
+console.log(ageStats.stdDev);   // Standard deviation`}
+          />
+        </section>
+
+        <section>
+          <h2>Properties</h2>
+          <h3>size</h3>
+          <p>Number of personas in the group.</p>
+          <CodeBlock 
+            code={`console.log(group.size); // Returns count of personas`}
+          />
+
+          <h3>personas</h3>
+          <p>Array of all personas in the group.</p>
+          <CodeBlock 
+            code={`const allPersonas = group.personas;
+allPersonas.forEach(persona => {
+  console.log(persona.name);
+});`}
+          />
+
+          <h3>name</h3>
+          <p>Name of the persona group.</p>
+          <CodeBlock 
+            code={`console.log(group.name); // "My Team"`}
+          />
         </section>
       </div>
     ),
@@ -2020,927 +2052,6 @@ console.log('\\nKey Insights:', correlationAnalysis.insights);`}
       </div>
     ),
   },
-  'rest-api': {
-    title: 'REST API',
-    content: (
-      <div className="space-y-8">
-        <p className="text-xl text-gray-600 leading-relaxed">
-          The Persona SDK includes a full-featured REST API server with PostgreSQL persistence. Deploy your persona generation capabilities as a service with authentication, rate limiting, and comprehensive endpoints.
-        </p>
-        
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Quick Start</h2>
-          <p className="text-gray-600 mb-4">Get the REST API up and running:</p>
-          <CodeBlock 
-            code={`# Install the REST API package
-npm install @jamesaphoenix/persona-api
-
-# Set up environment variables
-export DATABASE_URL="postgresql://user:password@localhost:5432/persona_db"
-export API_KEY="your-secret-api-key"
-export PORT=3000
-
-# Run migrations
-npx persona-api migrate
-
-# Start the server
-npx persona-api start
-
-# Or programmatically
-import { PersonaAPIServer } from '@jamesaphoenix/persona-api';
-
-const server = new PersonaAPIServer({
-  port: 3000,
-  database: process.env.DATABASE_URL,
-  apiKeys: ['key1', 'key2'], // Multiple API keys supported
-  rateLimit: {
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each key to 100 requests per window
-  }
-});
-
-await server.start();
-console.log('API running on http://localhost:3000');`}
-            filename="api-setup.ts"
-            showLineNumbers
-          />
-        </section>
-
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Core Endpoints</h2>
-          
-          <div className="space-y-6">
-            <div className="border-l-4 border-blue-500 pl-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">POST /api/personas</h3>
-              <p className="text-gray-600 mb-4">Generate a new persona</p>
-              <CodeBlock 
-                code={`// Request
-POST /api/personas
-Authorization: Bearer your-api-key
-Content-Type: application/json
-
-{
-  "name": "Random User",
-  "distributions": {
-    "age": {
-      "type": "normal",
-      "mean": 35,
-      "stdDev": 10
-    },
-    "occupation": {
-      "type": "categorical",
-      "categories": [
-        { "value": "Engineer", "probability": 0.6 },
-        { "value": "Designer", "probability": 0.4 }
-      ]
-    }
-  },
-  "attributes": {
-    "location": "San Francisco",
-    "interests": ["tech", "coffee"]
-  }
-}
-
-// Response
-{
-  "id": "persona_abc123",
-  "name": "Random User 1",
-  "age": 32,
-  "occupation": "Engineer",
-  "attributes": {
-    "location": "San Francisco",
-    "interests": ["tech", "coffee"]
-  },
-  "createdAt": "2024-01-15T10:30:00Z"
-}`}
-                language="json"
-              />
-            </div>
-
-            <div className="border-l-4 border-green-500 pl-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">POST /api/personas/batch</h3>
-              <p className="text-gray-600 mb-4">Generate multiple personas at once</p>
-              <CodeBlock 
-                code={`// Request
-POST /api/personas/batch
-Authorization: Bearer your-api-key
-
-{
-  "count": 100,
-  "namePrefix": "User",
-  "distributions": {
-    "age": { "type": "normal", "mean": 30, "stdDev": 5 },
-    "income": { "type": "lognormal", "mean": 60000, "stdDev": 20000 }
-  },
-  "correlations": [
-    {
-      "attribute1": "age",
-      "attribute2": "income",
-      "correlation": 0.6
-    }
-  ]
-}
-
-// Response
-{
-  "personas": [...], // Array of 100 personas
-  "groupId": "group_xyz789",
-  "statistics": {
-    "age": { "mean": 30.2, "stdDev": 4.9, "min": 20, "max": 42 },
-    "income": { "mean": 61500, "stdDev": 19800, "min": 25000, "max": 120000 }
-  }
-}`}
-                language="json"
-              />
-            </div>
-
-            <div className="border-l-4 border-purple-500 pl-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">POST /api/personas/from-prompt</h3>
-              <p className="text-gray-600 mb-4">Generate persona from natural language</p>
-              <CodeBlock 
-                code={`// Request
-POST /api/personas/from-prompt
-Authorization: Bearer your-api-key
-
-{
-  "prompt": "Create a 28-year-old marketing manager who loves travel and photography",
-  "options": {
-    "includeBackground": true,
-    "generateInterests": true
-  }
-}
-
-// Response
-{
-  "id": "persona_def456",
-  "name": "Emma Rodriguez",
-  "age": 28,
-  "occupation": "Marketing Manager",
-  "attributes": {
-    "interests": ["travel", "photography", "social media", "branding"],
-    "personality": "creative, adventurous, detail-oriented",
-    "background": "Graduated with MBA, worked at 2 startups...",
-    "skills": ["digital marketing", "content creation", "analytics"]
-  }
-}`}
-                language="json"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Group Management</h2>
-          <p className="text-gray-600 mb-4">Create and manage persona groups:</p>
-          <CodeBlock 
-            code={`// Create a group
-POST /api/groups
-{
-  "name": "Q1 Target Audience",
-  "description": "Target audience for Q1 marketing campaign"
-}
-
-// Add personas to group
-POST /api/groups/{groupId}/personas
-{
-  "personaIds": ["persona_abc123", "persona_def456"]
-}
-
-// Get group statistics
-GET /api/groups/{groupId}/statistics
-{
-  "groupId": "group_xyz789",
-  "size": 100,
-  "statistics": {
-    "age": { "mean": 32.5, "stdDev": 8.2 },
-    "occupation": {
-      "Engineer": 45,
-      "Designer": 30,
-      "Manager": 25
-    }
-  }
-}
-
-// Generate insights
-POST /api/groups/{groupId}/insights
-{
-  "schema": {
-    "targetSegments": "array",
-    "recommendations": "array",
-    "predictedEngagement": "number"
-  },
-  "prompt": "Analyze for social media campaign"
-}`}
-            filename="group-endpoints.sh"
-            language="bash"
-          />
-        </section>
-
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Advanced Features</h2>
-          
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Webhooks</h3>
-              <p className="text-gray-600 mb-4">Get notified when personas are generated:</p>
-              <CodeBlock 
-                code={`// Register webhook
-POST /api/webhooks
-{
-  "url": "https://your-app.com/webhook",
-  "events": ["persona.created", "group.analyzed"],
-  "secret": "webhook_secret"
-}
-
-// Webhook payload
-{
-  "event": "persona.created",
-  "data": {
-    "id": "persona_abc123",
-    "name": "John Doe",
-    "groupId": "group_xyz789"
-  },
-  "timestamp": "2024-01-15T10:30:00Z",
-  "signature": "sha256=..."
-}`}
-                language="json"
-              />
-            </div>
-
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Filtering & Pagination</h3>
-              <p className="text-gray-600 mb-4">Query personas with advanced filters:</p>
-              <CodeBlock 
-                code={`// Filter personas
-GET /api/personas?age[gte]=25&age[lte]=35&occupation=Engineer&limit=20&offset=0
-
-// Search with full-text
-GET /api/personas/search?q=software+developer+san+francisco
-
-// Complex queries
-POST /api/personas/query
-{
-  "filter": {
-    "and": [
-      { "age": { "gte": 25, "lte": 40 } },
-      { "or": [
-        { "occupation": "Engineer" },
-        { "occupation": "Designer" }
-      ]},
-      { "attributes.income": { "gte": 50000 } }
-    ]
-  },
-  "sort": [
-    { "field": "age", "order": "asc" },
-    { "field": "createdAt", "order": "desc" }
-  ],
-  "limit": 50,
-  "offset": 0
-}`}
-                language="bash"
-              />
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Database Schema</h2>
-          <p className="text-gray-600 mb-4">PostgreSQL schema for persona persistence:</p>
-          <CodeBlock 
-            code={`-- Personas table
-CREATE TABLE personas (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name VARCHAR(255) NOT NULL,
-  age INTEGER,
-  occupation VARCHAR(255),
-  sex VARCHAR(50),
-  attributes JSONB,
-  group_id UUID REFERENCES groups(id),
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-
--- Groups table
-CREATE TABLE groups (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name VARCHAR(255) NOT NULL,
-  description TEXT,
-  metadata JSONB,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
--- API keys table
-CREATE TABLE api_keys (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  key_hash VARCHAR(255) UNIQUE NOT NULL,
-  name VARCHAR(255),
-  permissions JSONB,
-  rate_limit INTEGER DEFAULT 100,
-  created_at TIMESTAMP DEFAULT NOW(),
-  last_used TIMESTAMP
-);
-
--- Indexes for performance
-CREATE INDEX idx_personas_age ON personas(age);
-CREATE INDEX idx_personas_occupation ON personas(occupation);
-CREATE INDEX idx_personas_attributes ON personas USING GIN(attributes);
-CREATE INDEX idx_personas_group ON personas(group_id);`}
-            language="sql"
-          />
-        </section>
-
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Client SDKs</h2>
-          <p className="text-gray-600 mb-4">Use the API from various languages:</p>
-          
-          <div className="space-y-4">
-            <CodeBlock 
-              code={`// JavaScript/TypeScript
-import { PersonaAPIClient } from '@jamesaphoenix/persona-api-client';
-
-const client = new PersonaAPIClient({
-  baseURL: 'https://api.your-domain.com',
-  apiKey: 'your-api-key'
-});
-
-const persona = await client.personas.create({
-  distributions: {
-    age: { type: 'normal', mean: 30, stdDev: 5 }
-  }
-});
-
-const group = await client.groups.create({
-  name: 'Test Group'
-});
-
-await client.groups.addPersonas(group.id, [persona.id]);`}
-              filename="client.ts"
-              showLineNumbers
-            />
-            
-            <CodeBlock 
-              code={`# Python
-from persona_sdk import PersonaAPIClient
-
-client = PersonaAPIClient(
-    base_url='https://api.your-domain.com',
-    api_key='your-api-key'
-)
-
-# Generate persona
-persona = client.personas.create(
-    distributions={
-        'age': {'type': 'normal', 'mean': 30, 'stdDev': 5}
-    }
-)
-
-# Batch generate
-personas = client.personas.batch_create(
-    count=100,
-    distributions={
-        'age': {'type': 'uniform', 'min': 20, 'max': 50}
-    }
-)`}
-              filename="client.py"
-              showLineNumbers
-            />
-          </div>
-        </section>
-
-        <section className="bg-red-50 rounded-xl p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">🔒 Security Best Practices</h3>
-          <ul className="space-y-2 text-gray-700">
-            <li>• <strong>API Keys:</strong> Rotate keys regularly and use environment variables</li>
-            <li>• <strong>Rate Limiting:</strong> Configure appropriate limits per API key</li>
-            <li>• <strong>HTTPS Only:</strong> Always use TLS in production</li>
-            <li>• <strong>Input Validation:</strong> The API validates all inputs automatically</li>
-            <li>• <strong>Database Security:</strong> Use connection pooling and prepared statements</li>
-            <li>• <strong>CORS:</strong> Configure allowed origins restrictively</li>
-          </ul>
-        </section>
-      </div>
-    ),
-  },
-  'react-integration': {
-    title: 'React Integration',
-    content: (
-      <div className="space-y-8">
-        <p className="text-xl text-gray-600 leading-relaxed">
-          Seamlessly integrate persona generation into your React applications with custom hooks, components, and real-time updates. Build dynamic user experiences powered by AI-generated personas.
-        </p>
-        
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Installation & Setup</h2>
-          <p className="text-gray-600 mb-4">Add React support to your project:</p>
-          <CodeBlock 
-            code={`npm install @jamesaphoenix/persona-sdk @jamesaphoenix/persona-react
-
-// In your app root
-import { PersonaProvider } from '@jamesaphoenix/persona-react';
-
-function App() {
-  return (
-    <PersonaProvider
-      apiKey={process.env.REACT_APP_OPENAI_API_KEY}
-      config={{
-        cacheEnabled: true,
-        cacheDuration: 300000, // 5 minutes
-        defaultDistributions: {
-          age: { type: 'normal', mean: 30, stdDev: 10 }
-        }
-      }}
-    >
-      <YourApp />
-    </PersonaProvider>
-  );
-}`}
-            filename="setup.tsx"
-            showLineNumbers
-          />
-        </section>
-
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Core Hooks</h2>
-          
-          <div className="space-y-6">
-            <div className="border-l-4 border-blue-500 pl-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">usePersona</h3>
-              <p className="text-gray-600 mb-4">Generate and manage individual personas:</p>
-              <CodeBlock 
-                code={`import { usePersona } from '@jamesaphoenix/persona-react';
-
-function UserProfile() {
-  const {
-    persona,
-    generate,
-    regenerate,
-    update,
-    loading,
-    error
-  } = usePersona({
-    initialData: {
-      age: { type: 'normal', mean: 28, stdDev: 5 },
-      occupation: { 
-        type: 'categorical',
-        categories: [
-          { value: 'Developer', probability: 0.6 },
-          { value: 'Designer', probability: 0.4 }
-        ]
-      }
-    }
-  });
-
-  return (
-    <div>
-      {loading && <Spinner />}
-      {error && <Alert>{error.message}</Alert>}
-      
-      {persona && (
-        <Card>
-          <h2>{persona.name}</h2>
-          <p>Age: {persona.age}</p>
-          <p>Occupation: {persona.occupation}</p>
-          
-          <Button onClick={regenerate}>
-            Generate New Persona
-          </Button>
-          
-          <Button onClick={() => update({ name: 'Custom Name' })}>
-            Update Name
-          </Button>
-        </Card>
-      )}
-    </div>
-  );
-}`}
-                filename="use-persona.tsx"
-                showLineNumbers
-              />
-            </div>
-
-            <div className="border-l-4 border-green-500 pl-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">usePersonaGroup</h3>
-              <p className="text-gray-600 mb-4">Manage collections of personas:</p>
-              <CodeBlock 
-                code={`import { usePersonaGroup } from '@jamesaphoenix/persona-react';
-
-function AudienceAnalytics() {
-  const {
-    group,
-    personas,
-    add,
-    remove,
-    generate,
-    statistics,
-    filter,
-    loading
-  } = usePersonaGroup('Marketing Audience');
-
-  // Generate personas on mount
-  useEffect(() => {
-    generate(100, {
-      age: { type: 'normal', mean: 35, stdDev: 10 },
-      income: { type: 'lognormal', mean: 60000, stdDev: 20000 }
-    });
-  }, []);
-
-  const highEarners = filter(p => p.attributes.income > 80000);
-
-  return (
-    <Dashboard>
-      <Stat label="Total Personas" value={group.size} />
-      <Stat label="Avg Age" value={statistics.age?.mean.toFixed(1)} />
-      <Stat label="High Earners" value={highEarners.length} />
-      
-      <PersonaList personas={personas} onRemove={remove} />
-      
-      <Button onClick={() => generate(50)}>
-        Add 50 More
-      </Button>
-    </Dashboard>
-  );
-}`}
-                filename="use-persona-group.tsx"
-                showLineNumbers
-              />
-            </div>
-
-            <div className="border-l-4 border-purple-500 pl-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">useAIInsights</h3>
-              <p className="text-gray-600 mb-4">Generate AI-powered insights from personas:</p>
-              <CodeBlock 
-                code={`import { useAIInsights } from '@jamesaphoenix/persona-react';
-import { z } from 'zod';
-
-function MarketingInsights({ personas }) {
-  const {
-    insights,
-    generate,
-    loading,
-    stream
-  } = useAIInsights();
-
-  const MarketingSchema = z.object({
-    segments: z.array(z.object({
-      name: z.string(),
-      size: z.number(),
-      characteristics: z.array(z.string())
-    })),
-    recommendations: z.array(z.string()),
-    predictedCTR: z.number()
-  });
-
-  const generateInsights = async () => {
-    const result = await generate({
-      personas,
-      schema: MarketingSchema,
-      prompt: 'Analyze audience for social media campaign'
-    });
-    
-    setInsights(result);
-  };
-
-  // Stream insights for real-time updates
-  const streamInsights = () => {
-    stream({
-      personas,
-      onChunk: (chunk) => {
-        setStreamedText(prev => prev + chunk);
-      }
-    });
-  };
-
-  return (
-    <InsightsPanel>
-      {insights && (
-        <>
-          <h3>Audience Segments</h3>
-          {insights.segments.map(segment => (
-            <SegmentCard key={segment.name} {...segment} />
-          ))}
-          
-          <h3>Recommendations</h3>
-          <ul>
-            {insights.recommendations.map((rec, i) => (
-              <li key={i}>{rec}</li>
-            ))}
-          </ul>
-        </>
-      )}
-    </InsightsPanel>
-  );
-}`}
-                filename="use-ai-insights.tsx"
-                showLineNumbers
-              />
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Pre-built Components</h2>
-          <p className="text-gray-600 mb-4">Ready-to-use React components for common use cases:</p>
-          <CodeBlock 
-            code={`import {
-  PersonaCard,
-  PersonaGrid,
-  PersonaForm,
-  DistributionPicker,
-  CorrelationMatrix,
-  InsightsPanel
-} from '@jamesaphoenix/persona-react';
-
-function PersonaManager() {
-  const [personas, setPersonas] = useState([]);
-
-  return (
-    <>
-      {/* Persona generation form */}
-      <PersonaForm
-        onGenerate={(persona) => {
-          setPersonas([...personas, persona]);
-        }}
-        distributions={{
-          age: { type: 'normal', mean: 30, stdDev: 5 },
-          occupation: { type: 'categorical', options: occupations }
-        }}
-      />
-
-      {/* Display personas in a grid */}
-      <PersonaGrid
-        personas={personas}
-        columns={3}
-        onSelect={(persona) => console.log('Selected:', persona)}
-        onDelete={(id) => {
-          setPersonas(personas.filter(p => p.id !== id));
-        }}
-      />
-
-      {/* Individual persona card */}
-      <PersonaCard
-        persona={personas[0]}
-        showDetails
-        actions={[
-          { label: 'Edit', onClick: () => {} },
-          { label: 'Clone', onClick: () => {} }
-        ]}
-      />
-
-      {/* Distribution configuration */}
-      <DistributionPicker
-        value={distribution}
-        onChange={setDistribution}
-        supportedTypes={['normal', 'uniform', 'categorical']}
-      />
-
-      {/* Correlation visualization */}
-      <CorrelationMatrix
-        attributes={['age', 'income', 'experience']}
-        correlations={[
-          { attr1: 'age', attr2: 'income', value: 0.6 },
-          { attr1: 'age', attr2: 'experience', value: 0.8 }
-        ]}
-        interactive
-        onUpdate={(correlations) => console.log(correlations)}
-      />
-    </>
-  );
-}`}
-            filename="components.tsx"
-            showLineNumbers
-          />
-        </section>
-
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Real-time Collaboration</h2>
-          <p className="text-gray-600 mb-4">Build collaborative persona generation experiences:</p>
-          <CodeBlock 
-            code={`import { useRealtimePersonas } from '@jamesaphoenix/persona-react';
-
-function CollaborativeWorkspace({ roomId }) {
-  const {
-    personas,
-    users,
-    broadcast,
-    subscribe
-  } = useRealtimePersonas(roomId);
-
-  // Subscribe to persona changes
-  useEffect(() => {
-    const unsubscribe = subscribe('persona.created', (data) => {
-      toast(\`\${data.user} created a new persona: \${data.persona.name}\`);
-    });
-
-    return unsubscribe;
-  }, []);
-
-  const createPersona = async () => {
-    const persona = await PersonaBuilder.create()
-      .withAge(new NormalDistribution(30, 5))
-      .build();
-
-    // Broadcast to all users
-    broadcast('persona.created', {
-      persona,
-      user: currentUser.name
-    });
-  };
-
-  return (
-    <Workspace>
-      <UserList users={users} />
-      
-      <PersonaCanvas
-        personas={personas}
-        onDragEnd={(id, position) => {
-          broadcast('persona.moved', { id, position });
-        }}
-      />
-      
-      <Chat
-        onMessage={(message) => {
-          broadcast('chat.message', { message, user: currentUser });
-        }}
-      />
-    </Workspace>
-  );
-}`}
-            filename="realtime-collaboration.tsx"
-            showLineNumbers
-          />
-        </section>
-
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Form Integration</h2>
-          <p className="text-gray-600 mb-4">Integrate with popular form libraries:</p>
-          <CodeBlock 
-            code={`import { useForm } from 'react-hook-form';
-import { PersonaField } from '@jamesaphoenix/persona-react';
-
-function SurveyForm() {
-  const { register, handleSubmit, watch } = useForm();
-  const [targetPersona, setTargetPersona] = useState(null);
-
-  const onSubmit = async (data) => {
-    // Include persona context with form submission
-    const enrichedData = {
-      ...data,
-      targetPersona: targetPersona?.toObject(),
-      predictedResponse: await predictResponse(targetPersona, data)
-    };
-    
-    await submitSurvey(enrichedData);
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {/* Generate a persona to represent survey taker */}
-      <PersonaField
-        name="respondent"
-        control={control}
-        rules={{ required: true }}
-        generateOptions={{
-          prompt: 'Generate a typical survey respondent',
-          constraints: {
-            age: { min: 18, max: 65 },
-            occupation: ['professional', 'student', 'retired']
-          }
-        }}
-        onChange={setTargetPersona}
-      />
-
-      {/* Show personalized questions based on persona */}
-      {targetPersona && (
-        <>
-          <h3>Questions for {targetPersona.name}</h3>
-          
-          {targetPersona.age > 50 && (
-            <input
-              {...register('retirementPlanning')}
-              placeholder="Retirement planning interests"
-            />
-          )}
-          
-          {targetPersona.occupation === 'student' && (
-            <input
-              {...register('educationGoals')}
-              placeholder="Education goals"
-            />
-          )}
-        </>
-      )}
-
-      <button type="submit">Submit Survey</button>
-    </form>
-  );
-}`}
-            filename="form-integration.tsx"
-            showLineNumbers
-          />
-        </section>
-
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Performance Optimization</h2>
-          <p className="text-gray-600 mb-4">Best practices for optimal performance:</p>
-          <CodeBlock 
-            code={`import { 
-  PersonaProvider, 
-  usePersonaCache,
-  useLazyPersona 
-} from '@jamesaphoenix/persona-react';
-
-function App() {
-  return (
-    <PersonaProvider
-      config={{
-        // Enable caching
-        cache: {
-          enabled: true,
-          strategy: 'lru',
-          maxSize: 1000,
-          ttl: 300000 // 5 minutes
-        },
-        
-        // Batch API requests
-        batching: {
-          enabled: true,
-          maxBatchSize: 50,
-          debounceMs: 100
-        },
-        
-        // Virtual scrolling for large lists
-        virtualization: {
-          enabled: true,
-          overscan: 5
-        }
-      }}
-    >
-      <AppContent />
-    </PersonaProvider>
-  );
-}
-
-function PersonaList() {
-  // Use lazy loading
-  const { load, personas, hasMore } = useLazyPersona({
-    pageSize: 20
-  });
-
-  // Access cache directly
-  const cache = usePersonaCache();
-  
-  // Prefetch likely personas
-  const prefetch = (filters) => {
-    cache.prefetch(filters);
-  };
-
-  return (
-    <VirtualList
-      items={personas}
-      onEndReached={() => hasMore && load()}
-      renderItem={(persona) => (
-        <PersonaCard 
-          key={persona.id} 
-          persona={persona}
-          // Memoize expensive renders
-          memo={['name', 'age', 'occupation']}
-        />
-      )}
-    />
-  );
-}`}
-            filename="performance.tsx"
-            showLineNumbers
-          />
-        </section>
-
-        <section className="grid md:grid-cols-2 gap-6">
-          <div className="bg-blue-50 rounded-xl p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">🎨 UI Libraries</h3>
-            <p className="text-gray-600 mb-3">Works great with:</p>
-            <ul className="space-y-2 text-gray-700 text-sm">
-              <li>• Material-UI / MUI</li>
-              <li>• Ant Design</li>
-              <li>• Chakra UI</li>
-              <li>• Tailwind CSS</li>
-              <li>• Styled Components</li>
-            </ul>
-          </div>
-          <div className="bg-green-50 rounded-xl p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">🔧 Framework Support</h3>
-            <p className="text-gray-600 mb-3">Compatible with:</p>
-            <ul className="space-y-2 text-gray-700 text-sm">
-              <li>• Next.js (SSR/SSG)</li>
-              <li>• Gatsby</li>
-              <li>• Create React App</li>
-              <li>• Vite</li>
-              <li>• Remix</li>
-            </ul>
-          </div>
-        </section>
-      </div>
-    ),
-  },
   'prompt-optimization': {
     title: 'Prompt Optimization',
     content: (
@@ -3350,10 +2461,15 @@ export default async function Page({
     notFound();
   }
   
+  // Get current page index for navigation
+  const currentIndex = navigation.findIndex(item => item.href === `/docs${slug ? '/' + slug.join('/') : ''}`);
+  const previousPage = currentIndex > 0 ? navigation[currentIndex - 1] : null;
+  const nextPage = currentIndex < navigation.length - 1 ? navigation[currentIndex + 1] : null;
+
   return (
     <div className="min-h-screen bg-[var(--bg)]">
       <div className="max-w-screen-xl mx-auto flex">
-        {/* Sidebar Navigation - Zod style */}
+        {/* Left Sidebar Navigation */}
         <aside className="w-64 shrink-0 border-r border-[var(--border)] py-8 px-6 sticky top-0 h-screen overflow-y-auto">
           <Link href="/" className="font-semibold text-lg mb-8 block">
             Persona SDK
@@ -3396,12 +2512,106 @@ export default async function Page({
           </div>
         </aside>
         
-        {/* Main Content - Zod style */}
-        <main className="flex-1 px-12 py-8 max-w-3xl">
+        {/* Main Content */}
+        <main className="flex-1 px-12 py-8 max-w-4xl">
           <h1 className="text-3xl font-bold mb-8">{page.title}</h1>
-          {page.content}
+          <div id="main-content">
+            {page.content}
+          </div>
+          
+          {/* Previous/Next Navigation */}
+          <div className="flex justify-between items-center mt-16 pt-8 border-t border-[var(--border)]">
+            <div>
+              {previousPage && (
+                <Link href={previousPage.href} className="flex items-center gap-2 text-[var(--muted)] hover:text-[var(--fg)]">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  <div>
+                    <div className="text-xs text-[var(--muted)]">Previous</div>
+                    <div className="text-sm font-medium">{previousPage.name}</div>
+                  </div>
+                </Link>
+              )}
+            </div>
+            <div>
+              {nextPage && (
+                <Link href={nextPage.href} className="flex items-center gap-2 text-[var(--muted)] hover:text-[var(--fg)]">
+                  <div className="text-right">
+                    <div className="text-xs text-[var(--muted)]">Next</div>
+                    <div className="text-sm font-medium">{nextPage.name}</div>
+                  </div>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              )}
+            </div>
+          </div>
         </main>
+        
+        {/* Right Sidebar - Table of Contents */}
+        <aside className="w-64 shrink-0 pl-8 py-8 sticky top-0 h-screen overflow-y-auto">
+          <div className="text-sm font-medium text-[var(--fg)] mb-4">On this page</div>
+          <nav className="space-y-2" id="toc">
+            {/* TOC will be populated by client-side script */}
+          </nav>
+        </aside>
       </div>
+      
+      {/* Client-side script for TOC */}
+      <script dangerouslySetInnerHTML={{
+        __html: `
+          document.addEventListener('DOMContentLoaded', function() {
+            const content = document.getElementById('main-content');
+            const toc = document.getElementById('toc');
+            if (!content || !toc) return;
+            
+            const headings = content.querySelectorAll('h2, h3, h4');
+            const tocItems = [];
+            
+            headings.forEach((heading, index) => {
+              const id = heading.textContent.toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+              heading.id = id;
+              
+              const level = parseInt(heading.tagName.charAt(1));
+              const indent = level === 2 ? '' : level === 3 ? 'ml-4' : 'ml-8';
+              
+              tocItems.push(\`
+                <a href="#\${id}" class="block py-1 text-xs \${indent} text-[var(--muted)] hover:text-[var(--fg)] transition-colors">
+                  \${heading.textContent}
+                </a>
+              \`);
+            });
+            
+            toc.innerHTML = tocItems.join('');
+            
+            // Highlight current section
+            const observer = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                const id = entry.target.id;
+                const link = toc.querySelector(\`a[href="#\${id}"]\`);
+                if (link) {
+                  if (entry.isIntersecting) {
+                    link.classList.add('text-[var(--accent)]');
+                    link.classList.remove('text-[var(--muted)]');
+                  } else {
+                    link.classList.remove('text-[var(--accent)]');
+                    link.classList.add('text-[var(--muted)]');
+                  }
+                }
+              });
+            }, {
+              rootMargin: '-100px 0px -66%',
+              threshold: 0
+            });
+            
+            headings.forEach(heading => observer.observe(heading));
+          });
+        `
+      }} />
     </div>
   );
 }
@@ -3418,8 +2628,6 @@ export async function generateStaticParams() {
     { slug: ['ai'] },
     { slug: ['media-to-persona'] },
     { slug: ['real-world-examples'] },
-    { slug: ['rest-api'] },
-    { slug: ['react-integration'] },
     { slug: ['prompt-optimization'] },
     { slug: ['advanced'] },
     { slug: ['api'] },
