@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { CodeBlock } from '@/components/CodeBlock';
+import { TableOfContents } from '@/components/TableOfContents';
+import { MobileNavigation } from '@/components/MobileNavigation';
 
 const navigation = [
   { name: 'Introduction', href: '/docs' },
@@ -2468,9 +2470,16 @@ export default async function Page({
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
-      <div className="max-w-screen-xl mx-auto flex">
-        {/* Left Sidebar Navigation */}
-        <aside className="w-64 shrink-0 border-r border-[var(--border)] py-8 px-6 sticky top-0 h-screen overflow-y-auto">
+      {/* Mobile Navigation */}
+      <MobileNavigation 
+        navigation={navigation}
+        currentPath={`/docs${slug ? '/' + slug.join('/') : ''}`}
+      />
+
+      <div className="lg:max-w-screen-xl lg:mx-auto lg:flex">
+
+        {/* Desktop Left Sidebar Navigation */}
+        <aside className="hidden lg:block w-64 shrink-0 border-r border-[var(--border)] py-8 px-6 sticky top-0 h-screen overflow-y-auto">
           <Link href="/" className="font-semibold text-lg mb-8 block">
             Persona SDK
           </Link>
@@ -2513,14 +2522,14 @@ export default async function Page({
         </aside>
         
         {/* Main Content */}
-        <main className="flex-1 px-12 py-8 max-w-4xl">
-          <h1 className="text-3xl font-bold mb-8">{page.title}</h1>
+        <main className="flex-1 px-4 sm:px-6 lg:px-12 py-8 pt-16 lg:pt-8 max-w-4xl">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">{page.title}</h1>
           <div id="main-content">
             {page.content}
           </div>
           
           {/* Previous/Next Navigation */}
-          <div className="flex justify-between items-center mt-16 pt-8 border-t border-[var(--border)]">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-16 pt-8 border-t border-[var(--border)]">
             <div>
               {previousPage && (
                 <Link href={previousPage.href} className="flex items-center gap-2 text-[var(--muted)] hover:text-[var(--fg)]">
@@ -2534,7 +2543,7 @@ export default async function Page({
                 </Link>
               )}
             </div>
-            <div>
+            <div className="sm:text-right">
               {nextPage && (
                 <Link href={nextPage.href} className="flex items-center gap-2 text-[var(--muted)] hover:text-[var(--fg)]">
                   <div className="text-right">
@@ -2550,68 +2559,12 @@ export default async function Page({
           </div>
         </main>
         
-        {/* Right Sidebar - Table of Contents */}
-        <aside className="w-64 shrink-0 pl-8 py-8 sticky top-0 h-screen overflow-y-auto">
+        {/* Right Sidebar - Table of Contents (Desktop only) */}
+        <aside className="hidden xl:block w-64 shrink-0 pl-8 py-8 sticky top-0 h-screen overflow-y-auto">
           <div className="text-sm font-medium text-[var(--fg)] mb-4">On this page</div>
-          <nav className="space-y-2" id="toc">
-            {/* TOC will be populated by client-side script */}
-          </nav>
+          <TableOfContents />
         </aside>
       </div>
-      
-      {/* Client-side script for TOC */}
-      <script dangerouslySetInnerHTML={{
-        __html: `
-          document.addEventListener('DOMContentLoaded', function() {
-            const content = document.getElementById('main-content');
-            const toc = document.getElementById('toc');
-            if (!content || !toc) return;
-            
-            const headings = content.querySelectorAll('h2, h3, h4');
-            const tocItems = [];
-            
-            headings.forEach((heading, index) => {
-              const id = heading.textContent.toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-+|-+$/g, '');
-              heading.id = id;
-              
-              const level = parseInt(heading.tagName.charAt(1));
-              const indent = level === 2 ? '' : level === 3 ? 'ml-4' : 'ml-8';
-              
-              tocItems.push(\`
-                <a href="#\${id}" class="block py-1 text-xs \${indent} text-[var(--muted)] hover:text-[var(--fg)] transition-colors">
-                  \${heading.textContent}
-                </a>
-              \`);
-            });
-            
-            toc.innerHTML = tocItems.join('');
-            
-            // Highlight current section
-            const observer = new IntersectionObserver((entries) => {
-              entries.forEach(entry => {
-                const id = entry.target.id;
-                const link = toc.querySelector(\`a[href="#\${id}"]\`);
-                if (link) {
-                  if (entry.isIntersecting) {
-                    link.classList.add('text-[var(--accent)]');
-                    link.classList.remove('text-[var(--muted)]');
-                  } else {
-                    link.classList.remove('text-[var(--accent)]');
-                    link.classList.add('text-[var(--muted)]');
-                  }
-                }
-              });
-            }, {
-              rootMargin: '-100px 0px -66%',
-              threshold: 0
-            });
-            
-            headings.forEach(heading => observer.observe(heading));
-          });
-        `
-      }} />
     </div>
   );
 }

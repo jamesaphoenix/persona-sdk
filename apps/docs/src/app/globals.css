@@ -74,12 +74,32 @@ pre {
   margin: 1rem 0;
 }
 
+/* Mobile code blocks */
+@media (max-width: 768px) {
+  pre {
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    border-radius: 4px;
+  }
+  
+  code {
+    font-size: 0.8em;
+  }
+}
+
 pre code {
   background: none;
   border: none;
   padding: 0;
   font-size: 0.875rem;
   line-height: 1.7;
+}
+
+/* Mobile typography */
+@media (max-width: 640px) {
+  h1 { @apply text-2xl; }
+  h2 { @apply text-xl; }
+  h3 { @apply text-lg; }
 }
 
 /* Scrollbar - minimal */
