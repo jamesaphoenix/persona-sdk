@@ -24,105 +24,62 @@ const pageContent: Record<string, { title: string; content: JSX.Element }> = {
   index: {
     title: 'Persona SDK',
     content: (
-      <div className="space-y-24">
+      <div className="space-y-16">
         {/* Hero Section */}
-        <div className="relative overflow-hidden">
-          {/* Animated background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 opacity-50"></div>
-          <div className="absolute inset-0">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-            <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-            <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-indigo-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div className="text-center space-y-8">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+              <span>✨</span>
+              <span>TypeScript-first persona generation</span>
+            </div>
+            <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 leading-tight">
+              Generate Realistic Personas
+              <br />
+              <span className="text-blue-600">with Statistical Distributions</span>
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Create diverse, statistically accurate personas using mathematical distributions, AI-powered insights, and real-world correlations. Perfect for testing, simulations, and user research.
+            </p>
           </div>
           
-          <div className="relative text-center space-y-12 py-24">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/80 backdrop-blur-sm border border-blue-200 text-blue-700 rounded-full text-sm font-semibold shadow-lg">
-                <span className="text-lg">✨</span>
-                <span>TypeScript-first • AI-powered • Production-ready</span>
-              </div>
-              
-              <div className="space-y-6">
-                <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black leading-none">
-                  <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">
-                    Generate
-                  </span>
-                  <span className="block bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 bg-clip-text text-transparent">
-                    Realistic
-                  </span>
-                  <span className="block bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600 bg-clip-text text-transparent">
-                    Personas
-                  </span>
-                </h1>
-                
-                <p className="text-2xl text-gray-700 max-w-4xl mx-auto font-medium leading-relaxed">
-                  The most advanced persona generation library. Create <span className="font-bold text-blue-600">statistically accurate</span>, <span className="font-bold text-purple-600">AI-enhanced</span> personas with real-world correlations in milliseconds.
-                </p>
-              </div>
-              
-              <div className="flex flex-col lg:flex-row gap-6 justify-center items-center">
-                <Link href="/docs/quick-start" className="group px-12 py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-bold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:-translate-y-1">
-                  Start Building Now
-                  <span className="ml-2 group-hover:translate-x-1 transition-transform duration-300">→</span>
-                </Link>
-                <Link href="/docs/real-world-examples" className="px-12 py-5 bg-white/90 backdrop-blur-sm border-2 border-gray-300 text-gray-800 rounded-2xl font-bold text-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 shadow-xl">
-                  See Examples
-                </Link>
-              </div>
-            </div>
-            
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
-                <div className="text-3xl font-black text-blue-600 mb-2">1000+</div>
-                <div className="text-gray-700 font-semibold">Personas per second</div>
-              </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
-                <div className="text-3xl font-black text-purple-600 mb-2">15+</div>
-                <div className="text-gray-700 font-semibold">Statistical distributions</div>
-              </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/50">
-                <div className="text-3xl font-black text-emerald-600 mb-2">100%</div>
-                <div className="text-gray-700 font-semibold">TypeScript coverage</div>
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/docs/quick-start" className="inline-flex items-center px-8 py-4 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors group">
+              Get Started
+              <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+            <Link href="/docs/real-world-examples" className="px-8 py-4 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+              View Examples
+            </Link>
           </div>
         </div>
 
         {/* Installation */}
-        <section className="relative">
-          <div className="bg-gradient-to-r from-gray-900 to-blue-900 rounded-3xl p-12 shadow-2xl">
-            <div className="text-center space-y-6">
-              <h2 className="text-3xl font-bold text-white mb-8">Get Started in Seconds</h2>
-              <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                <CodeBlock 
-                  code="npm install @jamesaphoenix/persona-sdk"
-                  language="bash"
-                />
-              </div>
-              <p className="text-blue-200 text-lg">Zero dependencies • TypeScript included • Works everywhere</p>
-            </div>
-          </div>
+        <section className="bg-gray-50 rounded-2xl p-8">
+          <h2 className="text-2xl font-bold text-center mb-6">Quick Installation</h2>
+          <CodeBlock 
+            code="npm install @jamesaphoenix/persona-sdk"
+            language="bash"
+          />
         </section>
 
-        {/* Showcase Example */}
-        <section className="relative space-y-16">
-          <div className="text-center space-y-6">
-            <h2 className="text-5xl font-black bg-gradient-to-r from-gray-900 to-blue-900 bg-clip-text text-transparent">See the Magic</h2>
-            <p className="text-2xl text-gray-600 font-medium">Generate 1000 realistic personas with correlations in <span className="font-bold text-blue-600">milliseconds</span></p>
+        {/* Code Example */}
+        <section className="space-y-8">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl font-bold">Quick Example</h2>
+            <p className="text-gray-600">Generate realistic personas with statistical distributions</p>
           </div>
           
-          <div className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-3xl p-12 shadow-2xl border border-indigo-100">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <div className="bg-white rounded-2xl p-2 shadow-xl border border-gray-200">
-                  <CodeBlock 
-                    code={`import { PersonaGroup, NormalDistribution } from '@jamesaphoenix/persona-sdk';
+          <div className="grid lg:grid-cols-2 gap-8 items-start">
+            <div>
+              <CodeBlock 
+                code={`import { PersonaGroup, NormalDistribution } from '@jamesaphoenix/persona-sdk';
 
-// Generate 1000 realistic tech workers
+// Generate realistic tech workers
 const team = await PersonaGroup.generate({
   name: 'Tech Workforce',
-  size: 1000,
+  size: 100,
   attributes: {
     age: new NormalDistribution(32, 8),
     salary: new NormalDistribution(95000, 25000),
@@ -134,161 +91,110 @@ const team = await PersonaGroup.generate({
   ]
 });
 
-// Instant insights
+// Get insights
 const insights = team.getStatistics('salary');
-console.log(\`Average salary: $\${insights.mean.toLocaleString()}\`);
-// → Average salary: $94,750`}
-                    filename="generate-team.ts"
-                    showLineNumbers
-                  />
-                </div>
+console.log(\`Average salary: $\${insights.mean.toLocaleString()}\`);`}
+                filename="generate-team.ts"
+                showLineNumbers
+              />
+            </div>
+            
+            <div className="space-y-6">
+              <div className="bg-green-50 border border-green-200 p-6 rounded-xl">
+                <h3 className="font-semibold text-lg mb-3 text-green-800">✅ Realistic Results</h3>
+                <ul className="space-y-2 text-sm text-green-700">
+                  <li>• Age-appropriate experience levels</li>
+                  <li>• Salary correlates with seniority</li>
+                  <li>• Statistically valid distributions</li>
+                  <li>• No impossible combinations</li>
+                </ul>
               </div>
               
-              <div className="space-y-8">
-                <div className="bg-gradient-to-br from-emerald-500 to-green-600 text-white p-8 rounded-2xl shadow-xl">
-                  <h3 className="font-bold text-xl mb-4 flex items-center gap-3">
-                    <span className="text-2xl">✅</span>
-                    Statistically Perfect
-                  </h3>
-                  <ul className="space-y-3 text-emerald-50">
-                    <li className="flex items-center gap-2"><span className="w-2 h-2 bg-white rounded-full"></span>Age-appropriate experience levels</li>
-                    <li className="flex items-center gap-2"><span className="w-2 h-2 bg-white rounded-full"></span>Salary correlates with seniority</li>
-                    <li className="flex items-center gap-2"><span className="w-2 h-2 bg-white rounded-full"></span>Statistically valid distributions</li>
-                    <li className="flex items-center gap-2"><span className="w-2 h-2 bg-white rounded-full"></span>No impossible combinations</li>
-                  </ul>
-                </div>
-                
-                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-8 rounded-2xl shadow-xl">
-                  <h3 className="font-bold text-xl mb-4 flex items-center gap-3">
-                    <span className="text-2xl">⚡</span>
-                    Lightning Fast
-                  </h3>
-                  <ul className="space-y-3 text-blue-50">
-                    <li className="flex items-center gap-2"><span className="w-2 h-2 bg-white rounded-full"></span>1000 personas in ~50ms</li>
-                    <li className="flex items-center gap-2"><span className="w-2 h-2 bg-white rounded-full"></span>Memory efficient streaming</li>
-                    <li className="flex items-center gap-2"><span className="w-2 h-2 bg-white rounded-full"></span>Reproducible with seeds</li>
-                    <li className="flex items-center gap-2"><span className="w-2 h-2 bg-white rounded-full"></span>TypeScript performance</li>
-                  </ul>
-                </div>
+              <div className="bg-blue-50 border border-blue-200 p-6 rounded-xl">
+                <h3 className="font-semibold text-lg mb-3 text-blue-800">⚡ Developer Friendly</h3>
+                <ul className="space-y-2 text-sm text-blue-700">
+                  <li>• TypeScript support included</li>
+                  <li>• Intuitive API design</li>
+                  <li>• Reproducible with seeds</li>
+                  <li>• Comprehensive documentation</li>
+                </ul>
               </div>
             </div>
           </div>
         </section>
 
         {/* Feature Grid */}
-        <section className="space-y-16">
-          <div className="text-center space-y-6">
-            <h2 className="text-5xl font-black bg-gradient-to-r from-gray-900 to-purple-900 bg-clip-text text-transparent">Powerful Features</h2>
-            <p className="text-2xl text-gray-600 font-medium">Everything you need to build incredible experiences</p>
+        <section className="space-y-12">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl font-bold">Key Features</h2>
+            <p className="text-gray-600">Everything you need for persona generation</p>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Link href="/docs/distributions" className="group relative bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-blue-200 p-8 rounded-3xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-3xl"></div>
-              <div className="relative text-center space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-3xl">🎲</span>
-                </div>
-                <h3 className="font-bold text-xl text-gray-900">Statistical Distributions</h3>
-                <p className="text-gray-700 leading-relaxed">Normal, Uniform, Exponential, Beta, Poisson, and custom distributions for realistic data generation</p>
+            <Link href="/docs/distributions" className="group bg-white border border-gray-200 p-6 rounded-xl hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
+                <span className="text-2xl">🎲</span>
               </div>
+              <h3 className="font-semibold text-lg mb-2">Statistical Distributions</h3>
+              <p className="text-gray-600 text-sm">Normal, Uniform, Exponential, Beta, Poisson, and custom distributions</p>
             </Link>
 
-            <Link href="/docs/ai" className="group relative bg-gradient-to-br from-emerald-50 to-green-100 border-2 border-emerald-200 p-8 rounded-3xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 rounded-3xl"></div>
-              <div className="relative text-center space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-3xl">🤖</span>
-                </div>
-                <h3 className="font-bold text-xl text-gray-900">AI-Powered Generation</h3>
-                <p className="text-gray-700 leading-relaxed">Create personas from text prompts and analyze media content with advanced AI</p>
+            <Link href="/docs/ai" className="group bg-white border border-gray-200 p-6 rounded-xl hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
+                <span className="text-2xl">🤖</span>
               </div>
+              <h3 className="font-semibold text-lg mb-2">AI-Powered Generation</h3>
+              <p className="text-gray-600 text-sm">Create personas from text prompts and analyze media content</p>
             </Link>
 
-            <Link href="/docs/correlations" className="group relative bg-gradient-to-br from-purple-50 to-pink-100 border-2 border-purple-200 p-8 rounded-3xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-3xl"></div>
-              <div className="relative text-center space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-3xl">🔗</span>
-                </div>
-                <h3 className="font-bold text-xl text-gray-900">Realistic Correlations</h3>
-                <p className="text-gray-700 leading-relaxed">Model real-world relationships between attributes for authentic data patterns</p>
+            <Link href="/docs/correlations" className="group bg-white border border-gray-200 p-6 rounded-xl hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-200 transition-colors">
+                <span className="text-2xl">🔗</span>
               </div>
+              <h3 className="font-semibold text-lg mb-2">Realistic Correlations</h3>
+              <p className="text-gray-600 text-sm">Model real-world relationships between attributes</p>
             </Link>
 
-            <Link href="/docs/persona-group" className="group relative bg-gradient-to-br from-orange-50 to-red-100 border-2 border-orange-200 p-8 rounded-3xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-red-500/5 rounded-3xl"></div>
-              <div className="relative text-center space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-3xl">👥</span>
-                </div>
-                <h3 className="font-bold text-xl text-gray-900">Group Management</h3>
-                <p className="text-gray-700 leading-relaxed">Powerful tools for managing persona collections at scale</p>
+            <Link href="/docs/persona-group" className="group bg-white border border-gray-200 p-6 rounded-xl hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
+                <span className="text-2xl">👥</span>
               </div>
+              <h3 className="font-semibold text-lg mb-2">Group Management</h3>
+              <p className="text-gray-600 text-sm">Powerful tools for managing persona collections</p>
             </Link>
 
-            <Link href="/docs/ai#focus-groups" className="group relative bg-gradient-to-br from-pink-50 to-rose-100 border-2 border-pink-200 p-8 rounded-3xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
-              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-rose-500/5 rounded-3xl"></div>
-              <div className="relative text-center space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-3xl">💬</span>
-                </div>
-                <h3 className="font-bold text-xl text-gray-900">Focus Groups</h3>
-                <p className="text-gray-700 leading-relaxed">Simulate discussions with diverse perspectives and insights</p>
+            <Link href="/docs/ai#focus-groups" className="group bg-white border border-gray-200 p-6 rounded-xl hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-pink-200 transition-colors">
+                <span className="text-2xl">💬</span>
               </div>
+              <h3 className="font-semibold text-lg mb-2">Focus Groups</h3>
+              <p className="text-gray-600 text-sm">Simulate discussions with diverse perspectives</p>
             </Link>
 
-            <Link href="/docs/real-world-examples" className="group relative bg-gradient-to-br from-indigo-50 to-blue-100 border-2 border-indigo-200 p-8 rounded-3xl hover:shadow-2xl hover:scale-105 transition-all duration-300 md:col-span-2 lg:col-span-3">
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-blue-500/5 rounded-3xl"></div>
-              <div className="relative text-center space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-3xl">🎯</span>
-                </div>
-                <h3 className="font-bold text-2xl text-gray-900">Real-World Examples</h3>
-                <p className="text-gray-700 leading-relaxed text-lg max-w-2xl mx-auto">CTR prediction, market research, A/B testing, and more production use cases</p>
+            <Link href="/docs/real-world-examples" className="group bg-white border border-gray-200 p-6 rounded-xl hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-indigo-200 transition-colors">
+                <span className="text-2xl">🎯</span>
               </div>
+              <h3 className="font-semibold text-lg mb-2">Real-World Examples</h3>
+              <p className="text-gray-600 text-sm">CTR prediction, market research, A/B testing</p>
             </Link>
           </div>
         </section>
 
         {/* Call to Action */}
-        <section className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700"></div>
-          <div className="absolute inset-0 bg-black/20"></div>
-          <div className="absolute inset-0">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full filter blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/20 rounded-full filter blur-3xl"></div>
-          </div>
-          
-          <div className="relative text-center py-24 px-8">
-            <div className="space-y-8 max-w-4xl mx-auto">
-              <h2 className="text-6xl font-black text-white leading-tight">
-                Ready to Build the
-                <br />
-                <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
-                  Future of Personas?
-                </span>
-              </h2>
-              <p className="text-2xl text-blue-100 font-medium leading-relaxed">
-                Join thousands of developers using Persona SDK to create
-                <br />
-                more realistic, data-driven applications
-              </p>
-              
-              <div className="flex flex-col lg:flex-row gap-6 justify-center items-center pt-8">
-                <Link href="/docs/quick-start" className="group px-16 py-6 bg-white text-blue-600 rounded-2xl font-black text-xl hover:bg-blue-50 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:-translate-y-2">
-                  Start Building Today
-                  <span className="ml-3 group-hover:translate-x-2 transition-transform duration-300">🚀</span>
-                </Link>
-                <Link href="/docs/api" className="px-16 py-6 border-2 border-white/40 text-white rounded-2xl font-black text-xl hover:bg-white/10 hover:border-white/60 transition-all duration-300 backdrop-blur-sm">
-                  Explore API
-                </Link>
-              </div>
-              
-              <div className="pt-12 text-blue-200 text-lg">
-                ⭐ Trusted by developers at top companies worldwide
-              </div>
-            </div>
+        <section className="bg-blue-600 text-white rounded-2xl p-8 md:p-12 text-center">
+          <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+          <p className="text-xl mb-8 opacity-90">Build better applications with realistic persona data</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/docs/quick-start" className="inline-flex items-center px-8 py-4 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors group">
+              Quick Start Guide
+              <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+            <Link href="/docs/api" className="px-8 py-4 border border-white/30 text-white rounded-lg font-semibold hover:bg-white/10 transition-colors">
+              API Reference
+            </Link>
           </div>
         </section>
       </div>
