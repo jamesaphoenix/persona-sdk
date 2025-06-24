@@ -2,117 +2,177 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom scrollbar for code blocks */
-pre::-webkit-scrollbar {
-  height: 10px;
-  width: 10px;
+/* Zod-style minimal design */
+:root {
+  --bg: #fafafa;
+  --fg: #18181b;
+  --border: #e4e4e7;
+  --muted: #71717a;
+  --accent: #3b82f6;
+  --code-bg: #f4f4f5;
+  --code-border: #e4e4e7;
 }
 
-pre::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 5px;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #09090b;
+    --fg: #fafafa;
+    --border: #27272a;
+    --muted: #a1a1aa;
+    --accent: #3b82f6;
+    --code-bg: #18181b;
+    --code-border: #27272a;
+  }
 }
 
-pre::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 5px;
-  border: 2px solid transparent;
-  background-clip: content-box;
+/* Base styles */
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-pre::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-  background-clip: content-box;
+/* Typography */
+h1 { @apply text-3xl font-bold mb-2; }
+h2 { @apply text-2xl font-semibold mb-4 mt-12; }
+h3 { @apply text-xl font-semibold mb-3 mt-8; }
+h4 { @apply text-lg font-semibold mb-2 mt-6; }
+
+p {
+  @apply mb-4 leading-7;
+  color: var(--muted);
 }
 
-pre::-webkit-scrollbar-corner {
-  background: transparent;
+/* Links */
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
 }
 
-/* Smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
+a:hover {
+  border-bottom-color: var(--accent);
 }
 
-/* Code block enhancements */
+/* Code styles - Zod-like */
+code {
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-size: 0.875em;
+  padding: 0.2em 0.4em;
+  background-color: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 4px;
+}
+
 pre {
-  position: relative;
-  background: linear-gradient(to bottom right, #1a1b26, #16161e) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-pre::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 40px;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), transparent);
-  pointer-events: none;
+  background-color: var(--code-bg) !important;
+  border: 1px solid var(--code-border);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
 }
 
 pre code {
-  font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', 'Monaco', 'Andale Mono', monospace;
+  background: none;
+  border: none;
+  padding: 0;
   font-size: 0.875rem;
   line-height: 1.7;
-  font-variant-ligatures: normal;
-  font-feature-settings: "liga" 1;
-  tab-size: 2;
 }
 
-/* Syntax highlighting colors */
-code .comment { color: #7982a9; font-style: italic; }
-code .keyword { color: #bb9af7; font-weight: 500; }
-code .string { color: #9ece6a; }
-code .number { color: #ff9e64; }
-code .function { color: #7aa2f7; }
-code .class { color: #ff9e64; }
-code .property { color: #73daca; }
-code .operator { color: #89ddff; }
-code .punctuation { color: #c0caf5; }
-code .variable { color: #f7768e; }
-
-/* Active navigation item animation */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+/* Scrollbar - minimal */
+pre::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
 }
 
-/* Fade in animation */
+pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* Navigation - Zod style */
+nav a {
+  display: block;
+  padding: 0.5rem 0;
+  color: var(--muted);
+  border: none;
+  font-size: 0.875rem;
+  transition: color 0.2s;
+}
+
+nav a:hover {
+  color: var(--fg);
+  border: none;
+}
+
+nav a.active {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* Sections */
+section {
+  margin: 2rem 0;
+}
+
+/* Cards - minimal */
+.card {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  font-weight: 600;
+  color: var(--fg);
+}
+
+td {
+  color: var(--muted);
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+
+/* Remove all fancy effects */
+.gradient-text,
+.animate-fade-in,
+@keyframes slideIn,
 @keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  display: none !important;
 }
-
-.animate-fade-in {
-  animation: fade-in 0.2s ease-out;
-}
-
-/* Gradient text effect */
-.gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Code block hover effects */
-.group:hover pre {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* Line highlight on hover - handled via Tailwind classes */
